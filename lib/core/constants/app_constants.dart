@@ -12,6 +12,7 @@ abstract final class AppConstants {
   static const String keyLastReadAyah = 'last_read_ayah';
   static const String keySelectedReciter = 'selected_reciter';
   static const String keyIsFirstLaunch = 'is_first_launch';
+  static const String keyOnboardingCompleted = 'onboarding_completed';
   static const String keyInabaStreakDays = 'inaba_streak_days';
   static const String keyLastInabaCheckIn = 'last_inaba_check_in';
   static const String keyAppLocale = 'app_locale';

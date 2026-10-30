@@ -25,11 +25,9 @@ class CheckInitialAppStateUseCase implements UseCase<String, NoParams> {
       await databaseHelper.database;
       AppLogger.info('Local database pre-warmed successfully', 'SPLASH');
 
-      // 2. Check first launch or onboarding flag
-      final isFirstLaunch = preferencesService.getBool(AppConstants.keyIsFirstLaunch) ?? true;
-      if (isFirstLaunch) {
-        await preferencesService.setBool(AppConstants.keyIsFirstLaunch, false);
-      }
+      // 2. Check onboarding completion flag
+      final isOnboardingCompleted = preferencesService.getBool(AppConstants.keyOnboardingCompleted) ?? false;
+      final targetRoute = isOnboardingCompleted ? AppRoutes.quran : AppRoutes.onboarding;
 
       // 3. Ensure minimum splash showcase duration to preserve luxury sensory immersion
       final elapsed = stopwatch.elapsed;
@@ -37,8 +35,7 @@ class CheckInitialAppStateUseCase implements UseCase<String, NoParams> {
         await Future.delayed(AppConstants.splashDelay - elapsed);
       }
 
-      // For initial release or subsequent launches, direct to Quran index
-      return const Right(AppRoutes.quran);
+      return Right(targetRoute);
     } catch (e, stack) {
       AppLogger.error('Error during splash pre-flight check', e, stack, 'SPLASH');
       // Graceful fallback to guarantee user is never blocked on splash screen

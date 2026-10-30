@@ -8,6 +8,8 @@ import 'package:sakina_app/core/services/audio/audio_player_handler.dart';
 import 'package:sakina_app/core/services/storage/database_helper.dart';
 import 'package:sakina_app/core/services/storage/preferences_service.dart';
 import 'package:sakina_app/core/services/storage/secure_storage_service.dart';
+import 'package:sakina_app/features/onboarding/domain/usecases/complete_onboarding_usecase.dart';
+import 'package:sakina_app/features/onboarding/presentation/cubit/onboarding_cubit.dart';
 import 'package:sakina_app/features/splash/domain/usecases/check_initial_app_state_usecase.dart';
 import 'package:sakina_app/features/splash/presentation/cubit/splash_cubit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -59,8 +61,15 @@ void _initFeatureModules() {
       databaseHelper: sl(),
     ),
   );
-
   sl.registerFactory<SplashCubit>(
     () => SplashCubit(checkInitialAppStateUseCase: sl()),
+  );
+
+  // Onboarding Feature
+  sl.registerLazySingleton<CompleteOnboardingUseCase>(
+    () => CompleteOnboardingUseCase(preferencesService: sl()),
+  );
+  sl.registerFactory<OnboardingCubit>(
+    () => OnboardingCubit(completeOnboardingUseCase: sl()),
   );
 }

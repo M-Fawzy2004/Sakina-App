@@ -30,19 +30,27 @@ void main() {
     );
   });
 
-  test('should pre-warm database and return Quran route on first launch', () async {
+  test('should return onboarding route when onboarding is not yet completed', () async {
     when(() => mockDatabaseHelper.database).thenAnswer((_) async => mockDatabase);
-    when(() => mockPreferencesService.getBool(AppConstants.keyIsFirstLaunch))
+    when(() => mockPreferencesService.getBool(AppConstants.keyOnboardingCompleted))
+        .thenReturn(false);
+
+    final result = await useCase(const NoParams());
+
+    expect(result, const Right(AppRoutes.onboarding));
+    verify(() => mockDatabaseHelper.database).called(1);
+    verify(() => mockPreferencesService.getBool(AppConstants.keyOnboardingCompleted)).called(1);
+  });
+
+  test('should return quran route when onboarding is already completed', () async {
+    when(() => mockDatabaseHelper.database).thenAnswer((_) async => mockDatabase);
+    when(() => mockPreferencesService.getBool(AppConstants.keyOnboardingCompleted))
         .thenReturn(true);
-    when(() => mockPreferencesService.setBool(AppConstants.keyIsFirstLaunch, false))
-        .thenAnswer((_) async => true);
 
     final result = await useCase(const NoParams());
 
     expect(result, const Right(AppRoutes.quran));
     verify(() => mockDatabaseHelper.database).called(1);
-    verify(() => mockPreferencesService.getBool(AppConstants.keyIsFirstLaunch)).called(1);
-    verify(() => mockPreferencesService.setBool(AppConstants.keyIsFirstLaunch, false)).called(1);
+    verify(() => mockPreferencesService.getBool(AppConstants.keyOnboardingCompleted)).called(1);
   });
 }
-
