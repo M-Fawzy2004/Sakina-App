@@ -39,7 +39,7 @@ class SplashSpiritualQuote extends StatelessWidget {
             ),
             SizedBox(height: 6.h),
             Text(
-              'سورة الرعد — آية ٢٨',
+              'سورة الرعد — آية 28',
               textAlign: TextAlign.center,
               style: GoogleFonts.cairo(
                 fontSize: 11.sp,

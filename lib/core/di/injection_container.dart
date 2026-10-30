@@ -8,6 +8,11 @@ import 'package:sakina_app/core/services/audio/audio_player_handler.dart';
 import 'package:sakina_app/core/services/storage/database_helper.dart';
 import 'package:sakina_app/core/services/storage/preferences_service.dart';
 import 'package:sakina_app/core/services/storage/secure_storage_service.dart';
+import 'package:sakina_app/features/maladh/data/datasources/maladh_local_data_source.dart';
+import 'package:sakina_app/features/maladh/data/repositories/maladh_repository_impl.dart';
+import 'package:sakina_app/features/maladh/domain/repositories/maladh_repository.dart';
+import 'package:sakina_app/features/maladh/domain/usecases/get_maladh_header_data_usecase.dart';
+import 'package:sakina_app/features/maladh/presentation/cubit/maladh_cubit.dart';
 import 'package:sakina_app/features/onboarding/domain/usecases/complete_onboarding_usecase.dart';
 import 'package:sakina_app/features/onboarding/presentation/cubit/onboarding_cubit.dart';
 import 'package:sakina_app/features/splash/domain/usecases/check_initial_app_state_usecase.dart';
@@ -71,5 +76,19 @@ void _initFeatureModules() {
   );
   sl.registerFactory<OnboardingCubit>(
     () => OnboardingCubit(completeOnboardingUseCase: sl()),
+  );
+
+  // Al-Maladh (The Sanctuary) Feature
+  sl.registerLazySingleton<MaladhLocalDataSource>(
+    () => MaladhLocalDataSourceImpl(preferencesService: sl()),
+  );
+  sl.registerLazySingleton<MaladhRepository>(
+    () => MaladhRepositoryImpl(localDataSource: sl()),
+  );
+  sl.registerLazySingleton<GetMaladhHeaderDataUseCase>(
+    () => GetMaladhHeaderDataUseCase(repository: sl()),
+  );
+  sl.registerFactory<MaladhCubit>(
+    () => MaladhCubit(getMaladhHeaderDataUseCase: sl()),
   );
 }

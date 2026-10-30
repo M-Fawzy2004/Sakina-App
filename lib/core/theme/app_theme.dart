@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:sakina_app/core/theme/app_colors.dart';
 import 'package:sakina_app/core/theme/app_text_styles.dart';
 
@@ -8,6 +9,8 @@ abstract final class AppTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
+      fontFamily: GoogleFonts.cairo().fontFamily,
+      textTheme: GoogleFonts.cairoTextTheme(),
       scaffoldBackgroundColor: AppColors.obsidianCore,
       canvasColor: AppColors.obsidianCore,
       cardColor: AppColors.carbonSlate,
@@ -42,4 +45,3 @@ abstract final class AppTheme {
     );
   }
 }
-

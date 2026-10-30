@@ -25,13 +25,6 @@ class SakinaBottomNavBar extends StatelessWidget {
         margin: EdgeInsets.symmetric(horizontal: 16.w),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(36.r),
-          boxShadow: const [
-            BoxShadow(
-              color: AppColors.cardShadow,
-              blurRadius: 24,
-              offset: Offset(0, 8),
-            ),
-          ],
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(36.r),
@@ -120,7 +113,7 @@ class SakinaBottomNavBar extends StatelessWidget {
                       color: currentIndex == 4
                           ? AppColors.champagneGold
                           : AppColors.mutedSilver,
-                      size: 22.r,
+                      size: 23.r,
                     ),
                   ),
                 ],
@@ -132,4 +125,3 @@ class SakinaBottomNavBar extends StatelessWidget {
     );
   }
 }
-

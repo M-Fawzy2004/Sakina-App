@@ -34,22 +34,11 @@ class SakinaNavItem extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Icon presentation with animated aura when selected
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 250),
+            // Icon presentation without blurry shadows
+            AnimatedScale(
+              scale: isSelected ? 1.08 : 1.0,
+              duration: const Duration(milliseconds: 200),
               curve: Curves.easeOutCubic,
-              decoration: isSelected
-                  ? const BoxDecoration(
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColors.goldGlowSoft,
-                          blurRadius: 10,
-                          spreadRadius: 2,
-                        ),
-                      ],
-                    )
-                  : null,
               child: iconWidget,
             ),
 
@@ -72,4 +61,3 @@ class SakinaNavItem extends StatelessWidget {
     );
   }
 }
-
