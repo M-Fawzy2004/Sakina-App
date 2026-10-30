@@ -1,0 +1,14 @@
+{
+  "@@locale": "en",
+  "appName": "Sakina",
+  "appTagline": "Your Luxury Spiritual & Quranic Sanctuary",
+  "quran": "Holy Quran",
+  "audio": "Recitations",
+  "inaba": "Inaba & Recovery",
+  "bookmarks": "Bookmarks",
+  "settings": "Settings",
+  "retry": "Retry",
+  "networkError": "No Internet Connection",
+  "serverError": "Server error, please try again later"
+}
+
