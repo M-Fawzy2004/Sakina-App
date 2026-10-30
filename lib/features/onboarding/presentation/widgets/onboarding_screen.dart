@@ -58,103 +58,110 @@ class _OnboardingViewState extends State<_OnboardingView> {
       },
       child: Scaffold(
         backgroundColor: AppColors.obsidianCore,
-        body: BlocBuilder<OnboardingCubit, OnboardingState>(
-          builder: (context, state) {
-            if (state is! OnboardingActive) {
-              return const SizedBox.shrink();
-            }
+        body: LayoutBuilder(
+          builder: (context, constraints) {
+            // Enhanced image height: ~53.5% of total screen height, clamped safely for all device dimensions
+            final imageHeight = (constraints.maxHeight * 0.535).clamp(310.0, 520.0);
 
-            final cubit = context.read<OnboardingCubit>();
+            return BlocBuilder<OnboardingCubit, OnboardingState>(
+              builder: (context, state) {
+                if (state is! OnboardingActive) {
+                  return const SizedBox.shrink();
+                }
 
-            return Stack(
-              fit: StackFit.expand,
-              children: [
-                // 1. Interactive PageView with Dynamic Parallax & Fluid Scale Animation
-                Column(
+                final cubit = context.read<OnboardingCubit>();
+
+                return Stack(
+                  fit: StackFit.expand,
                   children: [
-                    SizedBox(height: topPadding + 44.h), // Clearance for top controls
-                    Expanded(
-                      child: PageView.builder(
-                        controller: _pageController,
-                        physics: const BouncingScrollPhysics(),
-                        onPageChanged: cubit.onPageChanged,
-                        itemCount: state.items.length,
-                        itemBuilder: (context, index) {
-                          return AnimatedBuilder(
-                            animation: _pageController,
-                            builder: (context, child) {
-                              double pageOffset = 0.0;
-                              if (_pageController.position.haveDimensions) {
-                                pageOffset = (_pageController.page ??
-                                        _pageController.initialPage.toDouble()) -
-                                    index;
-                              }
+                    // 1. Interactive PageView Slider starting from absolute top y=0
+                    Column(
+                      children: [
+                        Expanded(
+                          child: PageView.builder(
+                            controller: _pageController,
+                            physics: const BouncingScrollPhysics(),
+                            onPageChanged: cubit.onPageChanged,
+                            itemCount: state.items.length,
+                            itemBuilder: (context, index) {
+                              return AnimatedBuilder(
+                                animation: _pageController,
+                                builder: (context, child) {
+                                  double pageOffset = 0.0;
+                                  if (_pageController.position.haveDimensions) {
+                                    pageOffset = (_pageController.page ??
+                                            _pageController.initialPage.toDouble()) -
+                                        index;
+                                  }
 
-                              final scale =
-                                  (1.0 - (pageOffset.abs() * 0.12)).clamp(0.0, 1.0);
-                              final opacity =
-                                  (1.0 - (pageOffset.abs() * 0.55)).clamp(0.0, 1.0);
+                                  final scale =
+                                      (1.0 - (pageOffset.abs() * 0.10)).clamp(0.0, 1.0);
+                                  final opacity =
+                                      (1.0 - (pageOffset.abs() * 0.50)).clamp(0.0, 1.0);
 
-                              return Transform.scale(
-                                scale: scale,
-                                child: Opacity(
-                                  opacity: opacity,
-                                  child: child,
+                                  return Transform.scale(
+                                    scale: scale,
+                                    child: Opacity(
+                                      opacity: opacity,
+                                      child: child,
+                                    ),
+                                  );
+                                },
+                                child: OnboardingPageContent(
+                                  item: state.items[index],
+                                  imageHeight: imageHeight,
                                 ),
                               );
                             },
-                            child: OnboardingPageContent(
-                              item: state.items[index],
-                            ),
-                          );
-                        },
+                          ),
+                        ),
+
+                        // 2. Centered Animated Indicator (Directly below description)
+                        OnboardingIndicator(
+                          count: state.items.length,
+                          currentIndex: state.currentIndex,
+                        ),
+
+                        SizedBox(height: 18.h),
+
+                        // 3. Primary Next / Finish Action Button
+                        OnboardingActionButton(
+                          text: state.currentItem.buttonText,
+                          isLastPage: state.isLastPage,
+                          onPressed: () {
+                            if (state.isLastPage) {
+                              cubit.completeOnboarding();
+                            } else {
+                              _pageController.nextPage(
+                                duration: const Duration(milliseconds: 380),
+                                curve: Curves.easeInOutCubic,
+                              );
+                            }
+                          },
+                        ),
+
+                        SizedBox(height: bottomPadding + 16.h),
+                      ],
+                    ),
+
+                    // 4. Top Skip Action Button (Floating at top-end over image with safe area clearance)
+                    PositionedDirectional(
+                      top: topPadding + 10.h,
+                      end: 18.w,
+                      child: AnimatedOpacity(
+                        opacity: state.isLastPage ? 0.0 : 1.0,
+                        duration: const Duration(milliseconds: 250),
+                        child: IgnorePointer(
+                          ignoring: state.isLastPage,
+                          child: OnboardingSkipButton(
+                            onSkip: cubit.completeOnboarding,
+                          ),
+                        ),
                       ),
                     ),
-
-                    // 2. Centered Animated Indicator (Directly below description)
-                    OnboardingIndicator(
-                      count: state.items.length,
-                      currentIndex: state.currentIndex,
-                    ),
-
-                    SizedBox(height: 28.h),
-
-                    // 3. Primary Next / Finish Action Button
-                    OnboardingActionButton(
-                      text: state.currentItem.buttonText,
-                      isLastPage: state.isLastPage,
-                      onPressed: () {
-                        if (state.isLastPage) {
-                          cubit.completeOnboarding();
-                        } else {
-                          _pageController.nextPage(
-                            duration: const Duration(milliseconds: 380),
-                            curve: Curves.easeInOutCubic,
-                          );
-                        }
-                      },
-                    ),
-
-                    SizedBox(height: bottomPadding + 24.h),
                   ],
-                ),
-
-                // 4. Top Skip Action Button (Floating at top-end with safe area clearance)
-                PositionedDirectional(
-                  top: topPadding + 10.h,
-                  end: 18.w,
-                  child: AnimatedOpacity(
-                    opacity: state.isLastPage ? 0.0 : 1.0,
-                    duration: const Duration(milliseconds: 250),
-                    child: IgnorePointer(
-                      ignoring: state.isLastPage,
-                      child: OnboardingSkipButton(
-                        onSkip: cubit.completeOnboarding,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+                );
+              },
             );
           },
         ),

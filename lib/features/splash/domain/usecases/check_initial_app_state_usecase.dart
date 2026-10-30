@@ -27,7 +27,7 @@ class CheckInitialAppStateUseCase implements UseCase<String, NoParams> {
 
       // 2. Check onboarding completion flag
       final isOnboardingCompleted = preferencesService.getBool(AppConstants.keyOnboardingCompleted) ?? false;
-      final targetRoute = isOnboardingCompleted ? AppRoutes.quran : AppRoutes.onboarding;
+      final targetRoute = isOnboardingCompleted ? AppRoutes.maladh : AppRoutes.onboarding;
 
       // 3. Ensure minimum splash showcase duration to preserve luxury sensory immersion
       final elapsed = stopwatch.elapsed;

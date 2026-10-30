@@ -34,13 +34,13 @@ class OnboardingActionButton extends StatelessWidget {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
-          boxShadow: const [
-            BoxShadow(
-              color: AppColors.goldGlowSoft,
-              blurRadius: 18,
-              offset: Offset(0, 6),
-            ),
-          ],
+          // boxShadow: const [
+          //   BoxShadow(
+          //     color: AppColors.goldGlowSoft,
+          //     blurRadius: 18,
+          //     offset: Offset(0, 6),
+          //   ),
+          // ],
         ),
         child: Material(
           color: Colors.transparent,
@@ -72,4 +72,3 @@ class OnboardingActionButton extends StatelessWidget {
     );
   }
 }
-

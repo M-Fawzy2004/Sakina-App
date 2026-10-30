@@ -47,10 +47,10 @@ void main() {
 
   test('completeOnboarding should emit OnboardingCompleted when usecase succeeds', () async {
     when(() => mockCompleteOnboardingUseCase(const NoParams()))
-        .thenAnswer((_) async => const Right(AppRoutes.quran));
+        .thenAnswer((_) async => const Right(AppRoutes.maladh));
 
     final expectedStates = [
-      const OnboardingCompleted(destinationRoute: AppRoutes.quran),
+      const OnboardingCompleted(destinationRoute: AppRoutes.maladh),
     ];
 
     expectLater(onboardingCubit.stream, emitsInOrder(expectedStates));

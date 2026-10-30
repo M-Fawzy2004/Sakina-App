@@ -42,14 +42,14 @@ void main() {
     verify(() => mockPreferencesService.getBool(AppConstants.keyOnboardingCompleted)).called(1);
   });
 
-  test('should return quran route when onboarding is already completed', () async {
+  test('should return maladh route when onboarding is already completed', () async {
     when(() => mockDatabaseHelper.database).thenAnswer((_) async => mockDatabase);
     when(() => mockPreferencesService.getBool(AppConstants.keyOnboardingCompleted))
         .thenReturn(true);
 
     final result = await useCase(const NoParams());
 
-    expect(result, const Right(AppRoutes.quran));
+    expect(result, const Right(AppRoutes.maladh));
     verify(() => mockDatabaseHelper.database).called(1);
     verify(() => mockPreferencesService.getBool(AppConstants.keyOnboardingCompleted)).called(1);
   });

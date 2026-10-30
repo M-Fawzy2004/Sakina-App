@@ -18,13 +18,13 @@ void main() {
     useCase = CompleteOnboardingUseCase(preferencesService: mockPreferencesService);
   });
 
-  test('should set onboarding completed flag to true and return quran route', () async {
+  test('should set onboarding completed flag to true and return maladh route', () async {
     when(() => mockPreferencesService.setBool(AppConstants.keyOnboardingCompleted, true))
         .thenAnswer((_) async => true);
 
     final result = await useCase(const NoParams());
 
-    expect(result, const Right(AppRoutes.quran));
+    expect(result, const Right(AppRoutes.maladh));
     verify(() => mockPreferencesService.setBool(AppConstants.keyOnboardingCompleted, true)).called(1);
   });
 }

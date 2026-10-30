@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sakina_app/core/constants/app_assets.dart';
+import 'package:sakina_app/core/router/route_constants.dart';
 import 'package:sakina_app/core/usecases/usecase.dart';
 import 'package:sakina_app/core/utils/haptic_service.dart';
 import 'package:sakina_app/features/onboarding/domain/entities/onboarding_item.dart';
@@ -55,8 +56,8 @@ class OnboardingCubit extends Cubit<OnboardingState> {
     final result = await completeOnboardingUseCase(const NoParams());
     result.fold(
       (failure) {
-        // Fallback to Quran route
-        emit(const OnboardingCompleted(destinationRoute: '/quran'));
+        // Fallback to sanctuary home route
+        emit(const OnboardingCompleted(destinationRoute: AppRoutes.maladh));
       },
       (destinationRoute) {
         emit(OnboardingCompleted(destinationRoute: destinationRoute));

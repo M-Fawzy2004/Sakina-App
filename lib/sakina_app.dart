@@ -1,3 +1,4 @@
+import 'package:device_preview/device_preview.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sakina_app/core/l10n/app_localizations.dart';
@@ -21,10 +22,12 @@ class SakinaApp extends StatelessWidget {
           routerConfig: appRouter,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          locale: const Locale('ar'),
+          locale: DevicePreview.locale(context) ?? const Locale('ar'),
+          builder: (context, routerChild) {
+            return DevicePreview.appBuilder(context, routerChild);
+          },
         );
       },
     );
   }
 }
-
