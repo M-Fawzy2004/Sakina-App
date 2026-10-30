@@ -1,14 +1,24 @@
 {
   "@@locale": "ar",
   "appName": "سكينة",
+  "@appName": {},
   "appTagline": "ملاذك الروحي والقرآني الفاخر",
+  "@appTagline": {},
   "quran": "القرآن الكريم",
+  "@quran": {},
   "audio": "التلاوات العطرة",
+  "@audio": {},
   "inaba": "إنابة والتعافي",
+  "@inaba": {},
   "bookmarks": "الفواصل والختمات",
+  "@bookmarks": {},
   "settings": "الإعدادات",
+  "@settings": {},
   "retry": "إعادة المحاولة",
+  "@retry": {},
   "networkError": "لا يوجد اتصال بالإنترنت",
-  "serverError": "حدث خطأ في الخادم، يرجى المحاولة لاحقاً"
+  "@networkError": {},
+  "serverError": "حدث خطأ في الخادم، يرجى المحاولة لاحقاً",
+  "@serverError": {}
 }
 
