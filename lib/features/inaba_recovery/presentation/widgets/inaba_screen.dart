@@ -120,9 +120,7 @@ class _InabaScreenView extends StatelessWidget {
                       onTreeTap: () {
                         InabaTreeOfLightSheet.show(
                           context,
-                          streakDays: overview.streakDays,
-                          progress: overview.streakProgress,
-                          levels: state.spiritualLevels,
+                          cubit: context.read<InabaCubit>(),
                         );
                       },
                     ),
@@ -134,69 +132,31 @@ class _InabaScreenView extends StatelessWidget {
                     onGoodDeedsTap: () {
                       InabaGoodDeedsSheet.show(
                         context,
-                        deeds: state.goodDeeds,
-                        onToggleDeed: (id) {
-                          context.read<InabaCubit>().toggleGoodDeed(id);
-                        },
-                        onAddDeed: (title, category) {
-                          context.read<InabaCubit>().addCustomGoodDeed(
-                            title,
-                            category,
-                          );
-                        },
+                        cubit: context.read<InabaCubit>(),
                       );
                     },
                     onConfessionTap: () {
-                      final cubit = context.read<InabaCubit>();
                       InabaSanctuaryConfessionSheet.show(
                         context,
-                        isUnlocked: state.isConfessionUnlocked,
-                        reflections: state.reflections,
-                        onUnlock: cubit.unlockConfessionSanctuary,
-                        onLock: cubit.lockConfessionSanctuary,
-                        onSaveReflection:
-                            ({
-                              required title,
-                              required content,
-                              required moodTag,
-                            }) {
-                              cubit.saveReflection(
-                                title: title,
-                                content: content,
-                                moodTag: moodTag,
-                              );
-                            },
-                        onDeleteReflection: (id) {
-                          cubit.deleteReflection(id);
-                        },
+                        cubit: context.read<InabaCubit>(),
                       );
                     },
                     onCovenantTap: () {
-                      final cubit = context.read<InabaCubit>();
                       InabaCovenantRenewalSheet.show(
                         context,
-                        steps: state.repentanceSteps,
-                        onToggleStep: (id) => cubit.toggleRepentanceStep(id),
-                        onRenewCovenant: () => cubit.renewCovenant(),
+                        cubit: context.read<InabaCubit>(),
                       );
                     },
                     onTreeTap: () {
-                      if (overview != null) {
-                        InabaTreeOfLightSheet.show(
-                          context,
-                          streakDays: overview.streakDays,
-                          progress: overview.streakProgress,
-                          levels: state.spiritualLevels,
-                        );
-                      }
+                      InabaTreeOfLightSheet.show(
+                        context,
+                        cubit: context.read<InabaCubit>(),
+                      );
                     },
                     onHopeDoseTap: () {
-                      final cubit = context.read<InabaCubit>();
                       InabaDailyHopeSheet.show(
                         context,
-                        activeDose: state.activeHopeDose,
-                        onNextDose: () => cubit.nextHopeDose(),
-                        onToggleSave: () => cubit.toggleSaveCurrentHopeDose(),
+                        cubit: context.read<InabaCubit>(),
                       );
                     },
                   ),

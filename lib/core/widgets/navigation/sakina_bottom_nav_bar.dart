@@ -23,20 +23,20 @@ class SakinaBottomNavBar extends StatelessWidget {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Container(
-        height: 68.h,
+        height: 64.h,
         margin: EdgeInsets.symmetric(horizontal: 16.w),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(36.r),
+          borderRadius: BorderRadius.circular(32.r),
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(36.r),
+          borderRadius: BorderRadius.circular(32.r),
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 6.w),
               decoration: BoxDecoration(
                 color: colors.cardSurface.withValues(alpha: 0.94),
-                borderRadius: BorderRadius.circular(36.r),
+                borderRadius: BorderRadius.circular(32.r),
                 border: Border.all(
                   color: colors.borderHairline,
                   width: 1.r,

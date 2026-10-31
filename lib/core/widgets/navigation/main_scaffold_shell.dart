@@ -33,7 +33,7 @@ class MainScaffoldShell extends StatelessWidget {
             Positioned(
               left: 0,
               right: 0,
-              bottom: bottomPadding + 12.h,
+              bottom: (bottomPadding > 0 ? 8.0 : 10.0).h,
               child: SakinaBottomNavBar(
                 currentIndex: navigationShell.currentIndex,
                 onItemSelected: (index) {

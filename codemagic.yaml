@@ -1,0 +1,50 @@
+workflows:
+  ios-release-workflow:
+    name: iOS Sideloadly IPA Build
+    max_build_duration: 120
+    instance_type: mac_mini_m2
+    environment:
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: 'main'
+          include: true
+          source: true
+
+    scripts:
+      - name: Install dependencies & CocoaPods
+        script: |
+          flutter packages pub get
+          cd ios
+          pod install --repo-update
+          cd ..
+
+      - name: Build Unsigned iOS App
+        script: |
+          flutter build ios --release --no-codesign
+
+      - name: Package IPA for Sideloadly
+        script: |
+          set -e
+          APP_PATH="build/ios/iphoneos/Runner.app"
+          if [ -d "$APP_PATH" ]; then
+            echo "App built successfully at $APP_PATH! Packaging into IPA for Sideloadly..."
+            rm -rf Payload Runner.ipa
+            mkdir -p Payload
+            cp -r "$APP_PATH" Payload/
+            zip -r -q Runner.ipa Payload
+            rm -rf Payload
+            echo "Packaging complete: Runner.ipa is ready for download!"
+            ls -lh Runner.ipa
+          else
+            echo "Error: App NOT found at $APP_PATH"
+            exit 1
+          fi
+
+    artifacts:
+      - Runner.ipa

@@ -1,45 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:sakina_app/core/theme/app_colors_scheme.dart';
 import 'package:sakina_app/core/theme/app_text_styles.dart';
 import 'package:sakina_app/features/inaba_recovery/domain/entities/spiritual_reflection_entity.dart';
+import 'package:sakina_app/features/inaba_recovery/presentation/cubit/inaba_cubit.dart';
+import 'package:sakina_app/features/inaba_recovery/presentation/cubit/inaba_state.dart';
 
 class InabaSanctuaryConfessionSheet extends StatefulWidget {
-  final bool isUnlocked;
-  final List<SpiritualReflectionEntity> reflections;
-  final VoidCallback onUnlock;
-  final VoidCallback onLock;
-  final Function({
-    required String title,
-    required String content,
-    required String moodTag,
-  }) onSaveReflection;
-  final ValueChanged<String> onDeleteReflection;
-
-  const InabaSanctuaryConfessionSheet({
-    super.key,
-    required this.isUnlocked,
-    required this.reflections,
-    required this.onUnlock,
-    required this.onLock,
-    required this.onSaveReflection,
-    required this.onDeleteReflection,
-  });
+  const InabaSanctuaryConfessionSheet({super.key});
 
   static Future<void> show(
     BuildContext context, {
-    required bool isUnlocked,
-    required List<SpiritualReflectionEntity> reflections,
-    required VoidCallback onUnlock,
-    required VoidCallback onLock,
-    required Function({
-      required String title,
-      required String content,
-      required String moodTag,
-    }) onSaveReflection,
-    required ValueChanged<String> onDeleteReflection,
+    required InabaCubit cubit,
   }) {
     return showModalBottomSheet(
       context: context,
@@ -47,13 +22,9 @@ class InabaSanctuaryConfessionSheet extends StatefulWidget {
       useRootNavigator: true,
       backgroundColor: Colors.transparent,
       elevation: 0,
-      builder: (ctx) => InabaSanctuaryConfessionSheet(
-        isUnlocked: isUnlocked,
-        reflections: reflections,
-        onUnlock: onUnlock,
-        onLock: onLock,
-        onSaveReflection: onSaveReflection,
-        onDeleteReflection: onDeleteReflection,
+      builder: (_) => BlocProvider.value(
+        value: cubit,
+        child: const InabaSanctuaryConfessionSheet(),
       ),
     );
   }
@@ -95,114 +66,123 @@ class _InabaSanctuaryConfessionSheetState
     final colors = context.colors;
     final bottomInset = MediaQuery.paddingOf(context).bottom;
 
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: Container(
-        height: 0.88.sh,
-        padding: EdgeInsets.only(
-          left: 20.w,
-          right: 20.w,
-          top: 16.h,
-          bottom: bottomInset > 0 ? bottomInset + 12.h : 20.h,
-        ),
-        decoration: BoxDecoration(
-          color: colors.cardSurface,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(28.r)),
-          border: Border.all(
-            color: colors.borderHairline,
-            width: 1.r,
-          ),
-        ),
-        child: Column(
-          children: [
-            // Handle Bar
-            Center(
-              child: Container(
-                width: 44.w,
-                height: 4.h,
-                decoration: BoxDecoration(
-                  color: colors.borderHairline,
-                  borderRadius: BorderRadius.circular(4.r),
-                ),
+    return BlocBuilder<InabaCubit, InabaState>(
+      builder: (context, state) {
+        final cubit = context.read<InabaCubit>();
+        final isUnlocked = state.isConfessionUnlocked;
+        final reflections = state.reflections;
+
+        return Directionality(
+          textDirection: TextDirection.rtl,
+          child: Container(
+            height: 0.88.sh,
+            padding: EdgeInsets.only(
+              left: 20.w,
+              right: 20.w,
+              top: 16.h,
+              bottom: bottomInset > 0 ? bottomInset + 12.h : 20.h,
+            ),
+            decoration: BoxDecoration(
+              color: colors.cardSurface,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(28.r)),
+              border: Border.all(
+                color: colors.borderHairline,
+                width: 1.r,
               ),
             ),
-            SizedBox(height: 16.h),
-
-            // Top Header Row
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            child: Column(
               children: [
-                Row(
-                  children: [
-                    Container(
-                      padding: EdgeInsets.all(8.r),
-                      decoration: BoxDecoration(
-                        color: colors.surfaceElevated,
-                        borderRadius: BorderRadius.circular(12.r),
-                        border: Border.all(
-                          color: colors.borderHairline,
-                          width: 1.r,
-                        ),
-                      ),
-                      child: Icon(
-                        widget.isUnlocked ? Iconsax.lock_slash : Iconsax.lock,
-                        size: 20.r,
-                        color: colors.accentGold,
-                      ),
+                // Handle Bar
+                Center(
+                  child: Container(
+                    width: 44.w,
+                    height: 4.h,
+                    decoration: BoxDecoration(
+                      color: colors.borderHairline,
+                      borderRadius: BorderRadius.circular(4.r),
                     ),
-                    SizedBox(width: 12.w),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                  ),
+                ),
+                SizedBox(height: 16.h),
+
+                // Top Header Row
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
                       children: [
-                        Text(
-                          'مِحْرَابُ البَوْحِ',
-                          style: AppTextStyles.titleMediumOf(context).copyWith(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 17.sp,
-                            color: colors.textPrimary,
+                        Container(
+                          padding: EdgeInsets.all(8.r),
+                          decoration: BoxDecoration(
+                            color: colors.surfaceElevated,
+                            borderRadius: BorderRadius.circular(12.r),
+                            border: Border.all(
+                              color: colors.borderHairline,
+                              width: 1.r,
+                            ),
+                          ),
+                          child: Icon(
+                            isUnlocked ? Iconsax.lock_slash : Iconsax.lock,
+                            size: 20.r,
+                            color: colors.accentGold,
                           ),
                         ),
-                        Text(
-                          'مساحتك الآمنة للتأمل والمحاسبة بينك وبين الله',
-                          style: AppTextStyles.captionOf(context).copyWith(
-                            color: colors.textSecondary,
-                            fontSize: 11.sp,
-                          ),
+                        SizedBox(width: 12.w),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'مِحْرَابُ البَوْحِ',
+                              style:
+                                  AppTextStyles.titleMediumOf(context).copyWith(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 17.sp,
+                                color: colors.textPrimary,
+                              ),
+                            ),
+                            Text(
+                              'مساحتك الآمنة للتأمل والمحاسبة بينك وبين الله',
+                              style: AppTextStyles.captionOf(context).copyWith(
+                                color: colors.textSecondary,
+                                fontSize: 11.sp,
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
+                    if (isUnlocked)
+                      IconButton(
+                        tooltip: 'قفل المحراب',
+                        icon: Icon(
+                          Iconsax.lock,
+                          size: 20.r,
+                          color: colors.accentGold,
+                        ),
+                        onPressed: () {
+                          HapticFeedback.lightImpact();
+                          cubit.lockConfessionSanctuary();
+                        },
+                      ),
                   ],
                 ),
-                if (widget.isUnlocked)
-                  IconButton(
-                    tooltip: 'قفل المحراب',
-                    icon: Icon(
-                      Iconsax.lock,
-                      size: 20.r,
-                      color: colors.accentGold,
-                    ),
-                    onPressed: () {
-                      HapticFeedback.lightImpact();
-                      widget.onLock();
-                    },
-                  ),
+                SizedBox(height: 16.h),
+
+                // Content: Locked vs Unlocked
+                Expanded(
+                  child: isUnlocked
+                      ? _buildUnlockedView(context, reflections, cubit)
+                      : _buildLockedView(context, cubit),
+                ),
               ],
             ),
-            SizedBox(height: 16.h),
-
-            // Content: Locked vs Unlocked
-            Expanded(
-              child: widget.isUnlocked
-                  ? _buildUnlockedView(context)
-                  : _buildLockedView(context),
-            ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 
-  Widget _buildLockedView(BuildContext context) {
+  Widget _buildLockedView(BuildContext context, InabaCubit cubit) {
     final colors = context.colors;
 
     return Center(
@@ -267,7 +247,7 @@ class _InabaSanctuaryConfessionSheetState
               ),
               onPressed: () {
                 HapticFeedback.mediumImpact();
-                widget.onUnlock();
+                cubit.unlockConfessionSanctuary();
               },
               icon: Icon(
                 Iconsax.finger_scan,
@@ -311,7 +291,8 @@ class _InabaSanctuaryConfessionSheetState
     );
   }
 
-  Widget _buildUnlockedView(BuildContext context) {
+  Widget _buildUnlockedView(BuildContext context,
+      List<SpiritualReflectionEntity> reflections, InabaCubit cubit) {
     final colors = context.colors;
 
     return SingleChildScrollView(
@@ -322,7 +303,7 @@ class _InabaSanctuaryConfessionSheetState
           // Mood Selector Pills
           Text(
             'حَالُ القَلْبِ الآن:',
-            style: AppTextStyles.caption.copyWith(
+            style: AppTextStyles.captionOf(context).copyWith(
               color: colors.textSecondary,
               fontWeight: FontWeight.bold,
               fontSize: 11.sp,
@@ -428,7 +409,7 @@ class _InabaSanctuaryConfessionSheetState
                     final content = _contentController.text.trim();
                     if (content.isNotEmpty) {
                       HapticFeedback.lightImpact();
-                      widget.onSaveReflection(
+                      cubit.saveReflection(
                         title: _titleController.text.trim(),
                         content: content,
                         moodTag: _selectedMood,
@@ -476,8 +457,8 @@ class _InabaSanctuaryConfessionSheetState
 
           // Saved Reflections Section
           Text(
-            'خَوَاطِرُكَ المَحْفُوظَةُ (${widget.reflections.length})',
-            style: AppTextStyles.titleMedium.copyWith(
+            'خَوَاطِرُكَ المَحْفُوظَةُ (${reflections.length})',
+            style: AppTextStyles.titleMediumOf(context).copyWith(
               fontWeight: FontWeight.bold,
               fontSize: 13.sp,
               color: colors.textPrimary,
@@ -485,13 +466,13 @@ class _InabaSanctuaryConfessionSheetState
           ),
           SizedBox(height: 8.h),
 
-          if (widget.reflections.isEmpty)
+          if (reflections.isEmpty)
             Center(
               child: Padding(
                 padding: EdgeInsets.symmetric(vertical: 24.h),
                 child: Text(
                   'لم تسجل أي خواطر بعد.. المحراب ينتظر صدقك',
-                  style: AppTextStyles.caption.copyWith(
+                  style: AppTextStyles.captionOf(context).copyWith(
                     color: colors.textSecondary,
                     fontSize: 12.sp,
                   ),
@@ -499,10 +480,10 @@ class _InabaSanctuaryConfessionSheetState
               ),
             )
           else
-            ...widget.reflections.map((r) {
+            ...reflections.map((r) {
               return _ReflectionCard(
                 reflection: r,
-                onDelete: () => widget.onDeleteReflection(r.id),
+                onDelete: () => cubit.deleteReflection(r.id),
               );
             }),
         ],
@@ -562,7 +543,7 @@ class _ReflectionCard extends StatelessWidget {
                   SizedBox(width: 8.w),
                   Text(
                     reflection.title,
-                    style: AppTextStyles.titleMedium.copyWith(
+                    style: AppTextStyles.titleMediumOf(context).copyWith(
                       fontWeight: FontWeight.bold,
                       fontSize: 13.sp,
                       color: colors.textPrimary,
@@ -586,7 +567,7 @@ class _ReflectionCard extends StatelessWidget {
           SizedBox(height: 6.h),
           Text(
             reflection.content,
-            style: AppTextStyles.bodyMedium.copyWith(
+            style: AppTextStyles.bodyMediumOf(context).copyWith(
               color: colors.textPrimary,
               fontSize: 12.sp,
               height: 1.5,
