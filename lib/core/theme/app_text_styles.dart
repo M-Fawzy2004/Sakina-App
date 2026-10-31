@@ -24,6 +24,15 @@ abstract final class AppTextStyles {
         letterSpacing: 0.4,
       );
 
+  // Traditional Illuminated Quran Scripture (Amiri Calligraphy - matching design mockup)
+  static TextStyle get quranIlluminatedAyah => GoogleFonts.amiri(
+        fontSize: 21.sp,
+        fontWeight: FontWeight.w700,
+        color: AppColors.paleRadiance,
+        height: 2.1,
+        letterSpacing: 0.3,
+      );
+
   // Modern Bold Headings & Surah Titles (Cairo - matching Onboarding)
   static TextStyle get headlineLarge => GoogleFonts.cairo(
         fontSize: 25.sp,

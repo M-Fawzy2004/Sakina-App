@@ -60,11 +60,14 @@ class _SurahReaderScreenState extends State<SurahReaderScreen> {
             return const QuranShimmer();
           }
 
+          final activeSurah = state.activeReadingSurah ?? widget.surah;
           final verses = state.activeVerses;
 
           return QuranReaderView(
-            surah: widget.surah,
+            surah: activeSurah,
             verses: verses,
+            allSurahs: state.allSurahs,
+            onSurahChanged: (newSurah) => cubit.openSurahReader(newSurah),
             onClose: () {
               cubit.closeSurahReader();
               Navigator.of(context).pop();

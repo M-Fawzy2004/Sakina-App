@@ -5,10 +5,9 @@ import 'package:sakina_app/core/theme/app_colors.dart';
 import 'package:sakina_app/core/theme/app_text_styles.dart';
 import 'package:sakina_app/core/utils/haptic_service.dart';
 
-/// Floating interactive stadium menu for Al-Mushaf reader:
-/// Replaces the old rectangular bottom bar with a floating action bar that operates:
-/// - On the currently selected Ayah if one is highlighted, OR
-/// - On the entire current page/Surah if no ayah is highlighted.
+/// Compact single-row floating bar for the Al-Mushaf reader.
+/// - If an ayah is selected: actions apply to that ayah.
+/// - Otherwise: actions apply to the current page / surah.
 class QuranReaderFloatingBar extends StatelessWidget {
   final int pageNumber;
   final int juzNumber;
@@ -36,192 +35,192 @@ class QuranReaderFloatingBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final hasSelection = selectedAyahNumber != null;
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
 
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
-      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
-      decoration: BoxDecoration(
-        color: AppColors.carbonSlate.withValues(alpha: 0.95),
-        borderRadius: BorderRadius.circular(24.r),
-        border: Border.all(
-          color: AppColors.goldBorderStroke,
-          width: 1.2.r,
+    return SafeArea(
+      top: false,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeOutCubic,
+        margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 4.h),
+        padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
+        decoration: BoxDecoration(
+          color: AppColors.carbonSlate.withValues(alpha: 0.96),
+          borderRadius: BorderRadius.circular(25.r),
+          border: Border.all(
+            color: hasSelection
+                ? AppColors.emeraldGlow.withValues(alpha: 0.6)
+                : AppColors.goldBorderStroke,
+            width: 1.r,
+          ),
         ),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Top Row: Page Navigation & Status
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              // Previous Page
-              IconButton(
-                visualDensity: VisualDensity.compact,
-                onPressed: () {
-                  HapticService.selectionClick();
-                  onPreviousPage();
-                },
-                icon: Icon(
-                  Icons.chevron_left_rounded,
-                  color: AppColors.champagneGold,
-                  size: 24.r,
+        child: Row(
+          children: [
+            _IconBtn(
+              icon: isRtl
+                  ? Icons.chevron_left_rounded
+                  : Icons.chevron_right_rounded,
+              tooltip: 'الصفحة السابقة',
+              size: 22,
+              onTap: onPreviousPage,
+            ),
+
+            // Info: page · juz  /  ayah badge
+            Expanded(
+              child: Center(
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 200),
+                  transitionBuilder: (child, anim) =>
+                      FadeTransition(opacity: anim, child: child),
+                  child: hasSelection
+                      ? _Badge(
+                          key: ValueKey('ayah-$selectedAyahNumber'),
+                          text: 'الآية $selectedAyahNumber',
+                          color: AppColors.emeraldGlow,
+                          filled: true,
+                        )
+                      : _Badge(
+                          key: ValueKey('page-$pageNumber-$juzNumber'),
+                          text: 'ص $pageNumber • جزء $juzNumber',
+                          color: AppColors.champagneGold,
+                        ),
                 ),
               ),
+            ),
 
-              // Page & Juz Info or Active Ayah Badge
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    'ص $pageNumber • الجزء $juzNumber',
-                    style: AppTextStyles.caption.copyWith(
-                      color: AppColors.champagneGold,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 11.5.sp,
-                    ),
-                  ),
-                  if (hasSelection) ...[
-                    SizedBox(width: 8.w),
-                    Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 8.w,
-                        vertical: 2.h,
-                      ),
-                      decoration: BoxDecoration(
-                        color: AppColors.emeraldGlow.withValues(alpha: 0.15),
-                        borderRadius: BorderRadius.circular(10.r),
-                        border: Border.all(
-                          color: AppColors.emeraldGlow,
-                          width: 0.8.r,
-                        ),
-                      ),
-                      child: Text(
-                        'الآية $selectedAyahNumber',
-                        style: AppTextStyles.caption.copyWith(
-                          color: AppColors.emeraldGlow,
-                          fontWeight: FontWeight.w700,
-                          fontSize: 10.sp,
-                        ),
-                      ),
-                    ),
-                  ],
-                ],
-              ),
+            _IconBtn(
+              icon: isRtl
+                  ? Icons.chevron_right_rounded
+                  : Icons.chevron_left_rounded,
+              tooltip: 'الصفحة التالية',
+              size: 22,
+              onTap: onNextPage,
+            ),
 
-              // Next Page
-              IconButton(
-                visualDensity: VisualDensity.compact,
-                onPressed: () {
-                  HapticService.selectionClick();
-                  onNextPage();
-                },
-                icon: Icon(
-                  Icons.chevron_right_rounded,
-                  color: AppColors.champagneGold,
-                  size: 24.r,
-                ),
-              ),
-            ],
-          ),
+            Container(
+              width: 1,
+              height: 20.h,
+              margin: EdgeInsets.symmetric(horizontal: 4.w),
+              color: AppColors.goldBorderStroke.withValues(alpha: 0.5),
+            ),
 
-          Divider(
-            color: AppColors.goldBorderStroke.withValues(alpha: 0.3),
-            height: 10.h,
-          ),
-
-          // Bottom Row: Action Buttons (Play, Tafsir, Copy, Bookmark)
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              _FloatingActionItem(
-                icon: Icons.play_arrow_rounded,
-                label: 'تِلَاوَة',
-                onTap: onPlay,
-              ),
-              _FloatingActionItem(
-                icon: HugeIcons.strokeRoundedBookOpen01,
-                label: 'تَفْسِير',
-                isHighlighted: true,
-                onTap: onTafsir,
-              ),
-              _FloatingActionItem(
-                icon: Icons.copy_rounded,
-                label: 'نَسْخ',
-                onTap: onCopy,
-              ),
-              _FloatingActionItem(
-                icon: Icons.bookmark_add_rounded,
-                label: 'حِفْظ',
-                onTap: onBookmark,
-              ),
-            ],
-          ),
-        ],
+            _IconBtn(
+              icon: Icons.play_arrow_rounded,
+              tooltip: 'تِلَاوَة',
+              size: 24,
+              onTap: onPlay,
+            ),
+            _IconBtn(
+              icon: HugeIcons.strokeRoundedBookOpen01,
+              tooltip: 'تَفْسِير',
+              color: AppColors.emeraldGlow,
+              size: 19,
+              onTap: onTafsir,
+            ),
+            _IconBtn(
+              icon: Icons.copy_rounded,
+              tooltip: 'نَسْخ',
+              size: 18,
+              onTap: onCopy,
+            ),
+            _IconBtn(
+              icon: Icons.bookmark_add_rounded,
+              tooltip: 'حِفْظ',
+              size: 20,
+              onTap: onBookmark,
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
-class _FloatingActionItem extends StatelessWidget {
-  final dynamic icon;
-  final String label;
-  final bool isHighlighted;
-  final VoidCallback onTap;
+class _Badge extends StatelessWidget {
+  final String text;
+  final Color color;
+  final bool filled;
 
-  const _FloatingActionItem({
-    required this.icon,
-    required this.label,
-    this.isHighlighted = false,
-    required this.onTap,
+  const _Badge({
+    super.key,
+    required this.text,
+    required this.color,
+    this.filled = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    final activeColor =
-        isHighlighted ? AppColors.emeraldGlow : AppColors.champagneGold;
-
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: () {
-          HapticService.selectionClick();
-          onTap();
-        },
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 3.h),
+      decoration: BoxDecoration(
+        color: filled ? color.withValues(alpha: 0.15) : Colors.transparent,
         borderRadius: BorderRadius.circular(12.r),
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (icon is IconData)
-                Icon(
-                  icon as IconData,
-                  color: activeColor,
-                  size: 15.r,
-                )
-              else if (icon is List<List<dynamic>>)
-                HugeIcon(
-                  icon: icon as List<List<dynamic>>,
-                  color: activeColor,
-                  size: 14.r,
-                ),
-              SizedBox(width: 4.w),
-              Text(
-                label,
-                style: AppTextStyles.caption.copyWith(
-                  color: isHighlighted
-                      ? AppColors.emeraldGlow
-                      : AppColors.pureChalk,
-                  fontWeight: FontWeight.w700,
-                  fontSize: 11.sp,
-                ),
-              ),
-            ],
-          ),
+        border: filled
+            ? Border.all(color: color.withValues(alpha: 0.7), width: 0.8.r)
+            : null,
+      ),
+      child: Text(
+        text,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: AppTextStyles.caption.copyWith(
+          color: color,
+          fontWeight: FontWeight.w700,
+          fontSize: 11.sp,
         ),
       ),
     );
   }
 }
 
+class _IconBtn extends StatelessWidget {
+  final dynamic icon; // IconData | List<List<dynamic>> (HugeIcons)
+  final String tooltip;
+  final Color color;
+  final double size;
+  final VoidCallback onTap;
+
+  const _IconBtn({
+    required this.icon,
+    required this.tooltip,
+    required this.onTap,
+    this.color = AppColors.champagneGold,
+    this.size = 20,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    Widget child;
+    if (icon is IconData) {
+      child = Icon(icon as IconData, color: color, size: size.r);
+    } else if (icon is List<List<dynamic>>) {
+      child = HugeIcon(
+        icon: icon as List<List<dynamic>>,
+        color: color,
+        size: size.r,
+      );
+    } else {
+      child = const SizedBox.shrink();
+    }
+
+    return Semantics(
+      button: true,
+      label: tooltip,
+      child: Tooltip(
+        message: tooltip,
+        child: InkResponse(
+          radius: 20.r,
+          onTap: () {
+            HapticService.selectionClick();
+            onTap();
+          },
+          child: SizedBox(
+            width: 34.r,
+            height: 34.r,
+            child: Center(child: child),
+          ),
+        ),
+      ),
+    );
+  }
+}

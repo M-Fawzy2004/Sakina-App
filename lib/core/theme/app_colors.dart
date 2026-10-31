@@ -24,5 +24,6 @@ abstract final class AppColors {
   static const Color mutedSilver       = Color(0xFF94A3B8); // Metadata, translations, timestamps
   static const Color softAmber         = Color(0xFFFBBF24); // Warm bookmark indicators
   static const Color errorRed          = Color(0xFFEF4444); // Error state indicator
+  static const Color white             = Color(0xFFFFFFFF);
 }
 

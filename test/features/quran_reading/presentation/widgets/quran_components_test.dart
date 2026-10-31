@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:sakina_app/features/quran_reading/domain/entities/ayah_entity.dart';
 import 'package:sakina_app/features/quran_reading/domain/entities/surah_entity.dart';
 import 'package:sakina_app/features/quran_reading/presentation/widgets/components/quran_3d_page_turn.dart';
 import 'package:sakina_app/features/quran_reading/presentation/widgets/components/quran_mushaf_brand_header.dart';
 import 'package:sakina_app/features/quran_reading/presentation/cubit/quran_state.dart';
 import 'package:sakina_app/features/quran_reading/presentation/widgets/components/quran_ornate_surah_header.dart';
 import 'package:sakina_app/features/quran_reading/presentation/widgets/components/quran_reader_floating_bar.dart';
+import 'package:sakina_app/features/quran_reading/presentation/widgets/components/quran_reader_view.dart';
 import 'package:sakina_app/features/quran_reading/presentation/widgets/components/quran_resume_reading_hero.dart';
 import 'package:sakina_app/features/quran_reading/presentation/widgets/components/quran_surah_mockup_card.dart';
 import 'package:sakina_app/features/quran_reading/presentation/widgets/components/quran_tab_bar.dart';
@@ -230,6 +232,55 @@ void main() {
       await tester.tap(find.byIcon(Icons.chevron_right_rounded));
       await tester.pumpAndSettle();
       expect(nextTapped, isTrue);
+    });
+  });
+
+  group('QuranReaderView Widget Tests', () {
+    testWidgets('renders illuminated manuscript card, top bar, and responds to back tap', (tester) async {
+      bool closed = false;
+
+      const testVerses = [
+        AyahEntity(
+          numberInSurah: 1,
+          text: 'الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ',
+          page: 1,
+          juz: 1,
+        ),
+        AyahEntity(
+          numberInSurah: 2,
+          text: 'الرَّحْمَٰنِ الرَّحِيمِ',
+          page: 1,
+          juz: 1,
+        ),
+      ];
+
+      await tester.pumpWidget(
+        createTestWidget(
+          QuranReaderView(
+            surah: testSurah,
+            verses: testVerses,
+            onClose: () => closed = true,
+            onBookmarkSaved: (_) {},
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('سُورَةُ الكَهْفِ'), findsOneWidget);
+      expect(find.text('الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ'), findsOneWidget);
+
+      await tester.scrollUntilVisible(
+        find.text('الرَّحْمَٰنِ الرَّحِيمِ'),
+        100.0,
+      );
+      expect(find.text('الرَّحْمَٰنِ الرَّحِيمِ'), findsOneWidget);
+
+      final backButton = find.byIcon(Icons.arrow_back_ios_new_rounded);
+      expect(backButton, findsOneWidget);
+      await tester.tap(backButton);
+      await tester.pumpAndSettle();
+
+      expect(closed, isTrue);
     });
   });
 }
