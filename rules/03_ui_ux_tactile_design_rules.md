@@ -5,35 +5,48 @@
 
 ---
 
-## 1. THE LUXURY COLOR SYSTEM (`AppColors`)
-Every color must be extracted from this unified semantic design token class. No raw hex or Material Colors outside this catalog:
+## 1. THE DUAL LUXURY COLOR SYSTEM (`AppColors` & `AppColorsScheme`)
+Every color must resolve from `context.colors` (or `AppColorsScheme`), supporting both:
+1. **OLED Dark Luxury Theme** (`obsidianCore` foundation)
+2. **Calming Sacred Parchment Light Theme** (`parchmentCore` foundation `#F6EDE2` - restful Holy Quran manuscript aesthetic)
 
 ```dart
 import 'package:flutter/material.dart';
 
 abstract final class AppColors {
-  // Foundations (OLED Pure & Slate)
+  // Dark Foundations (OLED Pure & Slate)
   static const Color obsidianCore     = Color(0xFF080A0C); // OLED primary background
   static const Color carbonSlate       = Color(0xFF0F1316); // Elevated card foundation
   static const Color frostedGlass      = Color(0x66151A21); // 40% translucent surface
   static const Color surfaceElevated   = Color(0xFF1E242B); // Secondary surface
-  static const Color cardShadow        = Color(0x66000000); // 40% pitch black shadow
 
-  // Sacred Metallic Gold
+  // Light Foundations (Calming Sacred Parchment - Zero Eye-Strain)
+  static const Color parchmentCore     = Color(0xFFF6EDE2); // Soothing primary paper background
+  static const Color parchmentCard     = Color(0xFFEDE6D7); // Elevated warm cream card foundation
+  static const Color parchmentElevated = Color(0xFFE2DACB); // Secondary elevated cream surface
+  static const Color parchmentBorder   = Color(0xFFD7D1C3); // Soft warm hairline divider stroke
+  static const Color inkDeep           = Color(0xFF241E19); // High-contrast restful deep umber text
+  static const Color inkMuted          = Color(0xFF766C62); // Muted slate umber for captions
+  static const Color warmGold          = Color(0xFFB88E28); // Calibrated antique sacred gold on light
+  static const Color forestEmerald     = Color(0xFF1B6A50); // Calibrated deep forest emerald on light
+
+  // Sacred Metallic Gold Accents (Universal)
   static const Color champagneGold     = Color(0xFFD4AF37); // Primary sacred accents & icons
   static const Color paleRadiance       = Color(0xFFF3E5AB); // Soft luminescent highlights
   static const Color goldBorderStroke   = Color(0x33D4AF37); // 20% opacity 1px hairline stroke
-  static const Color goldGlowSoft       = Color(0x1AD4AF37); // 10% opacity radiant aura
 
-  // Spiritual Emerald
+  // Spiritual Emerald Accents (Universal)
   static const Color emeraldGlow       = Color(0xFF10B981); // Serenity, bookmarks, progress
   static const Color deepSanctuary     = Color(0xFF0B3B2C); // Background spiritual tint
 
-  // Typography
+  // Dark Typography
   static const Color pureChalk         = Color(0xFFF8FAFC); // High contrast Quranic text
   static const Color mutedSilver       = Color(0xFF94A3B8); // Metadata, translations, timestamps
   static const Color softAmber         = Color(0xFFFBBF24); // Warm bookmark indicators
   static const Color errorRed          = Color(0xFFEF4444); // Error state indicator
+
+  // Context-Aware Dynamic Resolution:
+  // Prefer `context.colors.background`, `context.colors.cardSurface`, `context.colors.textPrimary`
 }
 ```
 

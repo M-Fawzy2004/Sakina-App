@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_islamic_icons/flutter_islamic_icons.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:sakina_app/core/theme/app_colors.dart';
+import 'package:sakina_app/core/theme/app_colors_scheme.dart';
 import 'package:sakina_app/core/theme/app_spacing.dart';
 import 'package:sakina_app/core/theme/app_text_styles.dart';
 import 'package:sakina_app/core/widgets/glass/tactile_glass_card.dart';
@@ -14,13 +14,12 @@ import 'package:sakina_app/features/maladh/presentation/widgets/components/malad
 class MaladhGreetingHero extends StatelessWidget {
   final MaladhHeaderData data;
 
-  const MaladhGreetingHero({
-    super.key,
-    required this.data,
-  });
+  const MaladhGreetingHero({super.key, required this.data});
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
+
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.w),
       child: TactileGlassCard(
@@ -37,17 +36,17 @@ class MaladhGreetingHero extends StatelessWidget {
                   width: 44.r,
                   height: 44.r,
                   decoration: BoxDecoration(
-                    color: AppColors.surfaceElevated,
+                    color: colors.surfaceElevated,
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: AppColors.goldBorderStroke,
+                      color: colors.borderHairline,
                       width: 1.r,
                     ),
                   ),
                   child: Center(
                     child: Icon(
                       FlutterIslamicIcons.crescentMoon,
-                      color: AppColors.champagneGold,
+                      color: colors.accentGold,
                       size: 22.r,
                     ),
                   ),
@@ -64,7 +63,7 @@ class MaladhGreetingHero extends StatelessWidget {
                         data.greetingTitle,
                         style: AppTextStyles.headlineMedium.copyWith(
                           fontSize: 18.sp,
-                          color: AppColors.champagneGold,
+                          color: colors.accentGold,
                           height: 1.45,
                         ),
                         maxLines: 1,
@@ -74,7 +73,7 @@ class MaladhGreetingHero extends StatelessWidget {
                       Text(
                         data.greetingSubtitle,
                         style: AppTextStyles.bodyMedium.copyWith(
-                          color: AppColors.mutedSilver,
+                          color: colors.textSecondary,
                           fontSize: 12.5.sp,
                           height: 1.45,
                         ),
@@ -92,11 +91,11 @@ class MaladhGreetingHero extends StatelessWidget {
             // 2. Hairline Separator with Subtle Gold Fade
             Container(
               height: 1.h,
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
                     Colors.transparent,
-                    AppColors.goldBorderStroke,
+                    colors.borderHairline,
                     Colors.transparent,
                   ],
                 ),

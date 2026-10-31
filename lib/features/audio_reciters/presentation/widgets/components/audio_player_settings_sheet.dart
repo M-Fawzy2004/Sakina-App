@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:sakina_app/core/theme/app_colors.dart';
+import 'package:sakina_app/core/theme/app_colors_scheme.dart';
 import 'package:sakina_app/core/theme/app_spacing.dart';
 
 /// Luxury bottom sheet for audio player adjustments and timer controls with instant reactive state.
@@ -68,12 +68,14 @@ class _AudioPlayerSettingsSheetState extends State<AudioPlayerSettingsSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
+
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.carbonSlate,
+        color: colors.cardSurface,
         borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
         border: Border.all(
-          color: AppColors.goldBorderStroke,
+          color: colors.borderHairline,
           width: 1.r,
         ),
       ),
@@ -90,7 +92,7 @@ class _AudioPlayerSettingsSheetState extends State<AudioPlayerSettingsSheet> {
                 width: 38.w,
                 height: 4.h,
                 decoration: BoxDecoration(
-                  color: AppColors.mutedSilver.withValues(alpha: 0.4),
+                  color: colors.textSecondary.withValues(alpha: 0.3),
                   borderRadius: BorderRadius.circular(2.r),
                 ),
               ),
@@ -102,7 +104,7 @@ class _AudioPlayerSettingsSheetState extends State<AudioPlayerSettingsSheet> {
               children: [
                 Icon(
                   Iconsax.setting_2,
-                  color: AppColors.champagneGold,
+                  color: colors.accentGold,
                   size: 20.r,
                 ),
                 SizedBox(width: 8.w),
@@ -112,7 +114,7 @@ class _AudioPlayerSettingsSheetState extends State<AudioPlayerSettingsSheet> {
                     style: GoogleFonts.cairo(
                       fontSize: 16.sp,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.pureChalk,
+                      color: colors.textPrimary,
                     ),
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -167,10 +169,10 @@ class _AudioPlayerSettingsSheetState extends State<AudioPlayerSettingsSheet> {
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
                 decoration: BoxDecoration(
-                  color: AppColors.surfaceElevated,
+                  color: colors.surfaceElevated,
                   borderRadius: AppSpacing.radiusMd,
                   border: Border.all(
-                    color: _activeIsRepeating ? AppColors.champagneGold : AppColors.goldBorderStroke,
+                    color: _activeIsRepeating ? colors.accentGold : colors.borderHairline,
                     width: 1.r,
                   ),
                 ),
@@ -182,7 +184,7 @@ class _AudioPlayerSettingsSheetState extends State<AudioPlayerSettingsSheet> {
                         children: [
                           Icon(
                             Iconsax.repeate_one,
-                            color: _activeIsRepeating ? AppColors.champagneGold : AppColors.mutedSilver,
+                            color: _activeIsRepeating ? colors.accentGold : colors.textSecondary,
                             size: 20.r,
                           ),
                           SizedBox(width: 10.w),
@@ -192,7 +194,7 @@ class _AudioPlayerSettingsSheetState extends State<AudioPlayerSettingsSheet> {
                               style: GoogleFonts.cairo(
                                 fontSize: 13.5.sp,
                                 fontWeight: FontWeight.w600,
-                                color: _activeIsRepeating ? AppColors.champagneGold : AppColors.pureChalk,
+                                color: _activeIsRepeating ? colors.accentGold : colors.textPrimary,
                               ),
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -203,7 +205,7 @@ class _AudioPlayerSettingsSheetState extends State<AudioPlayerSettingsSheet> {
                     SizedBox(width: 8.w),
                     Icon(
                       _activeIsRepeating ? Iconsax.tick_circle : Iconsax.close_circle,
-                      color: _activeIsRepeating ? AppColors.champagneGold : AppColors.mutedSilver,
+                      color: _activeIsRepeating ? colors.accentGold : colors.textSecondary,
                       size: 20.r,
                     ),
                   ],
@@ -231,9 +233,11 @@ class _SettingsSectionTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
+
     return Row(
       children: [
-        Icon(icon, color: AppColors.champagneGold, size: 18.r),
+        Icon(icon, color: colors.accentGold, size: 18.r),
         SizedBox(width: 8.w),
         Expanded(
           child: Column(
@@ -244,14 +248,14 @@ class _SettingsSectionTitle extends StatelessWidget {
                 style: GoogleFonts.cairo(
                   fontSize: 14.sp,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.pureChalk,
+                  color: colors.textPrimary,
                 ),
               ),
               Text(
                 subtitle,
                 style: GoogleFonts.cairo(
                   fontSize: 11.5.sp,
-                  color: AppColors.mutedSilver,
+                  color: colors.textSecondary,
                 ),
               ),
             ],
@@ -273,6 +277,7 @@ class _SleepTimerOptions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
     final options = <Map<String, dynamic>>[
       {'label': 'إيقاف', 'minutes': null},
       {'label': '15 د', 'minutes': 15},
@@ -295,10 +300,10 @@ class _SleepTimerOptions extends StatelessWidget {
               padding: EdgeInsets.symmetric(vertical: 8.h),
               alignment: Alignment.center,
               decoration: BoxDecoration(
-                color: isSelected ? AppColors.surfaceElevated : Colors.transparent,
+                color: isSelected ? colors.accentGold.withValues(alpha: 0.16) : colors.surfaceElevated,
                 borderRadius: AppSpacing.radiusSm,
                 border: Border.all(
-                  color: isSelected ? AppColors.champagneGold : AppColors.goldBorderStroke,
+                  color: isSelected ? colors.accentGold : colors.borderHairline,
                   width: 1.r,
                 ),
               ),
@@ -307,7 +312,7 @@ class _SleepTimerOptions extends StatelessWidget {
                 style: GoogleFonts.cairo(
                   fontSize: 12.sp,
                   fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                  color: isSelected ? AppColors.champagneGold : AppColors.mutedSilver,
+                  color: isSelected ? colors.accentGold : colors.textSecondary,
                 ),
               ),
             ),
@@ -329,6 +334,7 @@ class _SpeedOptions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
     final speeds = [0.75, 1.0, 1.25, 1.5, 2.0];
 
     return Row(
@@ -343,10 +349,10 @@ class _SpeedOptions extends StatelessWidget {
               padding: EdgeInsets.symmetric(vertical: 8.h),
               alignment: Alignment.center,
               decoration: BoxDecoration(
-                color: isSelected ? AppColors.surfaceElevated : Colors.transparent,
+                color: isSelected ? colors.accentGold.withValues(alpha: 0.16) : colors.surfaceElevated,
                 borderRadius: AppSpacing.radiusSm,
                 border: Border.all(
-                  color: isSelected ? AppColors.champagneGold : AppColors.goldBorderStroke,
+                  color: isSelected ? colors.accentGold : colors.borderHairline,
                   width: 1.r,
                 ),
               ),
@@ -355,7 +361,7 @@ class _SpeedOptions extends StatelessWidget {
                 style: GoogleFonts.cairo(
                   fontSize: 12.sp,
                   fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                  color: isSelected ? AppColors.champagneGold : AppColors.mutedSilver,
+                  color: isSelected ? colors.accentGold : colors.textSecondary,
                 ),
               ),
             ),

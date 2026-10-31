@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:sakina_app/core/theme/app_colors.dart';
+import 'package:sakina_app/core/theme/app_colors_scheme.dart';
 import 'package:sakina_app/core/theme/app_spacing.dart';
 import 'package:sakina_app/features/audio_reciters/domain/entities/reciter_entity.dart';
 import 'package:sakina_app/features/audio_reciters/presentation/widgets/components/reciter_avatar_medallion.dart';
@@ -24,6 +25,8 @@ class ReciterTileCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
+
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 4.h),
       child: Material(
@@ -34,10 +37,10 @@ class ReciterTileCard extends StatelessWidget {
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
             decoration: BoxDecoration(
-              color: isCurrentPlaying ? AppColors.surfaceElevated : AppColors.carbonSlate,
+              color: isCurrentPlaying ? colors.surfaceElevated : colors.cardSurface,
               borderRadius: AppSpacing.radiusMd,
               border: Border.all(
-                color: isCurrentPlaying ? AppColors.champagneGold : AppColors.goldBorderStroke,
+                color: isCurrentPlaying ? colors.accentGold : colors.borderHairline,
                 width: 1.r,
               ),
             ),
@@ -65,7 +68,7 @@ class ReciterTileCard extends StatelessWidget {
                               style: GoogleFonts.cairo(
                                 fontSize: 14.5.sp,
                                 fontWeight: FontWeight.w700,
-                                color: isCurrentPlaying ? AppColors.champagneGold : AppColors.pureChalk,
+                                color: isCurrentPlaying ? colors.accentGold : colors.textPrimary,
                               ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
@@ -83,7 +86,7 @@ class ReciterTileCard extends StatelessWidget {
                           Icon(
                             Iconsax.eye,
                             size: 13.r,
-                            color: AppColors.champagneGold,
+                            color: colors.accentGold,
                           ),
                           SizedBox(width: 4.w),
                           Text(
@@ -91,7 +94,7 @@ class ReciterTileCard extends StatelessWidget {
                             style: GoogleFonts.cairo(
                               fontSize: 11.sp,
                               fontWeight: FontWeight.w600,
-                              color: AppColors.mutedSilver,
+                              color: colors.textSecondary,
                             ),
                           ),
                           SizedBox(width: 8.w),
@@ -99,7 +102,7 @@ class ReciterTileCard extends StatelessWidget {
                             '•',
                             style: TextStyle(
                               fontSize: 11.sp,
-                              color: AppColors.mutedSilver,
+                              color: colors.textSecondary,
                             ),
                           ),
                           SizedBox(width: 8.w),
@@ -109,7 +112,7 @@ class ReciterTileCard extends StatelessWidget {
                               style: GoogleFonts.cairo(
                                 fontSize: 11.sp,
                                 fontWeight: FontWeight.w500,
-                                color: AppColors.mutedSilver,
+                                color: colors.textSecondary,
                               ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
@@ -130,15 +133,15 @@ class ReciterTileCard extends StatelessWidget {
                     height: 38.r,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: isCurrentPlaying ? AppColors.champagneGold : AppColors.frostedGlass,
+                      color: isCurrentPlaying ? colors.accentGold : colors.surfaceElevated,
                       border: Border.all(
-                        color: isCurrentPlaying ? AppColors.champagneGold : AppColors.goldBorderStroke,
+                        color: isCurrentPlaying ? colors.accentGold : colors.borderHairline,
                         width: 1.r,
                       ),
                     ),
                     child: Icon(
                       isCurrentPlaying ? Iconsax.pause : Iconsax.arrow_left_2,
-                      color: isCurrentPlaying ? AppColors.obsidianCore : AppColors.champagneGold,
+                      color: isCurrentPlaying ? colors.background : colors.accentGold,
                       size: 16.r,
                     ),
                   ),

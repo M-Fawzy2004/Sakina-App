@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sakina_app/core/di/injection_container.dart';
 import 'package:sakina_app/core/theme/app_colors.dart';
+import 'package:sakina_app/core/theme/app_colors_scheme.dart';
 import 'package:sakina_app/core/theme/app_spacing.dart';
 import 'package:sakina_app/core/theme/app_text_styles.dart';
 import 'package:sakina_app/features/quran_reading/domain/entities/surah_entity.dart';
@@ -45,7 +46,7 @@ class _QuranScreenContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.obsidianCore,
+      backgroundColor: context.colors.background,
       resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: BlocBuilder<QuranCubit, QuranState>(

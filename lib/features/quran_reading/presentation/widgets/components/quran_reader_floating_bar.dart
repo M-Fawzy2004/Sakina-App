@@ -19,6 +19,7 @@ class QuranReaderFloatingBar extends StatelessWidget {
   final VoidCallback onCopy;
   final VoidCallback onBookmark;
   final Color? accentColor;
+  final Color? cardColor;
 
   const QuranReaderFloatingBar({
     super.key,
@@ -32,6 +33,7 @@ class QuranReaderFloatingBar extends StatelessWidget {
     required this.onCopy,
     required this.onBookmark,
     this.accentColor,
+    this.cardColor,
   });
 
   @override
@@ -48,19 +50,19 @@ class QuranReaderFloatingBar extends StatelessWidget {
         margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 4.h),
         padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
         decoration: BoxDecoration(
-          color: AppColors.carbonSlate.withValues(alpha: 0.96),
+          color: (cardColor ?? AppColors.carbonSlate).withValues(alpha: 0.96),
           borderRadius: BorderRadius.circular(25.r),
           border: Border.all(
             color: hasSelection
                 ? AppColors.emeraldGlow.withValues(alpha: 0.6)
-                : AppColors.goldBorderStroke,
+                : activeAccent.withValues(alpha: 0.6),
             width: 1.r,
           ),
         ),
         child: Row(
           children: [
             _IconBtn(
-              icon: isRtl ? Iconsax.arrow_left_2 : Iconsax.arrow_right_3,
+              icon: isRtl ? Iconsax.arrow_right_3 : Iconsax.arrow_left_2,
               tooltip: 'الصفحة السابقة',
               color: activeAccent,
               size: 20,
@@ -91,7 +93,7 @@ class QuranReaderFloatingBar extends StatelessWidget {
             ),
 
             _IconBtn(
-              icon: isRtl ? Iconsax.arrow_right_3 : Iconsax.arrow_left_2,
+              icon: isRtl ? Iconsax.arrow_left_2 : Iconsax.arrow_right_3,
               tooltip: 'الصفحة التالية',
               color: activeAccent,
               size: 20,

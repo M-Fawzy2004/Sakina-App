@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sakina_app/core/theme/app_colors.dart';
+import 'package:sakina_app/core/theme/app_colors_scheme.dart';
 import 'package:sakina_app/core/theme/app_text_styles.dart';
 
 /// Eight-pointed Islamic star badge (Rub El Hizb / Rosette - ۞)
@@ -10,19 +11,24 @@ class QuranIslamicRosetteBadge extends StatelessWidget {
   final int number;
   final bool isHighlighted;
   final double? size;
+  final Color? color;
+  final Color? backgroundColor;
 
   const QuranIslamicRosetteBadge({
     super.key,
     required this.number,
     this.isHighlighted = false,
     this.size,
+    this.color,
+    this.backgroundColor,
   });
 
   @override
   Widget build(BuildContext context) {
-    final activeColor = isHighlighted
-        ? AppColors.emeraldGlow
-        : AppColors.champagneGold;
+    final activeColor = color ??
+        (isHighlighted ? AppColors.emeraldGlow : AppColors.champagneGold);
+    final innerBg = backgroundColor ??
+        (context.isDark ? AppColors.obsidianCore : context.colors.cardSurface);
 
     final effectiveSize = size ?? 38.r;
     final innerDimension = effectiveSize * 0.62;
@@ -56,7 +62,7 @@ class QuranIslamicRosetteBadge extends StatelessWidget {
             height: innerDimension,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: AppColors.obsidianCore,
+              color: innerBg,
               border: Border.all(color: activeColor, width: 1.1.r),
             ),
             child: Center(

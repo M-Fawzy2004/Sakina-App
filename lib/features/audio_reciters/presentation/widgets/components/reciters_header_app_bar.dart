@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:sakina_app/core/theme/app_colors.dart';
+import 'package:sakina_app/core/theme/app_colors_scheme.dart';
 import 'package:sakina_app/core/theme/app_spacing.dart';
 
 /// Sacred top brand header matching "سكينة 🌙" and "واجهة التلاوات".
@@ -10,6 +10,8 @@ class RecitersHeaderAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
+
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
       child: Row(
@@ -26,7 +28,7 @@ class RecitersHeaderAppBar extends StatelessWidget {
                     style: GoogleFonts.cairo(
                       fontSize: 22.sp,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.champagneGold,
+                      color: colors.accentGold,
                     ),
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -45,10 +47,10 @@ class RecitersHeaderAppBar extends StatelessWidget {
           Container(
             padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 6.h),
             decoration: BoxDecoration(
-              color: AppColors.frostedGlass,
+              color: colors.cardSurface,
               borderRadius: AppSpacing.radiusSm,
               border: Border.all(
-                color: AppColors.goldBorderStroke,
+                color: colors.borderHairline,
                 width: 1.r,
               ),
             ),
@@ -57,7 +59,7 @@ class RecitersHeaderAppBar extends StatelessWidget {
               style: GoogleFonts.cairo(
                 fontSize: 14.sp,
                 fontWeight: FontWeight.w700,
-                color: AppColors.pureChalk,
+                color: colors.textPrimary,
               ),
             ),
           ),

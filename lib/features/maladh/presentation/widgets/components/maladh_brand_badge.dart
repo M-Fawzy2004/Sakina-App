@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_islamic_icons/flutter_islamic_icons.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:sakina_app/core/theme/app_colors.dart';
+import 'package:sakina_app/core/theme/app_colors_scheme.dart';
 import 'package:sakina_app/core/theme/app_text_styles.dart';
 
 /// Luxury brand identity mark displaying the golden Sakina crescent emblem,
@@ -11,6 +11,8 @@ class MaladhBrandBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
+
     return Row(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -20,17 +22,17 @@ class MaladhBrandBadge extends StatelessWidget {
           width: 42.r,
           height: 42.r,
           decoration: BoxDecoration(
-            color: AppColors.frostedGlass,
+            color: colors.cardSurface,
             shape: BoxShape.circle,
             border: Border.all(
-              color: AppColors.goldBorderStroke,
+              color: colors.borderHairline,
               width: 1.r,
             ),
           ),
           child: Center(
             child: Icon(
               FlutterIslamicIcons.solidCrescentMoon,
-              color: AppColors.champagneGold,
+              color: colors.accentGold,
               size: 20.r,
             ),
           ),
@@ -48,13 +50,13 @@ class MaladhBrandBadge extends StatelessWidget {
               style: AppTextStyles.headlineLarge.copyWith(
                 fontSize: 22.sp,
                 height: 1.2,
-                color: AppColors.champagneGold,
+                color: colors.accentGold,
               ),
             ),
             Text(
               'مَلَاذُ الرُّوحِ وَالقُرْآنِ',
               style: AppTextStyles.caption.copyWith(
-                color: AppColors.mutedSilver,
+                color: colors.textSecondary,
                 fontSize: 10.sp,
                 height: 1.1,
                 letterSpacing: 0.2,

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:sakina_app/core/theme/app_colors.dart';
+import 'package:sakina_app/core/theme/app_colors_scheme.dart';
 import 'package:sakina_app/core/theme/app_text_styles.dart';
 import 'package:sakina_app/core/utils/haptic_service.dart';
 import 'package:sakina_app/features/quran_reading/domain/entities/surah_entity.dart';
@@ -56,6 +56,8 @@ class _PageTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
+
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 4.h),
       child: Material(
@@ -66,14 +68,13 @@ class _PageTile extends StatelessWidget {
             onTap();
           },
           borderRadius: BorderRadius.circular(16.r),
-          splashColor: AppColors.goldGlowSoft,
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
             decoration: BoxDecoration(
-              color: AppColors.surfaceElevated,
+              color: colors.cardSurface,
               borderRadius: BorderRadius.circular(16.r),
               border: Border.all(
-                color: AppColors.goldBorderStroke.withValues(alpha: 0.25),
+                color: colors.borderHairline,
                 width: 1.r,
               ),
             ),
@@ -83,10 +84,10 @@ class _PageTile extends StatelessWidget {
                   width: 36.r,
                   height: 36.r,
                   decoration: BoxDecoration(
-                    color: AppColors.carbonSlate,
+                    color: colors.surfaceElevated,
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: AppColors.champagneGold,
+                      color: colors.accentGold,
                       width: 1.r,
                     ),
                   ),
@@ -94,7 +95,7 @@ class _PageTile extends StatelessWidget {
                     child: Text(
                       '$pageNumber',
                       style: AppTextStyles.caption.copyWith(
-                        color: AppColors.champagneGold,
+                        color: colors.accentGold,
                         fontWeight: FontWeight.w800,
                         fontSize: 11.sp,
                       ),
@@ -110,7 +111,7 @@ class _PageTile extends StatelessWidget {
                       Text(
                         'الصَّفْحَةُ $pageNumber',
                         style: AppTextStyles.titleMedium.copyWith(
-                          color: AppColors.pureChalk,
+                          color: colors.textPrimary,
                           fontWeight: FontWeight.w700,
                           fontSize: 14.sp,
                         ),
@@ -119,7 +120,7 @@ class _PageTile extends StatelessWidget {
                       Text(
                         'سُورَةُ $surahName • الجُزْءُ $juzNumber',
                         style: AppTextStyles.caption.copyWith(
-                          color: AppColors.mutedSilver,
+                          color: colors.textSecondary,
                           fontSize: 11.sp,
                         ),
                       ),
@@ -128,7 +129,7 @@ class _PageTile extends StatelessWidget {
                 ),
                 Icon(
                   Iconsax.arrow_left_2,
-                  color: AppColors.champagneGold,
+                  color: colors.accentGold,
                   size: 16.r,
                 ),
               ],

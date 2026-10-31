@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:hugeicons/hugeicons.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:sakina_app/features/maladh/presentation/widgets/components/maladh_brand_badge.dart';
 import 'package:sakina_app/features/maladh/presentation/widgets/components/maladh_glass_icon_button.dart';
 
@@ -25,7 +25,7 @@ class MaladhTopBar extends StatelessWidget {
 
           // 2. Left Side (RTL End): Notification Action
           MaladhGlassIconButton(
-            icon: HugeIcons.strokeRoundedNotification03,
+            icon: Iconsax.notification,
             showBadge: true,
             onTap: onNotificationTap,
           ),

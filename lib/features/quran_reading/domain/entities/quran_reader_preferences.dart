@@ -83,6 +83,14 @@ enum QuranReaderTheme {
     cardColor: AppColors.surfaceElevated,
     accentColor: AppColors.softAmber,
     textColor: AppColors.pureChalk,
+  ),
+  parchment(
+    title: 'رَقُّ السَّكِينَةِ',
+    description: 'رَقٌّ كَرِيمِيٌّ مُرِيحٌ لِلْعَيْنِ كَالْمُصْحَفِ الشَّرِيفِ',
+    backgroundColor: AppColors.parchmentCore,
+    cardColor: AppColors.parchmentCard,
+    accentColor: AppColors.warmGold,
+    textColor: AppColors.inkDeep,
   );
 
   final String title;
@@ -100,6 +108,14 @@ enum QuranReaderTheme {
     required this.accentColor,
     required this.textColor,
   });
+
+  bool get isLight => this == QuranReaderTheme.parchment;
+  Color get secondaryTextColor =>
+      isLight ? AppColors.inkMuted : AppColors.mutedSilver;
+  Color get itemBackgroundColor =>
+      isLight ? AppColors.parchmentElevated : AppColors.frostedGlass;
+  Color get borderColor =>
+      isLight ? AppColors.parchmentBorder : AppColors.goldBorderStroke;
 }
 
 /// Line spacing choices to ensure Tashkeel (diacritics) readability:

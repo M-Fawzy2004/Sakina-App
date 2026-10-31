@@ -116,7 +116,7 @@ void main() {
   });
 
   group('QuranTabBar Widget Tests', () {
-    testWidgets('renders 4 tabs («الصَّفْحَة», «السُّورَة», «الجُزْء», «الحِزْب») and handles tab selection', (tester) async {
+    testWidgets('renders 3 tabs («السُّورَة», «الجُزْء», «الحِزْب») and handles tab selection without page tab', (tester) async {
       QuranTab selected = QuranTab.surahs;
 
       await tester.pumpWidget(
@@ -129,7 +129,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('الصَّفْحَة'), findsOneWidget);
+      expect(find.text('الصَّفْحَة'), findsNothing);
       expect(find.text('السُّورَة'), findsOneWidget);
       expect(find.text('الجُزْء'), findsOneWidget);
       expect(find.text('الحِزْب'), findsOneWidget);
@@ -139,10 +139,10 @@ void main() {
 
       expect(selected, equals(QuranTab.juzs));
 
-      await tester.tap(find.text('الصَّفْحَة'));
+      await tester.tap(find.text('الحِزْب'));
       await tester.pumpAndSettle();
 
-      expect(selected, equals(QuranTab.page));
+      expect(selected, equals(QuranTab.hizbs));
     });
   });
 
@@ -275,7 +275,7 @@ void main() {
       );
       expect(find.text('الرَّحْمَٰنِ الرَّحِيمِ'), findsOneWidget);
 
-      final backButton = find.byIcon(Iconsax.arrow_left_2).first;
+      final backButton = find.byIcon(Iconsax.arrow_right_3).first;
       expect(backButton, findsOneWidget);
       await tester.tap(backButton);
       await tester.pumpAndSettle();

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
-import 'package:sakina_app/core/theme/app_colors.dart';
+import 'package:sakina_app/core/theme/app_colors_scheme.dart';
 import 'package:sakina_app/core/widgets/navigation/sakina_bottom_nav_bar.dart';
 
 class MainScaffoldShell extends StatelessWidget {
@@ -18,7 +18,7 @@ class MainScaffoldShell extends StatelessWidget {
     final isKeyboardOpen = MediaQuery.viewInsetsOf(context).bottom > 0;
 
     return Scaffold(
-      backgroundColor: AppColors.obsidianCore,
+      backgroundColor: context.colors.background,
       resizeToAvoidBottomInset: false,
       body: Stack(
         fit: StackFit.expand,

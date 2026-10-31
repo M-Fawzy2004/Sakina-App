@@ -76,7 +76,10 @@ class _QuranReaderSettingsSheetState extends State<QuranReaderSettingsSheet> {
         children: [
           const _DragHandle(),
           AppSpacing.verticalXs,
-          _SheetHeader(accentColor: activeAccent),
+          _SheetHeader(
+            accentColor: activeAccent,
+            secondaryTextColor: activeTheme.secondaryTextColor,
+          ),
           AppSpacing.verticalSm,
           Expanded(
             child: ListView(
@@ -86,6 +89,7 @@ class _QuranReaderSettingsSheetState extends State<QuranReaderSettingsSheet> {
                 _ReadingStyleSection(
                   selectedStyle: _currentPreferences.style,
                   accentColor: activeAccent,
+                  activeTheme: activeTheme,
                   onStyleChanged: (newStyle) {
                     HapticService.selectionClick();
                     _updatePreferences(
@@ -100,6 +104,7 @@ class _QuranReaderSettingsSheetState extends State<QuranReaderSettingsSheet> {
                 _FontSizeSection(
                   selectedSize: _currentPreferences.fontSize,
                   accentColor: activeAccent,
+                  activeTheme: activeTheme,
                   lineSpacing: _currentPreferences.lineSpacing,
                   onSizeChanged: (newSize) {
                     HapticService.selectionClick();
@@ -128,6 +133,7 @@ class _QuranReaderSettingsSheetState extends State<QuranReaderSettingsSheet> {
                 _LineSpacingSection(
                   selectedSpacing: _currentPreferences.lineSpacing,
                   accentColor: activeAccent,
+                  activeTheme: activeTheme,
                   onSpacingChanged: (newSpacing) {
                     HapticService.selectionClick();
                     _updatePreferences(
@@ -176,8 +182,12 @@ class _DragHandle extends StatelessWidget {
 /// Sheet Header with Calligraphy title and settings icon.
 class _SheetHeader extends StatelessWidget {
   final Color accentColor;
+  final Color secondaryTextColor;
 
-  const _SheetHeader({required this.accentColor});
+  const _SheetHeader({
+    required this.accentColor,
+    required this.secondaryTextColor,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -207,7 +217,7 @@ class _SheetHeader extends StatelessWidget {
         Text(
           'تَخْصِيصُ القِرَاءَةِ',
           style: AppTextStyles.caption.copyWith(
-            color: AppColors.mutedSilver,
+            color: secondaryTextColor,
             fontSize: 11.sp,
           ),
         ),
@@ -220,11 +230,13 @@ class _SheetHeader extends StatelessWidget {
 class _ReadingStyleSection extends StatelessWidget {
   final QuranReadingStyle selectedStyle;
   final Color accentColor;
+  final QuranReaderTheme activeTheme;
   final ValueChanged<QuranReadingStyle> onStyleChanged;
 
   const _ReadingStyleSection({
     required this.selectedStyle,
     required this.accentColor,
+    required this.activeTheme,
     required this.onStyleChanged,
   });
 
@@ -248,6 +260,7 @@ class _ReadingStyleSection extends StatelessWidget {
                 icon: Iconsax.row_vertical,
                 isSelected: selectedStyle == QuranReadingStyle.verseByVerse,
                 accentColor: accentColor,
+                activeTheme: activeTheme,
                 onTap: () => onStyleChanged(QuranReadingStyle.verseByVerse),
               ),
             ),
@@ -259,6 +272,7 @@ class _ReadingStyleSection extends StatelessWidget {
                 icon: Iconsax.textalign_justifycenter,
                 isSelected: selectedStyle == QuranReadingStyle.continuous,
                 accentColor: accentColor,
+                activeTheme: activeTheme,
                 onTap: () => onStyleChanged(QuranReadingStyle.continuous),
               ),
             ),
@@ -275,6 +289,7 @@ class _ReadingStyleCard extends StatelessWidget {
   final IconData icon;
   final bool isSelected;
   final Color accentColor;
+  final QuranReaderTheme activeTheme;
   final VoidCallback onTap;
 
   const _ReadingStyleCard({
@@ -283,6 +298,7 @@ class _ReadingStyleCard extends StatelessWidget {
     required this.icon,
     required this.isSelected,
     required this.accentColor,
+    required this.activeTheme,
     required this.onTap,
   });
 
@@ -293,19 +309,18 @@ class _ReadingStyleCard extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(14.r),
-        splashColor: AppColors.goldGlowSoft,
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 180),
           padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 12.h),
           decoration: BoxDecoration(
             color: isSelected
                 ? accentColor.withValues(alpha: 0.14)
-                : AppColors.frostedGlass,
+                : activeTheme.itemBackgroundColor,
             borderRadius: BorderRadius.circular(14.r),
             border: Border.all(
               color: isSelected
                   ? accentColor
-                  : AppColors.goldBorderStroke.withValues(alpha: 0.4),
+                  : activeTheme.borderColor.withValues(alpha: 0.4),
               width: isSelected ? 1.4.r : 1.r,
             ),
           ),
@@ -318,7 +333,7 @@ class _ReadingStyleCard extends StatelessWidget {
                   Icon(
                     icon,
                     size: 20.r,
-                    color: isSelected ? accentColor : AppColors.mutedSilver,
+                    color: isSelected ? accentColor : activeTheme.secondaryTextColor,
                   ),
                   if (isSelected)
                     Icon(
@@ -332,7 +347,7 @@ class _ReadingStyleCard extends StatelessWidget {
               Text(
                 title,
                 style: AppTextStyles.bodyMedium.copyWith(
-                  color: isSelected ? accentColor : AppColors.pureChalk,
+                  color: isSelected ? accentColor : activeTheme.textColor,
                   fontWeight: FontWeight.w700,
                   fontSize: 13.sp,
                 ),
@@ -343,7 +358,7 @@ class _ReadingStyleCard extends StatelessWidget {
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: AppTextStyles.caption.copyWith(
-                  color: AppColors.mutedSilver,
+                  color: activeTheme.secondaryTextColor,
                   fontSize: 9.5.sp,
                 ),
               ),
@@ -359,12 +374,14 @@ class _ReadingStyleCard extends StatelessWidget {
 class _FontSizeSection extends StatelessWidget {
   final QuranFontSize selectedSize;
   final Color accentColor;
+  final QuranReaderTheme activeTheme;
   final QuranLineSpacing lineSpacing;
   final ValueChanged<QuranFontSize> onSizeChanged;
 
   const _FontSizeSection({
     required this.selectedSize,
     required this.accentColor,
+    required this.activeTheme,
     required this.lineSpacing,
     required this.onSizeChanged,
   });
@@ -397,7 +414,7 @@ class _FontSizeSection extends StatelessWidget {
                     Iconsax.minus_cirlce,
                     color: selectedSize.index > 0
                         ? accentColor
-                        : AppColors.mutedSilver.withValues(alpha: 0.4),
+                        : activeTheme.secondaryTextColor.withValues(alpha: 0.4),
                     size: 22.r,
                   ),
                 ),
@@ -418,7 +435,7 @@ class _FontSizeSection extends StatelessWidget {
                     Iconsax.add_circle,
                     color: selectedSize.index < QuranFontSize.values.length - 1
                         ? accentColor
-                        : AppColors.mutedSilver.withValues(alpha: 0.4),
+                        : activeTheme.secondaryTextColor.withValues(alpha: 0.4),
                     size: 22.r,
                   ),
                 ),
@@ -430,12 +447,14 @@ class _FontSizeSection extends StatelessWidget {
         _FontSizeSegmentedBar(
           selectedSize: selectedSize,
           accentColor: accentColor,
+          activeTheme: activeTheme,
           onSizeChanged: onSizeChanged,
         ),
         SizedBox(height: 10.h),
         _LiveFontPreviewBox(
           fontSizeDelta: selectedSize.scaleDelta,
           accentColor: accentColor,
+          activeTheme: activeTheme,
           lineSpacing: lineSpacing,
         ),
       ],
@@ -446,11 +465,13 @@ class _FontSizeSection extends StatelessWidget {
 class _FontSizeSegmentedBar extends StatelessWidget {
   final QuranFontSize selectedSize;
   final Color accentColor;
+  final QuranReaderTheme activeTheme;
   final ValueChanged<QuranFontSize> onSizeChanged;
 
   const _FontSizeSegmentedBar({
     required this.selectedSize,
     required this.accentColor,
+    required this.activeTheme,
     required this.onSizeChanged,
   });
 
@@ -459,10 +480,10 @@ class _FontSizeSegmentedBar extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(4.r),
       decoration: BoxDecoration(
-        color: AppColors.frostedGlass,
+        color: activeTheme.itemBackgroundColor,
         borderRadius: BorderRadius.circular(14.r),
         border: Border.all(
-          color: AppColors.goldBorderStroke.withValues(alpha: 0.3),
+          color: activeTheme.borderColor.withValues(alpha: 0.3),
           width: 1.r,
         ),
       ),
@@ -489,7 +510,7 @@ class _FontSizeSegmentedBar extends StatelessWidget {
                   child: Text(
                     size.title,
                     style: AppTextStyles.caption.copyWith(
-                      color: isSelected ? accentColor : AppColors.pureChalk,
+                      color: isSelected ? accentColor : activeTheme.textColor,
                       fontWeight:
                           isSelected ? FontWeight.w800 : FontWeight.w600,
                       fontSize: 11.5.sp,
@@ -509,11 +530,13 @@ class _FontSizeSegmentedBar extends StatelessWidget {
 class _LiveFontPreviewBox extends StatelessWidget {
   final double fontSizeDelta;
   final Color accentColor;
+  final QuranReaderTheme activeTheme;
   final QuranLineSpacing lineSpacing;
 
   const _LiveFontPreviewBox({
     required this.fontSizeDelta,
     required this.accentColor,
+    required this.activeTheme,
     required this.lineSpacing,
   });
 
@@ -523,10 +546,10 @@ class _LiveFontPreviewBox extends StatelessWidget {
       width: double.infinity,
       padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
       decoration: BoxDecoration(
-        color: AppColors.obsidianCore.withValues(alpha: 0.7),
+        color: activeTheme.cardColor,
         borderRadius: BorderRadius.circular(14.r),
         border: Border.all(
-          color: accentColor.withValues(alpha: 0.35),
+          color: activeTheme.borderColor.withValues(alpha: 0.45),
           width: 0.8.r,
         ),
       ),
@@ -535,7 +558,7 @@ class _LiveFontPreviewBox extends StatelessWidget {
           Text(
             'مُعَايَنَةُ الخَطِّ الحَيَّة',
             style: AppTextStyles.caption.copyWith(
-              color: AppColors.mutedSilver,
+              color: activeTheme.secondaryTextColor,
               fontSize: 10.sp,
             ),
           ),
@@ -547,7 +570,7 @@ class _LiveFontPreviewBox extends StatelessWidget {
               textAlign: TextAlign.center,
               style: AppTextStyles.quranIlluminatedAyah.copyWith(
                 fontSize: 22.sp + fontSizeDelta,
-                color: accentColor,
+                color: activeTheme.textColor,
                 height: lineSpacing.height,
                 fontWeight: FontWeight.w700,
               ),
@@ -588,6 +611,7 @@ class _ThemesSection extends StatelessWidget {
                 padding: EdgeInsets.symmetric(horizontal: 4.w),
                 child: _ThemePill(
                   theme: theme,
+                  activeTheme: selectedTheme,
                   isSelected: isSelected,
                   onTap: () => onThemeChanged(theme),
                 ),
@@ -602,11 +626,13 @@ class _ThemesSection extends StatelessWidget {
 
 class _ThemePill extends StatelessWidget {
   final QuranReaderTheme theme;
+  final QuranReaderTheme activeTheme;
   final bool isSelected;
   final VoidCallback onTap;
 
   const _ThemePill({
     required this.theme,
+    required this.activeTheme,
     required this.isSelected,
     required this.onTap,
   });
@@ -623,12 +649,12 @@ class _ThemePill extends StatelessWidget {
           decoration: BoxDecoration(
             color: isSelected
                 ? theme.accentColor.withValues(alpha: 0.2)
-                : AppColors.frostedGlass,
+                : activeTheme.itemBackgroundColor,
             borderRadius: BorderRadius.circular(12.r),
             border: Border.all(
               color: isSelected
                   ? theme.accentColor
-                  : AppColors.goldBorderStroke.withValues(alpha: 0.35),
+                  : activeTheme.borderColor.withValues(alpha: 0.35),
               width: isSelected ? 1.3.r : 0.8.r,
             ),
           ),
@@ -658,7 +684,7 @@ class _ThemePill extends StatelessWidget {
                 theme.title,
                 textAlign: TextAlign.center,
                 style: AppTextStyles.caption.copyWith(
-                  color: isSelected ? theme.accentColor : AppColors.pureChalk,
+                  color: isSelected ? theme.accentColor : activeTheme.textColor,
                   fontWeight:
                       isSelected ? FontWeight.w800 : FontWeight.w600,
                   fontSize: 10.5.sp,
@@ -676,11 +702,13 @@ class _ThemePill extends StatelessWidget {
 class _LineSpacingSection extends StatelessWidget {
   final QuranLineSpacing selectedSpacing;
   final Color accentColor;
+  final QuranReaderTheme activeTheme;
   final ValueChanged<QuranLineSpacing> onSpacingChanged;
 
   const _LineSpacingSection({
     required this.selectedSpacing,
     required this.accentColor,
+    required this.activeTheme,
     required this.onSpacingChanged,
   });
 
@@ -709,12 +737,12 @@ class _LineSpacingSection extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: isSelected
                           ? accentColor.withValues(alpha: 0.18)
-                          : AppColors.frostedGlass,
+                          : activeTheme.itemBackgroundColor,
                       borderRadius: BorderRadius.circular(10.r),
                       border: Border.all(
                         color: isSelected
                             ? accentColor
-                            : AppColors.goldBorderStroke.withValues(alpha: 0.3),
+                            : activeTheme.borderColor.withValues(alpha: 0.3),
                         width: 1.r,
                       ),
                     ),
@@ -722,7 +750,7 @@ class _LineSpacingSection extends StatelessWidget {
                       child: Text(
                         spacing.title,
                         style: AppTextStyles.caption.copyWith(
-                          color: isSelected ? accentColor : AppColors.pureChalk,
+                          color: isSelected ? accentColor : activeTheme.textColor,
                           fontWeight:
                               isSelected ? FontWeight.w800 : FontWeight.w600,
                           fontSize: 11.sp,
@@ -752,7 +780,8 @@ class _ComfortSettingsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final accent = preferences.theme.accentColor;
+    final activeTheme = preferences.theme;
+    final accent = activeTheme.accentColor;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -771,6 +800,7 @@ class _ComfortSettingsSection extends StatelessWidget {
           subtitle: 'خُطُوطٌ هَامِشِيَّةٌ رَقِيقَةٌ بَيْنَ الآيَاتِ',
           value: preferences.showDividers,
           accentColor: accent,
+          activeTheme: activeTheme,
           onChanged: (val) {
             HapticService.selectionClick();
             onPreferencesChanged(preferences.copyWith(showDividers: val));
@@ -786,6 +816,7 @@ class _ComfortSettingsSection extends StatelessWidget {
           subtitle: 'مَنْعُ انْطِفَاءِ الشَّاشَةِ أَثْنَاءَ التِّلَاوَةِ',
           value: preferences.isKeepScreenAwake,
           accentColor: accent,
+          activeTheme: activeTheme,
           onChanged: (val) {
             HapticService.selectionClick();
             onPreferencesChanged(preferences.copyWith(isKeepScreenAwake: val));
@@ -801,6 +832,7 @@ class _ComfortSettingsSection extends StatelessWidget {
           subtitle: 'تَمْرِيرٌ انْسِيَابِيٌّ لِلآيَاتِ بِلَا لَمْسِ الشَّاشَةِ',
           value: preferences.isAutoScrollEnabled,
           accentColor: accent,
+          activeTheme: activeTheme,
           onChanged: (val) {
             HapticService.selectionClick();
             onPreferencesChanged(preferences.copyWith(isAutoScrollEnabled: val));
@@ -818,6 +850,7 @@ class _PreferenceSwitchTile extends StatelessWidget {
   final String subtitle;
   final bool value;
   final Color accentColor;
+  final QuranReaderTheme activeTheme;
   final ValueChanged<bool> onChanged;
 
   const _PreferenceSwitchTile({
@@ -826,6 +859,7 @@ class _PreferenceSwitchTile extends StatelessWidget {
     required this.subtitle,
     required this.value,
     required this.accentColor,
+    required this.activeTheme,
     required this.onChanged,
   });
 
@@ -839,10 +873,10 @@ class _PreferenceSwitchTile extends StatelessWidget {
         child: Container(
           padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
           decoration: BoxDecoration(
-            color: AppColors.frostedGlass,
+            color: activeTheme.itemBackgroundColor,
             borderRadius: BorderRadius.circular(12.r),
             border: Border.all(
-              color: AppColors.goldBorderStroke.withValues(alpha: 0.3),
+              color: activeTheme.borderColor.withValues(alpha: 0.3),
               width: 0.8.r,
             ),
           ),
@@ -857,7 +891,7 @@ class _PreferenceSwitchTile extends StatelessWidget {
                     Text(
                       title,
                       style: AppTextStyles.bodyMedium.copyWith(
-                        color: AppColors.pureChalk,
+                        color: activeTheme.textColor,
                         fontWeight: FontWeight.w700,
                         fontSize: 12.5.sp,
                       ),
@@ -865,7 +899,7 @@ class _PreferenceSwitchTile extends StatelessWidget {
                     Text(
                       subtitle,
                       style: AppTextStyles.caption.copyWith(
-                        color: AppColors.mutedSilver,
+                        color: activeTheme.secondaryTextColor,
                         fontSize: 10.sp,
                       ),
                     ),
@@ -876,8 +910,8 @@ class _PreferenceSwitchTile extends StatelessWidget {
                 value: value,
                 activeThumbColor: accentColor,
                 activeTrackColor: accentColor.withValues(alpha: 0.45),
-                inactiveThumbColor: AppColors.mutedSilver,
-                inactiveTrackColor: AppColors.surfaceElevated,
+                inactiveThumbColor: activeTheme.secondaryTextColor,
+                inactiveTrackColor: activeTheme.cardColor,
                 onChanged: onChanged,
               ),
             ],

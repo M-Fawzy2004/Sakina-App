@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:hugeicons/hugeicons.dart';
-import 'package:sakina_app/core/theme/app_colors.dart';
+import 'package:iconsax/iconsax.dart';
+import 'package:sakina_app/core/theme/app_colors_scheme.dart';
 import 'package:sakina_app/core/theme/app_spacing.dart';
 import 'package:sakina_app/core/theme/app_text_styles.dart';
 import 'package:sakina_app/core/utils/haptic_service.dart';
@@ -27,6 +27,7 @@ class MaladhDailyGoalCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
     final progressFraction = totalPages > 0
         ? (completedPages / totalPages).clamp(0.0, 1.0)
         : 0.0;
@@ -51,16 +52,16 @@ class MaladhDailyGoalCard extends StatelessWidget {
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    HugeIcon(
-                      icon: HugeIcons.strokeRoundedFlag01,
-                      color: AppColors.champagneGold,
+                    Icon(
+                      Iconsax.flag,
+                      color: colors.accentGold,
                       size: 18.r,
                     ),
                     SizedBox(width: 8.w),
                     Text(
                       'إِنْجَازُ الوِرْدِ اليَوْمِي',
                       style: AppTextStyles.titleMedium.copyWith(
-                        color: AppColors.pureChalk,
+                        color: colors.textPrimary,
                         fontSize: 14.5.sp,
                         fontWeight: FontWeight.bold,
                       ),
@@ -72,7 +73,7 @@ class MaladhDailyGoalCard extends StatelessWidget {
                 Text(
                   '$completedPages من $totalPages صفحات ($percentInt%)',
                   style: AppTextStyles.caption.copyWith(
-                    color: AppColors.pureChalk,
+                    color: colors.textPrimary,
                     fontWeight: FontWeight.w700,
                     fontSize: 11.5.sp,
                   ),
@@ -86,10 +87,10 @@ class MaladhDailyGoalCard extends StatelessWidget {
             Container(
               height: 10.h,
               decoration: BoxDecoration(
-                color: AppColors.surfaceElevated,
+                color: colors.surfaceElevated,
                 borderRadius: BorderRadius.circular(8.r),
                 border: Border.all(
-                  color: AppColors.goldBorderStroke,
+                  color: colors.borderHairline,
                   width: 0.8.r,
                 ),
               ),
@@ -101,11 +102,10 @@ class MaladhDailyGoalCard extends StatelessWidget {
                       width: constraints.maxWidth * progressFraction,
                       height: double.infinity,
                       decoration: BoxDecoration(
-                        gradient: const LinearGradient(
+                        gradient: LinearGradient(
                           colors: [
-                            AppColors.emeraldGlow,
-                            AppColors.champagneGold,
-                            AppColors.paleRadiance,
+                            colors.accentEmerald,
+                            colors.accentGold,
                           ],
                         ),
                         borderRadius: BorderRadius.circular(8.r),
@@ -126,16 +126,16 @@ class MaladhDailyGoalCard extends StatelessWidget {
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    HugeIcon(
-                      icon: HugeIcons.strokeRoundedSparkles,
-                      color: AppColors.champagneGold,
+                    Icon(
+                      Iconsax.star_1,
+                      color: colors.accentGold,
                       size: 14.r,
                     ),
                     SizedBox(width: 5.w),
                     Text(
                       'سلسلة الالتزام: $streakDays يوماً متتالياً',
                       style: AppTextStyles.caption.copyWith(
-                        color: AppColors.champagneGold,
+                        color: colors.accentGold,
                         fontWeight: FontWeight.w700,
                         fontSize: 11.sp,
                       ),
@@ -147,7 +147,7 @@ class MaladhDailyGoalCard extends StatelessWidget {
                 Text(
                   remainingNote,
                   style: AppTextStyles.caption.copyWith(
-                    color: AppColors.mutedSilver,
+                    color: colors.textSecondary,
                     fontSize: 11.sp,
                   ),
                 ),

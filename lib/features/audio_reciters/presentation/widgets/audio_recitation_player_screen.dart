@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:sakina_app/core/theme/app_colors.dart';
+import 'package:sakina_app/core/theme/app_colors_scheme.dart';
 import 'package:sakina_app/features/audio_reciters/domain/entities/recitation_track_entity.dart';
 import 'package:sakina_app/features/audio_reciters/presentation/cubit/audio_reciters_cubit.dart';
 import 'package:sakina_app/features/audio_reciters/presentation/cubit/audio_reciters_state.dart';
@@ -82,7 +83,7 @@ class _AudioRecitationPlayerScreenState extends State<AudioRecitationPlayerScree
         final track = state.currentTrack ?? widget.initialTrack;
 
         return Scaffold(
-          backgroundColor: AppColors.obsidianCore,
+          backgroundColor: context.colors.background,
           body: GestureDetector(
             onVerticalDragUpdate: _handleVerticalDrag,
             child: SafeArea(
@@ -203,6 +204,8 @@ class _PlayerTopAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
+
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 4.h),
       child: Row(
@@ -215,15 +218,15 @@ class _PlayerTopAppBar extends StatelessWidget {
               height: 40.r,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: AppColors.carbonSlate,
+                color: colors.cardSurface,
                 border: Border.all(
-                  color: AppColors.goldBorderStroke,
+                  color: colors.borderHairline,
                   width: 1.r,
                 ),
               ),
               child: Icon(
                 Iconsax.arrow_right_3,
-                color: AppColors.champagneGold,
+                color: colors.accentGold,
                 size: 20.r,
               ),
             ),
@@ -236,7 +239,7 @@ class _PlayerTopAppBar extends StatelessWidget {
                 style: GoogleFonts.cairo(
                   fontSize: 16.sp,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.pureChalk,
+                  color: colors.textPrimary,
                 ),
               ),
               SizedBox(width: 6.w),
@@ -255,15 +258,15 @@ class _PlayerTopAppBar extends StatelessWidget {
               height: 40.r,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: AppColors.carbonSlate,
+                color: colors.cardSurface,
                 border: Border.all(
-                  color: AppColors.goldBorderStroke,
+                  color: colors.borderHairline,
                   width: 1.r,
                 ),
               ),
               child: Icon(
                 Iconsax.setting_2,
-                color: AppColors.champagneGold,
+                color: colors.accentGold,
                 size: 19.r,
               ),
             ),
@@ -337,6 +340,8 @@ class _PlayerTypography extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -345,7 +350,7 @@ class _PlayerTypography extends StatelessWidget {
           style: GoogleFonts.cairo(
             fontSize: 21.sp,
             fontWeight: FontWeight.w800,
-            color: AppColors.pureChalk,
+            color: colors.textPrimary,
           ),
           textAlign: TextAlign.center,
           maxLines: 1,
@@ -357,7 +362,7 @@ class _PlayerTypography extends StatelessWidget {
           style: GoogleFonts.amiri(
             fontSize: 15.sp,
             fontWeight: FontWeight.bold,
-            color: AppColors.champagneGold,
+            color: colors.accentGold,
             letterSpacing: 0.3,
           ),
           textAlign: TextAlign.center,
@@ -411,13 +416,15 @@ class _FloatingUtilityCapsule extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
+
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
       decoration: BoxDecoration(
-        color: AppColors.carbonSlate,
+        color: colors.cardSurface,
         borderRadius: BorderRadius.circular(30.r),
         border: Border.all(
-          color: AppColors.goldBorderStroke,
+          color: colors.borderHairline,
           width: 1.r,
         ),
       ),
@@ -430,10 +437,10 @@ class _FloatingUtilityCapsule extends StatelessWidget {
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
               decoration: BoxDecoration(
-                color: currentSpeed != 1.0 ? AppColors.surfaceElevated : Colors.transparent,
+                color: currentSpeed != 1.0 ? colors.surfaceElevated : Colors.transparent,
                 borderRadius: BorderRadius.circular(20.r),
                 border: Border.all(
-                  color: currentSpeed != 1.0 ? AppColors.champagneGold : Colors.transparent,
+                  color: currentSpeed != 1.0 ? colors.accentGold : Colors.transparent,
                   width: 1.r,
                 ),
               ),
@@ -443,7 +450,7 @@ class _FloatingUtilityCapsule extends StatelessWidget {
                   Icon(
                     Iconsax.speedometer,
                     size: 16.r,
-                    color: currentSpeed != 1.0 ? AppColors.champagneGold : AppColors.mutedSilver,
+                    color: currentSpeed != 1.0 ? colors.accentGold : colors.textSecondary,
                   ),
                   SizedBox(width: 4.w),
                   Text(
@@ -451,7 +458,7 @@ class _FloatingUtilityCapsule extends StatelessWidget {
                     style: GoogleFonts.cairo(
                       fontSize: 12.sp,
                       fontWeight: FontWeight.bold,
-                      color: currentSpeed != 1.0 ? AppColors.champagneGold : AppColors.pureChalk,
+                      color: currentSpeed != 1.0 ? colors.accentGold : colors.textPrimary,
                     ),
                   ),
                 ],
@@ -463,7 +470,7 @@ class _FloatingUtilityCapsule extends StatelessWidget {
           Container(
             height: 16.h,
             width: 1.w,
-            color: AppColors.goldBorderStroke,
+            color: colors.borderHairline,
           ),
 
           // 2. Quick Sleep Timer Toggle Pill
@@ -472,10 +479,10 @@ class _FloatingUtilityCapsule extends StatelessWidget {
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
               decoration: BoxDecoration(
-                color: sleepTimerMinutes != null ? AppColors.surfaceElevated : Colors.transparent,
+                color: sleepTimerMinutes != null ? colors.surfaceElevated : Colors.transparent,
                 borderRadius: BorderRadius.circular(20.r),
                 border: Border.all(
-                  color: sleepTimerMinutes != null ? AppColors.champagneGold : Colors.transparent,
+                  color: sleepTimerMinutes != null ? colors.accentGold : Colors.transparent,
                   width: 1.r,
                 ),
               ),
@@ -485,7 +492,7 @@ class _FloatingUtilityCapsule extends StatelessWidget {
                   Icon(
                     Iconsax.timer_1,
                     size: 16.r,
-                    color: sleepTimerMinutes != null ? AppColors.champagneGold : AppColors.mutedSilver,
+                    color: sleepTimerMinutes != null ? colors.accentGold : colors.textSecondary,
                   ),
                   SizedBox(width: 4.w),
                   Text(
@@ -493,7 +500,7 @@ class _FloatingUtilityCapsule extends StatelessWidget {
                     style: GoogleFonts.cairo(
                       fontSize: 12.sp,
                       fontWeight: FontWeight.w600,
-                      color: sleepTimerMinutes != null ? AppColors.champagneGold : AppColors.mutedSilver,
+                      color: sleepTimerMinutes != null ? colors.accentGold : colors.textSecondary,
                     ),
                   ),
                 ],
@@ -505,7 +512,7 @@ class _FloatingUtilityCapsule extends StatelessWidget {
           Container(
             height: 16.h,
             width: 1.w,
-            color: AppColors.goldBorderStroke,
+            color: colors.borderHairline,
           ),
 
           // 3. Quick Repeat Mode Toggle
@@ -517,17 +524,17 @@ class _FloatingUtilityCapsule extends StatelessWidget {
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
               decoration: BoxDecoration(
-                color: isRepeating ? AppColors.surfaceElevated : Colors.transparent,
+                color: isRepeating ? colors.surfaceElevated : Colors.transparent,
                 borderRadius: BorderRadius.circular(20.r),
                 border: Border.all(
-                  color: isRepeating ? AppColors.champagneGold : Colors.transparent,
+                  color: isRepeating ? colors.accentGold : Colors.transparent,
                   width: 1.r,
                 ),
               ),
               child: Icon(
                 Iconsax.repeate_one,
                 size: 18.r,
-                color: isRepeating ? AppColors.champagneGold : AppColors.mutedSilver,
+                color: isRepeating ? colors.accentGold : colors.textSecondary,
               ),
             ),
           ),
@@ -536,7 +543,7 @@ class _FloatingUtilityCapsule extends StatelessWidget {
           Container(
             height: 16.h,
             width: 1.w,
-            color: AppColors.goldBorderStroke,
+            color: colors.borderHairline,
           ),
 
           // 4. Quick Full Settings Opener
@@ -550,7 +557,7 @@ class _FloatingUtilityCapsule extends StatelessWidget {
               child: Icon(
                 Iconsax.setting_2,
                 size: 18.r,
-                color: AppColors.mutedSilver,
+                color: colors.textSecondary,
               ),
             ),
           ),

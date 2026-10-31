@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:sakina_app/core/theme/app_colors.dart';
+import 'package:sakina_app/core/theme/app_colors_scheme.dart';
 import 'package:sakina_app/core/utils/haptic_service.dart';
 
 class SakinaNavItem extends StatelessWidget {
@@ -20,13 +20,15 @@ class SakinaNavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
+
     return InkWell(
       onTap: () {
         HapticService.selectionClick();
         onTap();
       },
       borderRadius: BorderRadius.circular(20.r),
-      splashColor: AppColors.goldGlowSoft,
+      splashColor: colors.accentGold.withValues(alpha: 0.1),
       highlightColor: Colors.transparent,
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 6.h),
@@ -51,7 +53,7 @@ class SakinaNavItem extends StatelessWidget {
               style: GoogleFonts.cairo(
                 fontSize: isSelected ? 11.5.sp : 11.sp,
                 fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                color: isSelected ? AppColors.champagneGold : AppColors.mutedSilver,
+                color: isSelected ? colors.accentGold : colors.textSecondary,
                 height: 1.2,
               ),
             ),

@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:sakina_app/core/theme/app_colors.dart';
+import 'package:sakina_app/core/theme/app_colors_scheme.dart';
 import 'package:sakina_app/core/theme/app_spacing.dart';
 import 'package:sakina_app/features/audio_reciters/domain/entities/reciter_entity.dart';
 import 'package:sakina_app/features/audio_reciters/presentation/widgets/components/reciter_avatar_medallion.dart';
@@ -128,23 +129,25 @@ class _FeaturedSheikhCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
+
     return GestureDetector(
       onTap: onCardTap,
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
         decoration: BoxDecoration(
-          color: AppColors.carbonSlate,
+          color: colors.cardSurface,
           borderRadius: AppSpacing.radiusLg,
           border: Border.all(
-            color: isPlaying ? AppColors.champagneGold : AppColors.goldBorderStroke,
+            color: isPlaying ? colors.accentGold : colors.borderHairline,
             width: isPlaying ? 1.5.r : 1.r,
           ),
-          gradient: const LinearGradient(
+          gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              AppColors.surfaceElevated,
-              AppColors.carbonSlate,
+              colors.surfaceElevated,
+              colors.cardSurface,
             ],
           ),
         ),
@@ -158,8 +161,8 @@ class _FeaturedSheikhCard extends StatelessWidget {
                 Container(
                   width: 5.r,
                   height: 5.r,
-                  decoration: const BoxDecoration(
-                    color: AppColors.champagneGold,
+                  decoration: BoxDecoration(
+                    color: colors.accentGold,
                     shape: BoxShape.circle,
                   ),
                 ),
@@ -169,7 +172,7 @@ class _FeaturedSheikhCard extends StatelessWidget {
                   style: GoogleFonts.cairo(
                     fontSize: 12.sp,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.champagneGold,
+                    color: colors.accentGold,
                     letterSpacing: 0.3,
                   ),
                 ),
@@ -177,8 +180,8 @@ class _FeaturedSheikhCard extends StatelessWidget {
                 Container(
                   width: 5.r,
                   height: 5.r,
-                  decoration: const BoxDecoration(
-                    color: AppColors.champagneGold,
+                  decoration: BoxDecoration(
+                    color: colors.accentGold,
                     shape: BoxShape.circle,
                   ),
                 ),
@@ -209,7 +212,7 @@ class _FeaturedSheikhCard extends StatelessWidget {
                               style: GoogleFonts.cairo(
                                 fontSize: 15.sp,
                                 fontWeight: FontWeight.w800,
-                                color: AppColors.pureChalk,
+                                color: colors.textPrimary,
                               ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
@@ -227,7 +230,7 @@ class _FeaturedSheikhCard extends StatelessWidget {
                         style: GoogleFonts.amiri(
                           fontSize: 12.5.sp,
                           fontWeight: FontWeight.bold,
-                          color: AppColors.paleRadiance,
+                          color: colors.accentGold,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -245,15 +248,15 @@ class _FeaturedSheikhCard extends StatelessWidget {
                     height: 44.r,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: isPlaying ? AppColors.champagneGold : AppColors.frostedGlass,
+                      color: isPlaying ? colors.accentGold : colors.surfaceElevated,
                       border: Border.all(
-                        color: AppColors.champagneGold,
+                        color: colors.accentGold,
                         width: 1.5.r,
                       ),
                     ),
                     child: Icon(
                       isPlaying ? Iconsax.pause : Iconsax.play,
-                      color: isPlaying ? AppColors.obsidianCore : AppColors.champagneGold,
+                      color: isPlaying ? colors.background : colors.accentGold,
                       size: 20.r,
                     ),
                   ),
@@ -321,6 +324,8 @@ class _LiveCarouselIndicatorDots extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: List.generate(totalDots, (index) {
@@ -335,8 +340,8 @@ class _LiveCarouselIndicatorDots extends StatelessWidget {
             height: 6.h,
             decoration: BoxDecoration(
               color: isActive
-                  ? AppColors.champagneGold
-                  : AppColors.mutedSilver.withValues(alpha: 0.3),
+                  ? colors.accentGold
+                  : colors.borderHairline.withValues(alpha: 0.5),
               borderRadius: BorderRadius.circular(3.r),
             ),
           ),

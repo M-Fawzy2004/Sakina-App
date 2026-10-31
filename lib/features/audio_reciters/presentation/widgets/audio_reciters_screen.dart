@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sakina_app/core/di/injection_container.dart';
 import 'package:sakina_app/core/theme/app_colors.dart';
+import 'package:sakina_app/core/theme/app_colors_scheme.dart';
 import 'package:sakina_app/features/audio_reciters/presentation/cubit/audio_reciters_cubit.dart';
 import 'package:sakina_app/features/audio_reciters/presentation/cubit/audio_reciters_state.dart';
 import 'package:sakina_app/features/audio_reciters/presentation/widgets/audio_recitation_player_screen.dart';
@@ -49,7 +50,10 @@ class _AudioRecitersView extends StatelessWidget {
             begin: const Offset(0.0, 1.0),
             end: Offset.zero,
           ).chain(CurveTween(curve: Curves.easeOutCubic));
-          return SlideTransition(position: animation.drive(tween), child: child);
+          return SlideTransition(
+            position: animation.drive(tween),
+            child: child,
+          );
         },
       ),
     );
@@ -58,125 +62,127 @@ class _AudioRecitersView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bottomPadding = MediaQuery.paddingOf(context).bottom;
+    final keyboardInset = MediaQuery.viewInsetsOf(context).bottom;
+    final isKeyboardOpen = keyboardInset > 0;
     // SakinaBottomNavBar floats at bottomPadding + 12.h with height 68.h (top edge at bottomPadding + 80.h)
     final miniPlayerBottom = bottomPadding + 84.h;
-    final scrollBottomPadding = stateTrackPadding(context, bottomPadding);
+    final scrollBottomPadding = isKeyboardOpen
+        ? keyboardInset + 20.h
+        : stateTrackPadding(context, bottomPadding);
 
-    return Scaffold(
-      backgroundColor: AppColors.obsidianCore,
-      body: SafeArea(
-        bottom: false,
-        child: BlocConsumer<AudioRecitersCubit, AudioRecitersState>(
-          listener: (context, state) {
-            if (state.errorMessage != null && state.errorMessage!.isNotEmpty) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    state.errorMessage!,
-                    style: GoogleFonts.cairo(
-                      fontSize: 13.sp,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.pureChalk,
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      behavior: HitTestBehavior.translucent,
+      child: Scaffold(
+        backgroundColor: context.colors.background,
+        resizeToAvoidBottomInset: false,
+        body: SafeArea(
+          bottom: false,
+          child: BlocConsumer<AudioRecitersCubit, AudioRecitersState>(
+            listener: (context, state) {
+              if (state.errorMessage != null &&
+                  state.errorMessage!.isNotEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      state.errorMessage!,
+                      style: GoogleFonts.cairo(
+                        fontSize: 13.sp,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.pureChalk,
+                      ),
                     ),
+                    backgroundColor: AppColors.carbonSlate,
+                    behavior: SnackBarBehavior.floating,
                   ),
-                  backgroundColor: AppColors.carbonSlate,
-                  behavior: SnackBarBehavior.floating,
-                ),
-              );
-            }
-          },
-          builder: (context, state) {
-            final cubit = context.read<AudioRecitersCubit>();
+                );
+              }
+            },
+            builder: (context, state) {
+              final cubit = context.read<AudioRecitersCubit>();
 
-            return Stack(
-              fit: StackFit.expand,
-              children: [
-                CustomScrollView(
-                  physics: const BouncingScrollPhysics(),
-                  slivers: [
-                    // Top Sacred Header: "سكينة 🌙" and "واجهة التلاوات"
-                    const SliverToBoxAdapter(
-                      child: RecitersHeaderAppBar(),
-                    ),
+              return Stack(
+                fit: StackFit.expand,
+                children: [
+                  CustomScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    keyboardDismissBehavior:
+                        ScrollViewKeyboardDismissBehavior.onDrag,
+                    slivers: [
+                      // Top Sacred Header: "سكينة 🌙" and "واجهة التلاوات"
+                      const SliverToBoxAdapter(child: RecitersHeaderAppBar()),
 
-                    SliverToBoxAdapter(
-                      child: SizedBox(height: 8.h),
-                    ),
+                      SliverToBoxAdapter(child: SizedBox(height: 8.h)),
 
-                    // Search Bar
-                    SliverToBoxAdapter(
-                      child: RecitersSearchBar(
-                        onChanged: cubit.search,
-                        onClear: () => cubit.search(''),
-                      ),
-                    ),
-
-                    SliverToBoxAdapter(
-                      child: SizedBox(height: 12.h),
-                    ),
-
-                    // Horizontal Filter Chips
-                    SliverToBoxAdapter(
-                      child: RecitersFilterChips(
-                        categories: state.categories,
-                        selectedCategory: state.selectedCategory,
-                        onSelected: cubit.selectCategory,
-                      ),
-                    ),
-
-                    SliverToBoxAdapter(
-                      child: SizedBox(height: 14.h),
-                    ),
-
-                    // Interactive Sheikhs Carousel (if search is empty)
-                    if (state.searchQuery.isEmpty && state.featuredReciters.isNotEmpty) ...[
+                      // Search Bar
                       SliverToBoxAdapter(
-                        child: FeaturedRecitersCarousel(
-                          featuredReciters: state.featuredReciters,
-                          activeIndex: state.activeFeaturedIndex,
-                          isPlaying: state.isPlaying,
-                          currentlyPlayingReciterId: state.currentTrack?.reciterId,
-                          onPageChanged: cubit.setFeaturedIndex,
-                          onPlayTap: (reciter) async {
-                            await cubit.playReciterFeaturedTrack(reciter);
-                            if (context.mounted) {
-                              _openPlayer(context);
-                            }
-                          },
-                          onCardTap: (reciter) async {
-                            await cubit.playReciterFeaturedTrack(reciter);
-                            if (context.mounted) {
-                              _openPlayer(context);
-                            }
-                          },
+                        child: RecitersSearchBar(
+                          onChanged: cubit.search,
+                          onClear: () => cubit.search(''),
                         ),
                       ),
+
+                      SliverToBoxAdapter(child: SizedBox(height: 12.h)),
+
+                      // Horizontal Filter Chips
                       SliverToBoxAdapter(
-                        child: SizedBox(height: 14.h),
+                        child: RecitersFilterChips(
+                          categories: state.categories,
+                          selectedCategory: state.selectedCategory,
+                          onSelected: cubit.selectCategory,
+                        ),
                       ),
-                    ],
 
-                    // Reciters List Header
-                    const SliverToBoxAdapter(
-                      child: _CatalogSectionHeader(),
-                    ),
+                      SliverToBoxAdapter(child: SizedBox(height: 14.h)),
 
-                    // Loading Indicator
-                    if (state.isLoading)
-                      const SliverToBoxAdapter(
-                        child: _RecitersLoadingShimmer(),
-                      )
-                    else if (state.reciters.isEmpty)
-                      const SliverToBoxAdapter(
-                        child: _EmptyRecitersNotice(),
-                      )
-                    else
-                      // Reciter Tiles List
-                      SliverList(
-                        delegate: SliverChildBuilderDelegate(
-                          (context, index) {
+                      // Interactive Sheikhs Carousel (if search is empty)
+                      if (state.searchQuery.isEmpty &&
+                          state.featuredReciters.isNotEmpty) ...[
+                        SliverToBoxAdapter(
+                          child: FeaturedRecitersCarousel(
+                            featuredReciters: state.featuredReciters,
+                            activeIndex: state.activeFeaturedIndex,
+                            isPlaying: state.isPlaying,
+                            currentlyPlayingReciterId:
+                                state.currentTrack?.reciterId,
+                            onPageChanged: cubit.setFeaturedIndex,
+                            onPlayTap: (reciter) async {
+                              await cubit.playReciterFeaturedTrack(reciter);
+                              if (context.mounted) {
+                                _openPlayer(context);
+                              }
+                            },
+                            onCardTap: (reciter) async {
+                              await cubit.playReciterFeaturedTrack(reciter);
+                              if (context.mounted) {
+                                _openPlayer(context);
+                              }
+                            },
+                          ),
+                        ),
+                        SliverToBoxAdapter(child: SizedBox(height: 14.h)),
+                      ],
+
+                      // Reciters List Header
+                      const SliverToBoxAdapter(child: _CatalogSectionHeader()),
+
+                      // Loading Indicator
+                      if (state.isLoading)
+                        const SliverToBoxAdapter(
+                          child: _RecitersLoadingShimmer(),
+                        )
+                      else if (state.reciters.isEmpty)
+                        const SliverToBoxAdapter(child: _EmptyRecitersNotice())
+                      else
+                        // Reciter Tiles List
+                        SliverList(
+                          delegate: SliverChildBuilderDelegate((
+                            context,
+                            index,
+                          ) {
                             final reciter = state.reciters[index];
-                            final isCurrentPlaying = state.isPlaying &&
+                            final isCurrentPlaying =
+                                state.isPlaying &&
                                 state.currentTrack?.reciterId == reciter.id;
 
                             return ReciterTileCard(
@@ -185,45 +191,55 @@ class _AudioRecitersView extends StatelessWidget {
                               onTap: () async {
                                 await cubit.playReciterFeaturedTrack(reciter);
                                 if (context.mounted) {
-                                _openPlayer(context);
-                              }
-                            },
-                            onActionTap: () async {
-                              if (isCurrentPlaying) {
-                                await cubit.togglePlayPause();
-                              } else {
-                                await cubit.playReciterFeaturedTrack(reciter);
-                              }
-                            },
-                          );
-                        },
-                        childCount: state.reciters.length,
+                                  _openPlayer(context);
+                                }
+                              },
+                              onActionTap: () async {
+                                if (isCurrentPlaying) {
+                                  await cubit.togglePlayPause();
+                                } else {
+                                  await cubit.playReciterFeaturedTrack(reciter);
+                                }
+                              },
+                            );
+                          }, childCount: state.reciters.length),
+                        ),
+
+                      // Bottom spacing ensuring content scrolls completely above the floating nav bar and mini player
+                      SliverToBoxAdapter(
+                        child: SizedBox(height: scrollBottomPadding),
+                      ),
+                    ],
+                  ),
+
+                  // Floating Mini Player Bar - Positioned comfortably ABOVE bottom navigation bar
+                  // Smoothly hides off-screen when keyboard is active (searching) to maximize visible search space
+                  if (state.currentTrack != null)
+                    AnimatedPositioned(
+                      duration: const Duration(milliseconds: 200),
+                      curve: Curves.easeOutCubic,
+                      left: 0,
+                      right: 0,
+                      bottom: isKeyboardOpen ? -100.h : miniPlayerBottom,
+                      child: AnimatedOpacity(
+                        duration: const Duration(milliseconds: 200),
+                        opacity: isKeyboardOpen ? 0.0 : 1.0,
+                        curve: Curves.easeOutCubic,
+                        child: IgnorePointer(
+                          ignoring: isKeyboardOpen,
+                          child: ReciterMiniPlayerBar(
+                            track: state.currentTrack!,
+                            isPlaying: state.isPlaying,
+                            onTap: () => _openPlayer(context),
+                            onPlayPauseTap: cubit.togglePlayPause,
+                          ),
+                        ),
                       ),
                     ),
-
-                    // Bottom spacing ensuring content scrolls completely above the floating nav bar and mini player
-                    SliverToBoxAdapter(
-                      child: SizedBox(height: scrollBottomPadding),
-                    ),
-                  ],
-                ),
-
-                // Floating Mini Player Bar - Positioned comfortably ABOVE bottom navigation bar
-                if (state.currentTrack != null)
-                  Positioned(
-                    left: 0,
-                    right: 0,
-                    bottom: miniPlayerBottom,
-                    child: ReciterMiniPlayerBar(
-                      track: state.currentTrack!,
-                      isPlaying: state.isPlaying,
-                      onTap: () => _openPlayer(context),
-                      onPlayPauseTap: cubit.togglePlayPause,
-                    ),
-                  ),
-              ],
-            );
-          },
+                ],
+              );
+            },
+          ),
         ),
       ),
     );

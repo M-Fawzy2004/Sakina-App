@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:sakina_app/core/theme/app_colors.dart';
+import 'package:sakina_app/core/theme/app_colors_scheme.dart';
 import 'package:sakina_app/core/theme/app_text_styles.dart';
 import 'package:sakina_app/core/utils/haptic_service.dart';
 import 'package:sakina_app/core/widgets/glass/tactile_glass_card.dart';
 
 /// Single portal card inside "بَوَّابَاتُ السَّكِينَةِ" grid.
-/// Clean, elevated OLED dark slab without drop shadows.
+/// Clean, elevated tactile luxury slab without drop shadows.
 class MaladhPortalCard extends StatelessWidget {
   final String title;
   final String subtitle;
@@ -27,6 +27,8 @@ class MaladhPortalCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
+
     return TactileGlassCard(
       onTap: () {
         HapticService.selectionClick();
@@ -47,13 +49,13 @@ class MaladhPortalCard extends StatelessWidget {
                 height: 38.r,
                 decoration: BoxDecoration(
                   color: isEmerald
-                      ? const Color(0x2210B981)
-                      : AppColors.surfaceElevated,
+                      ? colors.accentEmerald.withValues(alpha: 0.12)
+                      : colors.surfaceElevated,
                   borderRadius: BorderRadius.circular(12.r),
                   border: Border.all(
                     color: isEmerald
-                        ? const Color(0x5510B981)
-                        : AppColors.goldBorderStroke,
+                        ? colors.accentEmerald.withValues(alpha: 0.35)
+                        : colors.borderHairline,
                     width: 1.r,
                   ),
                 ),
@@ -65,13 +67,13 @@ class MaladhPortalCard extends StatelessWidget {
                 padding: EdgeInsets.symmetric(horizontal: 9.w, vertical: 4.h),
                 decoration: BoxDecoration(
                   color: isEmerald
-                      ? const Color(0x2210B981)
-                      : AppColors.carbonSlate,
+                      ? colors.accentEmerald.withValues(alpha: 0.12)
+                      : colors.surfaceElevated,
                   borderRadius: BorderRadius.circular(12.r),
                   border: Border.all(
                     color: isEmerald
-                        ? const Color(0x5510B981)
-                        : AppColors.goldBorderStroke,
+                        ? colors.accentEmerald.withValues(alpha: 0.35)
+                        : colors.borderHairline,
                     width: 1.r,
                   ),
                 ),
@@ -79,8 +81,8 @@ class MaladhPortalCard extends StatelessWidget {
                   badgeText,
                   style: AppTextStyles.caption.copyWith(
                     color: isEmerald
-                        ? AppColors.emeraldGlow
-                        : AppColors.champagneGold,
+                        ? colors.accentEmerald
+                        : colors.accentGold,
                     fontSize: 10.5.sp,
                     fontWeight: FontWeight.w700,
                   ),
@@ -100,7 +102,7 @@ class MaladhPortalCard extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: AppTextStyles.titleMedium.copyWith(
-                  color: AppColors.pureChalk,
+                  color: colors.textPrimary,
                   fontSize: 13.5.sp,
                   fontWeight: FontWeight.bold,
                   height: 1.3,
@@ -112,7 +114,7 @@ class MaladhPortalCard extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: AppTextStyles.caption.copyWith(
-                  color: AppColors.mutedSilver,
+                  color: colors.textSecondary,
                   fontSize: 10.5.sp,
                   height: 1.25,
                 ),

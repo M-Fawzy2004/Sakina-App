@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_islamic_icons/flutter_islamic_icons.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:hugeicons/hugeicons.dart';
-import 'package:sakina_app/core/theme/app_colors.dart';
+import 'package:iconsax/iconsax.dart';
+import 'package:sakina_app/core/theme/app_colors_scheme.dart';
 import 'package:sakina_app/core/theme/app_text_styles.dart';
 import 'package:sakina_app/core/utils/haptic_service.dart';
 
@@ -21,6 +21,8 @@ class QuranMushafBrandHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
+
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
       child: Row(
@@ -36,28 +38,27 @@ class QuranMushafBrandHeader extends StatelessWidget {
                 onSearchToggle();
               },
               borderRadius: BorderRadius.circular(12.r),
-              splashColor: AppColors.goldGlowSoft,
               child: Container(
                 width: 40.r,
                 height: 40.r,
                 decoration: BoxDecoration(
                   color: isSearchActive
-                      ? AppColors.champagneGold
-                      : AppColors.surfaceElevated,
+                      ? colors.accentGold
+                      : colors.cardSurface,
                   borderRadius: BorderRadius.circular(12.r),
                   border: Border.all(
-                    color: AppColors.goldBorderStroke,
+                    color: colors.borderHairline,
                     width: 1.r,
                   ),
                 ),
                 child: Center(
-                  child: HugeIcon(
-                    icon: isSearchActive
-                        ? HugeIcons.strokeRoundedCancel01
-                        : HugeIcons.strokeRoundedSearch01,
+                  child: Icon(
+                    isSearchActive
+                        ? Iconsax.close_circle
+                        : Iconsax.search_normal_1,
                     color: isSearchActive
-                        ? AppColors.obsidianCore
-                        : AppColors.champagneGold,
+                        ? colors.background
+                        : colors.accentGold,
                     size: 20.r,
                   ),
                 ),
@@ -71,14 +72,14 @@ class QuranMushafBrandHeader extends StatelessWidget {
             children: [
               Icon(
                 FlutterIslamicIcons.solidCrescentMoon,
-                color: AppColors.champagneGold,
+                color: colors.accentGold,
                 size: 22.r,
               ),
               SizedBox(width: 8.w),
               Text(
                 'القُرْآنُ الكَرِيمُ',
                 style: AppTextStyles.headlineLarge.copyWith(
-                  color: AppColors.champagneGold,
+                  color: colors.accentGold,
                   fontSize: 22.sp,
                   fontWeight: FontWeight.w800,
                   letterSpacing: 0.5,

@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:sakina_app/core/di/injection_container.dart';
 import 'package:sakina_app/core/router/route_constants.dart';
 import 'package:sakina_app/core/theme/app_colors.dart';
+import 'package:sakina_app/core/theme/app_colors_scheme.dart';
 import 'package:sakina_app/core/theme/app_spacing.dart';
 import 'package:sakina_app/core/theme/app_text_styles.dart';
 import 'package:sakina_app/features/maladh/presentation/cubit/maladh_cubit.dart';
@@ -42,7 +43,7 @@ class _MaladhView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.obsidianCore,
+      backgroundColor: context.colors.background,
       body: SafeArea(
         bottom: false,
         child: Align(

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_islamic_icons/flutter_islamic_icons.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:sakina_app/core/theme/app_colors.dart';
+import 'package:sakina_app/core/theme/app_colors_scheme.dart';
 import 'package:sakina_app/core/theme/app_text_styles.dart';
 import 'package:sakina_app/core/utils/haptic_service.dart';
 import 'package:sakina_app/features/quran_reading/domain/entities/juz_entity.dart';
@@ -19,6 +19,8 @@ class JuzTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
+
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 4.h),
       child: Material(
@@ -29,14 +31,13 @@ class JuzTile extends StatelessWidget {
             onTap();
           },
           borderRadius: BorderRadius.circular(16.r),
-          splashColor: AppColors.goldGlowSoft,
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
             decoration: BoxDecoration(
-              color: AppColors.surfaceElevated,
+              color: colors.cardSurface,
               borderRadius: BorderRadius.circular(16.r),
               border: Border.all(
-                color: AppColors.goldBorderStroke,
+                color: colors.borderHairline,
                 width: 1.r,
               ),
             ),
@@ -47,10 +48,10 @@ class JuzTile extends StatelessWidget {
                   width: 38.r,
                   height: 38.r,
                   decoration: BoxDecoration(
-                    color: AppColors.carbonSlate,
+                    color: colors.surfaceElevated,
                     borderRadius: BorderRadius.circular(10.r),
                     border: Border.all(
-                      color: AppColors.champagneGold,
+                      color: colors.accentGold,
                       width: 1.r,
                     ),
                   ),
@@ -58,7 +59,7 @@ class JuzTile extends StatelessWidget {
                     child: Text(
                       '${juz.id}',
                       style: AppTextStyles.caption.copyWith(
-                        color: AppColors.champagneGold,
+                        color: colors.accentGold,
                         fontWeight: FontWeight.w800,
                         fontSize: 13.sp,
                       ),
@@ -76,7 +77,7 @@ class JuzTile extends StatelessWidget {
                       Text(
                         juz.nameArabic,
                         style: AppTextStyles.titleMedium.copyWith(
-                          color: AppColors.pureChalk,
+                          color: colors.textPrimary,
                           fontWeight: FontWeight.w700,
                           fontSize: 14.5.sp,
                         ),
@@ -86,14 +87,14 @@ class JuzTile extends StatelessWidget {
                         children: [
                           Icon(
                             FlutterIslamicIcons.quran,
-                            color: AppColors.mutedSilver,
+                            color: colors.textSecondary,
                             size: 12.r,
                           ),
                           SizedBox(width: 4.w),
                           Text(
                             'يبدأ من: سورة ${juz.startSurahName} (الآية ${juz.startVerseNumber})',
                             style: AppTextStyles.caption.copyWith(
-                              color: AppColors.mutedSilver,
+                              color: colors.textSecondary,
                               fontSize: 11.sp,
                             ),
                           ),
@@ -107,17 +108,17 @@ class JuzTile extends StatelessWidget {
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 9.w, vertical: 5.h),
                   decoration: BoxDecoration(
-                    color: AppColors.carbonSlate,
+                    color: colors.surfaceElevated,
                     borderRadius: BorderRadius.circular(8.r),
                     border: Border.all(
-                      color: AppColors.goldBorderStroke,
+                      color: colors.borderHairline,
                       width: 0.8.r,
                     ),
                   ),
                   child: Text(
                     'ص ${juz.startPageNumber} - ${juz.endPageNumber}',
                     style: AppTextStyles.caption.copyWith(
-                      color: AppColors.champagneGold,
+                      color: colors.accentGold,
                       fontWeight: FontWeight.w700,
                       fontSize: 10.5.sp,
                     ),

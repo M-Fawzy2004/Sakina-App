@@ -17,6 +17,7 @@ class QuranReaderTopBar extends StatelessWidget {
   final VoidCallback onOpenSurahSwitch;
   final VoidCallback onOpenSettings;
   final Color? accentColor;
+  final Color? cardColor;
 
   const QuranReaderTopBar({
     super.key,
@@ -25,6 +26,7 @@ class QuranReaderTopBar extends StatelessWidget {
     required this.onOpenSurahSwitch,
     required this.onOpenSettings,
     this.accentColor,
+    this.cardColor,
   });
 
   @override
@@ -42,8 +44,9 @@ class QuranReaderTopBar extends StatelessWidget {
         children: [
           // Left: Circular Back Button `<`
           _FrostedCircleButton(
-            icon: Iconsax.arrow_left_2,
+            icon: Iconsax.arrow_right_3,
             accentColor: activeAccent,
+            cardColor: cardColor,
             onTap: onClose,
           ),
 
@@ -51,6 +54,7 @@ class QuranReaderTopBar extends StatelessWidget {
           _SurahCapsuleSelector(
             title: calligraphicTitle,
             accentColor: activeAccent,
+            cardColor: cardColor,
             onTap: onOpenSurahSwitch,
           ),
 
@@ -58,6 +62,7 @@ class QuranReaderTopBar extends StatelessWidget {
           _FrostedCircleButton(
             icon: Iconsax.setting_2,
             accentColor: activeAccent,
+            cardColor: cardColor,
             onTap: onOpenSettings,
           ),
         ],
@@ -69,11 +74,13 @@ class QuranReaderTopBar extends StatelessWidget {
 class _FrostedCircleButton extends StatelessWidget {
   final IconData icon;
   final Color accentColor;
+  final Color? cardColor;
   final VoidCallback onTap;
 
   const _FrostedCircleButton({
     required this.icon,
     required this.accentColor,
+    this.cardColor,
     required this.onTap,
   });
 
@@ -87,12 +94,11 @@ class _FrostedCircleButton extends StatelessWidget {
           onTap();
         },
         customBorder: const CircleBorder(),
-        splashColor: AppColors.goldGlowSoft,
         child: Container(
           width: 45.r,
           height: 45.r,
           decoration: BoxDecoration(
-            color: AppColors.carbonSlate.withValues(alpha: 0.75),
+            color: (cardColor ?? AppColors.carbonSlate).withValues(alpha: 0.85),
             shape: BoxShape.circle,
             border: Border.all(
               color: accentColor.withValues(alpha: 0.5),
@@ -111,11 +117,13 @@ class _FrostedCircleButton extends StatelessWidget {
 class _SurahCapsuleSelector extends StatelessWidget {
   final String title;
   final Color accentColor;
+  final Color? cardColor;
   final VoidCallback onTap;
 
   const _SurahCapsuleSelector({
     required this.title,
     required this.accentColor,
+    this.cardColor,
     required this.onTap,
   });
 
@@ -129,11 +137,10 @@ class _SurahCapsuleSelector extends StatelessWidget {
           onTap();
         },
         borderRadius: BorderRadius.circular(25.r),
-        splashColor: AppColors.goldGlowSoft,
         child: Container(
           padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 9.h),
           decoration: BoxDecoration(
-            color: AppColors.carbonSlate.withValues(alpha: 0.8),
+            color: (cardColor ?? AppColors.carbonSlate).withValues(alpha: 0.85),
             borderRadius: BorderRadius.circular(25.r),
             border: Border.all(
               color: accentColor.withValues(alpha: 0.6),
@@ -152,11 +159,7 @@ class _SurahCapsuleSelector extends StatelessWidget {
                 ),
               ),
               SizedBox(width: 6.w),
-              Icon(
-                Iconsax.arrow_down_1,
-                color: accentColor,
-                size: 18.r,
-              ),
+              Icon(Iconsax.arrow_down_1, color: accentColor, size: 18.r),
             ],
           ),
         ),

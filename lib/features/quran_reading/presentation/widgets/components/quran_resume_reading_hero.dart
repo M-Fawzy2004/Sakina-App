@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:sakina_app/core/theme/app_colors.dart';
+import 'package:sakina_app/core/theme/app_colors_scheme.dart';
 import 'package:sakina_app/core/theme/app_text_styles.dart';
 import 'package:sakina_app/core/utils/haptic_service.dart';
 import 'package:sakina_app/features/quran_reading/domain/entities/quran_bookmark_entity.dart';
 
 /// "Resume Reading / مواصلة القراءة" Hero Card:
 /// Faithfully reproduces the exact visual design from the user's reference screenshot:
-/// - Frosted charcoal/gold bordered card
+/// - Tactile card surface with hairline border adapting cleanly to light/dark themes
 /// - Left-aligned text: "Resume Reading", "مواصلة القراءة", and calligraphic Surah title
 /// - Right-side swallowtail notched emerald ribbon hanging from the top edge
 /// - Metallic gold progress ring positioned on the right directly below the ribbon
@@ -24,6 +24,7 @@ class QuranResumeReadingHero extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
     final surahName = bookmark?.surahName ?? 'سُورَةُ الكَهْفِ';
 
     return Padding(
@@ -33,7 +34,7 @@ class QuranResumeReadingHero extends StatelessWidget {
         child: Stack(
           clipBehavior: Clip.none,
           children: [
-            // The Frosted Hero Card
+            // The Tactile Hero Card
             Material(
               color: Colors.transparent,
               child: InkWell(
@@ -42,15 +43,14 @@ class QuranResumeReadingHero extends StatelessWidget {
                   onResumeTap();
                 },
                 borderRadius: BorderRadius.circular(22.r),
-                splashColor: AppColors.goldGlowSoft,
                 child: Container(
                   width: double.infinity,
                   padding: EdgeInsets.fromLTRB(20.w, 18.h, 24.w, 18.h),
                   decoration: BoxDecoration(
-                    color: AppColors.surfaceElevated.withValues(alpha: 0.85),
+                    color: colors.cardSurface,
                     borderRadius: BorderRadius.circular(22.r),
                     border: Border.all(
-                      color: AppColors.goldBorderStroke,
+                      color: colors.borderHairline,
                       width: 1.2.r,
                     ),
                   ),
@@ -67,7 +67,7 @@ class QuranResumeReadingHero extends StatelessWidget {
                             Text(
                               'Resume Reading',
                               style: AppTextStyles.caption.copyWith(
-                                color: AppColors.paleRadiance,
+                                color: colors.accentGold,
                                 fontWeight: FontWeight.w700,
                                 fontSize: 13.5.sp,
                                 letterSpacing: 0.4,
@@ -77,7 +77,7 @@ class QuranResumeReadingHero extends StatelessWidget {
                             Text(
                               'مُوَاصَلَةُ القِرَاءَةِ',
                               style: AppTextStyles.caption.copyWith(
-                                color: AppColors.mutedSilver,
+                                color: colors.textSecondary,
                                 fontWeight: FontWeight.w500,
                                 fontSize: 12.sp,
                               ),
@@ -86,7 +86,7 @@ class QuranResumeReadingHero extends StatelessWidget {
                             Text(
                               surahName,
                               style: AppTextStyles.headlineLarge.copyWith(
-                                color: AppColors.pureChalk,
+                                color: colors.textPrimary,
                                 fontSize: 24.sp,
                                 fontWeight: FontWeight.w800,
                               ),
@@ -132,6 +132,8 @@ class _MetallicProgressRing extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
+
     return SizedBox(
       width: 48.r,
       height: 48.r,
@@ -141,16 +143,16 @@ class _MetallicProgressRing extends StatelessWidget {
           CircularProgressIndicator(
             value: progress,
             strokeWidth: 3.2.r,
-            backgroundColor: AppColors.carbonSlate,
-            valueColor: const AlwaysStoppedAnimation<Color>(
-              AppColors.champagneGold,
+            backgroundColor: colors.surfaceElevated,
+            valueColor: AlwaysStoppedAnimation<Color>(
+              colors.accentGold,
             ),
           ),
           Container(
             width: 36.r,
             height: 36.r,
             decoration: BoxDecoration(
-              color: AppColors.carbonSlate.withValues(alpha: 0.4),
+              color: colors.cardSurface,
               shape: BoxShape.circle,
             ),
           ),
@@ -168,6 +170,7 @@ class _SwallowtailRibbon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
     final ribbonWidth = 32.w;
     final ribbonHeight = 54.h;
 
@@ -175,7 +178,7 @@ class _SwallowtailRibbon extends StatelessWidget {
       onTap: onTap,
       child: CustomPaint(
         painter: _RibbonBorderPainter(
-          borderColor: AppColors.champagneGold,
+          borderColor: colors.accentGold,
           borderWidth: 1.r,
           notchDepth: 10.h,
         ),
@@ -184,13 +187,13 @@ class _SwallowtailRibbon extends StatelessWidget {
           child: Container(
             width: ribbonWidth,
             height: ribbonHeight,
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  AppColors.emeraldGlow,
-                  AppColors.deepSanctuary,
+                  colors.accentEmerald,
+                  colors.accentEmerald.withValues(alpha: 0.8),
                 ],
               ),
             ),

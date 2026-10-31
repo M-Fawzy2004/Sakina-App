@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:sakina_app/core/theme/app_colors.dart';
+import 'package:sakina_app/core/theme/app_colors_scheme.dart';
 import 'package:sakina_app/core/theme/app_text_styles.dart';
 
 /// Tactile luxury search field for filtering Surahs and Juzs.
@@ -45,15 +45,17 @@ class _QuranSearchBarState extends State<QuranSearchBar> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
+
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.w),
       child: Container(
         height: 46.h,
         decoration: BoxDecoration(
-          color: AppColors.surfaceElevated,
+          color: colors.cardSurface,
           borderRadius: BorderRadius.circular(14.r),
           border: Border.all(
-            color: AppColors.goldBorderStroke,
+            color: colors.borderHairline,
             width: 1.r,
           ),
         ),
@@ -61,21 +63,21 @@ class _QuranSearchBarState extends State<QuranSearchBar> {
           controller: _controller,
           onChanged: widget.onChanged,
           style: AppTextStyles.bodyMedium.copyWith(
-            color: AppColors.pureChalk,
+            color: colors.textPrimary,
             fontSize: 13.sp,
           ),
-          cursorColor: AppColors.champagneGold,
+          cursorColor: colors.accentGold,
           decoration: InputDecoration(
             hintText: 'ابْحَثْ عَنِ السُّورَةِ (بِالاسْمِ أَوْ الرَّقْمِ)...',
             hintStyle: AppTextStyles.caption.copyWith(
-              color: AppColors.mutedSilver,
+              color: colors.textSecondary,
               fontSize: 12.sp,
             ),
             prefixIcon: Padding(
               padding: EdgeInsets.symmetric(horizontal: 12.w),
               child: Icon(
                 Iconsax.search_normal,
-                color: AppColors.champagneGold,
+                color: colors.accentGold,
                 size: 18.r,
               ),
             ),
@@ -87,7 +89,7 @@ class _QuranSearchBarState extends State<QuranSearchBar> {
                 ? IconButton(
                     icon: Icon(
                       Iconsax.close_circle,
-                      color: AppColors.mutedSilver,
+                      color: colors.textSecondary,
                       size: 18.r,
                     ),
                     onPressed: () {

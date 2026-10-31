@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_islamic_icons/flutter_islamic_icons.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:hugeicons/hugeicons.dart';
-import 'package:sakina_app/core/theme/app_colors.dart';
+import 'package:iconsax/iconsax.dart';
+import 'package:sakina_app/core/theme/app_colors_scheme.dart';
 import 'package:sakina_app/core/theme/app_spacing.dart';
 import 'package:sakina_app/core/theme/app_text_styles.dart';
 import 'package:sakina_app/core/utils/haptic_service.dart';
@@ -24,6 +24,8 @@ class MaladhReflectionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
+
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.w),
       child: TactileGlassCard(
@@ -40,14 +42,14 @@ class MaladhReflectionCard extends StatelessWidget {
                   children: [
                     Icon(
                       FlutterIslamicIcons.solidQuran2,
-                      color: AppColors.champagneGold,
+                      color: colors.accentGold,
                       size: 16.r,
                     ),
                     SizedBox(width: 8.w),
                     Text(
                       'آيَةُ السَّكِينَةِ وَالتَّدَبُّرِ',
                       style: AppTextStyles.caption.copyWith(
-                        color: AppColors.paleRadiance,
+                        color: colors.accentGold,
                         fontWeight: FontWeight.w700,
                         fontSize: 12.sp,
                         letterSpacing: 0.3,
@@ -65,9 +67,9 @@ class MaladhReflectionCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12.r),
                     child: Padding(
                       padding: EdgeInsets.all(4.r),
-                      child: HugeIcon(
-                        icon: HugeIcons.strokeRoundedBookmark02,
-                        color: AppColors.champagneGold,
+                      child: Icon(
+                        Iconsax.bookmark,
+                        color: colors.accentGold,
                         size: 18.r,
                       ),
                     ),
@@ -88,7 +90,7 @@ class MaladhReflectionCard extends StatelessWidget {
                 style: AppTextStyles.quranAyah.copyWith(
                   fontSize: 19.sp,
                   height: 2.1,
-                  color: AppColors.pureChalk,
+                  color: colors.textPrimary,
                 ),
               ),
             ),
@@ -100,17 +102,17 @@ class MaladhReflectionCard extends StatelessWidget {
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 4.h),
                 decoration: BoxDecoration(
-                  color: AppColors.carbonSlate,
+                  color: colors.surfaceElevated,
                   borderRadius: BorderRadius.circular(12.r),
                   border: Border.all(
-                    color: AppColors.goldBorderStroke,
+                    color: colors.borderHairline,
                     width: 1.r,
                   ),
                 ),
                 child: Text(
                   surahSource,
                   style: AppTextStyles.caption.copyWith(
-                    color: AppColors.champagneGold,
+                    color: colors.accentGold,
                     fontSize: 11.sp,
                     fontWeight: FontWeight.w600,
                   ),

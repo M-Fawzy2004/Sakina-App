@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:sakina_app/core/theme/app_colors.dart';
+import 'package:sakina_app/core/theme/app_colors_scheme.dart';
 import 'package:sakina_app/core/theme/app_spacing.dart';
 import 'package:sakina_app/core/theme/app_text_styles.dart';
 import 'package:sakina_app/core/utils/haptic_service.dart';
@@ -81,6 +81,7 @@ class _QuranTafsirReflectionSheetState extends State<QuranTafsirReflectionSheet>
   }
 
   void _shareAyah(BuildContext context) {
+    final colors = context.colors;
     HapticService.selectionClick();
     final shareText =
         '«${widget.ayah.text}»\n'
@@ -92,16 +93,16 @@ class _QuranTafsirReflectionSheetState extends State<QuranTafsirReflectionSheet>
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        backgroundColor: AppColors.carbonSlate,
+        backgroundColor: colors.cardSurface,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12.r),
-          side: BorderSide(color: AppColors.emeraldGlow, width: 1.r),
+          side: BorderSide(color: colors.accentEmerald, width: 1.r),
         ),
         content: Text(
           'تم نسخ نص الآية والتفسير للمشاركة بنجاح ✓',
           style: AppTextStyles.caption.copyWith(
-            color: AppColors.emeraldGlow,
+            color: colors.accentEmerald,
             fontWeight: FontWeight.w700,
           ),
         ),
@@ -111,6 +112,7 @@ class _QuranTafsirReflectionSheetState extends State<QuranTafsirReflectionSheet>
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
     final tafsirText =
         widget.ayah.tafsir ??
         'الآية الكريمة تتضمن بياناً شاملاً من آيات الذكر الحكيم، تزيد القلب إيماناً ورسوخاً.';
@@ -120,9 +122,9 @@ class _QuranTafsirReflectionSheetState extends State<QuranTafsirReflectionSheet>
 
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.obsidianCore,
+        color: colors.cardSurface,
         borderRadius: BorderRadius.vertical(top: Radius.circular(28.r)),
-        border: Border.all(color: AppColors.goldBorderStroke, width: 1.r),
+        border: Border.all(color: colors.borderHairline, width: 1.r),
       ),
       padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
       child: SafeArea(
@@ -137,7 +139,7 @@ class _QuranTafsirReflectionSheetState extends State<QuranTafsirReflectionSheet>
                 width: 44.w,
                 height: 4.h,
                 decoration: BoxDecoration(
-                  color: AppColors.mutedSilver.withValues(alpha: 0.3),
+                  color: colors.textSecondary.withValues(alpha: 0.3),
                   borderRadius: BorderRadius.circular(2.r),
                 ),
               ),
@@ -156,10 +158,10 @@ class _QuranTafsirReflectionSheetState extends State<QuranTafsirReflectionSheet>
                       width: 36.r,
                       height: 36.r,
                       decoration: BoxDecoration(
-                        color: AppColors.surfaceElevated,
+                        color: colors.surfaceElevated,
                         shape: BoxShape.circle,
                         border: Border.all(
-                          color: AppColors.champagneGold,
+                          color: colors.accentGold,
                           width: 1.r,
                         ),
                       ),
@@ -167,7 +169,7 @@ class _QuranTafsirReflectionSheetState extends State<QuranTafsirReflectionSheet>
                         child: Text(
                           '${widget.ayah.numberInSurah}',
                           style: AppTextStyles.caption.copyWith(
-                            color: AppColors.champagneGold,
+                            color: colors.accentGold,
                             fontWeight: FontWeight.w800,
                             fontSize: 12.sp,
                           ),
@@ -181,7 +183,7 @@ class _QuranTafsirReflectionSheetState extends State<QuranTafsirReflectionSheet>
                         Text(
                           'سُورَةُ ${widget.surah.nameArabic}',
                           style: AppTextStyles.titleMedium.copyWith(
-                            color: AppColors.pureChalk,
+                            color: colors.textPrimary,
                             fontWeight: FontWeight.w700,
                             fontSize: 15.sp,
                           ),
@@ -189,7 +191,7 @@ class _QuranTafsirReflectionSheetState extends State<QuranTafsirReflectionSheet>
                         Text(
                           'الآية ${widget.ayah.numberInSurah} • ص ${widget.ayah.page}',
                           style: AppTextStyles.caption.copyWith(
-                            color: AppColors.champagneGold,
+                            color: colors.accentGold,
                             fontSize: 11.sp,
                           ),
                         ),
@@ -201,7 +203,7 @@ class _QuranTafsirReflectionSheetState extends State<QuranTafsirReflectionSheet>
                   onPressed: widget.onClose,
                   icon: Icon(
                     Iconsax.close_circle,
-                    color: AppColors.mutedSilver,
+                    color: colors.textSecondary,
                     size: 20.r,
                   ),
                 ),
@@ -214,15 +216,15 @@ class _QuranTafsirReflectionSheetState extends State<QuranTafsirReflectionSheet>
             Container(
               padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
               decoration: BoxDecoration(
-                color: AppColors.emeraldGlow.withValues(alpha: 0.12),
+                color: colors.accentEmerald.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(16.r),
-                border: Border.all(color: AppColors.emeraldGlow, width: 1.2.r),
+                border: Border.all(color: colors.accentEmerald, width: 1.2.r),
               ),
               child: Text(
                 '«${widget.ayah.text}»',
                 textAlign: TextAlign.center,
                 style: AppTextStyles.quranAyah.copyWith(
-                  color: AppColors.pureChalk,
+                  color: colors.textPrimary,
                   fontSize: 19.sp,
                   height: 2.1,
                   fontWeight: FontWeight.bold,
@@ -236,12 +238,9 @@ class _QuranTafsirReflectionSheetState extends State<QuranTafsirReflectionSheet>
             Container(
               padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 10.h),
               decoration: BoxDecoration(
-                color: AppColors.surfaceElevated,
+                color: colors.surfaceElevated,
                 borderRadius: BorderRadius.circular(16.r),
-                border: Border.all(
-                  color: AppColors.goldBorderStroke,
-                  width: 1.r,
-                ),
+                border: Border.all(color: colors.borderHairline, width: 1.r),
               ),
               child: Row(
                 children: [
@@ -251,18 +250,17 @@ class _QuranTafsirReflectionSheetState extends State<QuranTafsirReflectionSheet>
                     child: InkWell(
                       onTap: _toggleAudio,
                       customBorder: const CircleBorder(),
-                      splashColor: AppColors.emeraldGlow.withValues(alpha: 0.2),
                       child: Container(
                         width: 44.r,
                         height: 44.r,
-                        decoration: const BoxDecoration(
-                          color: AppColors.emeraldGlow,
+                        decoration: BoxDecoration(
+                          color: colors.accentEmerald,
                           shape: BoxShape.circle,
                         ),
                         child: Center(
                           child: Icon(
                             _isPlayingAudio ? Iconsax.pause : Iconsax.play,
-                            color: AppColors.obsidianCore,
+                            color: colors.background,
                             size: 24.r,
                           ),
                         ),
@@ -298,8 +296,8 @@ class _QuranTafsirReflectionSheetState extends State<QuranTafsirReflectionSheet>
                               height: (28.h * factor).clamp(6.h, 28.h),
                               decoration: BoxDecoration(
                                 color: isGold
-                                    ? AppColors.champagneGold
-                                    : AppColors.emeraldGlow,
+                                    ? colors.accentGold
+                                    : colors.accentEmerald,
                                 borderRadius: BorderRadius.circular(2.r),
                               ),
                             );
@@ -318,12 +316,9 @@ class _QuranTafsirReflectionSheetState extends State<QuranTafsirReflectionSheet>
             Container(
               padding: EdgeInsets.all(16.r),
               decoration: BoxDecoration(
-                color: AppColors.surfaceElevated,
+                color: colors.surfaceElevated,
                 borderRadius: BorderRadius.circular(16.r),
-                border: Border.all(
-                  color: AppColors.goldBorderStroke,
-                  width: 1.r,
-                ),
+                border: Border.all(color: colors.borderHairline, width: 1.r),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -335,14 +330,14 @@ class _QuranTafsirReflectionSheetState extends State<QuranTafsirReflectionSheet>
                       Text(
                         'Tafsir & Reflections • التَّفْسِيرُ وَالتَّدَبُّرُ',
                         style: AppTextStyles.caption.copyWith(
-                          color: AppColors.champagneGold,
+                          color: colors.accentGold,
                           fontWeight: FontWeight.w700,
                           fontSize: 12.sp,
                         ),
                       ),
                       Icon(
                         Iconsax.book_1,
-                        color: AppColors.champagneGold,
+                        color: colors.accentGold,
                         size: 16.r,
                       ),
                     ],
@@ -354,7 +349,7 @@ class _QuranTafsirReflectionSheetState extends State<QuranTafsirReflectionSheet>
                   Text(
                     tafsirText,
                     style: AppTextStyles.bodyMedium.copyWith(
-                      color: AppColors.pureChalk,
+                      color: colors.textPrimary,
                       fontSize: 13.5.sp,
                       height: 1.6,
                     ),
@@ -366,10 +361,10 @@ class _QuranTafsirReflectionSheetState extends State<QuranTafsirReflectionSheet>
                   Container(
                     padding: EdgeInsets.all(10.r),
                     decoration: BoxDecoration(
-                      color: AppColors.carbonSlate,
+                      color: colors.cardSurface,
                       borderRadius: BorderRadius.circular(10.r),
                       border: Border.all(
-                        color: AppColors.goldBorderStroke,
+                        color: colors.borderHairline,
                         width: 0.8.r,
                       ),
                     ),
@@ -386,7 +381,7 @@ class _QuranTafsirReflectionSheetState extends State<QuranTafsirReflectionSheet>
                           child: Text(
                             reflectionText,
                             style: AppTextStyles.caption.copyWith(
-                              color: AppColors.paleRadiance,
+                              color: colors.accentGold,
                               fontSize: 11.5.sp,
                               height: 1.5,
                             ),
@@ -407,13 +402,13 @@ class _QuranTafsirReflectionSheetState extends State<QuranTafsirReflectionSheet>
                         onPressed: () => _shareAyah(context),
                         icon: Icon(
                           Iconsax.share,
-                          color: AppColors.champagneGold,
+                          color: colors.accentGold,
                           size: 16.r,
                         ),
                         label: Text(
                           'Share • مُشَارَكَة',
                           style: AppTextStyles.caption.copyWith(
-                            color: AppColors.champagneGold,
+                            color: colors.accentGold,
                             fontWeight: FontWeight.w700,
                             fontSize: 12.sp,
                           ),
@@ -424,7 +419,7 @@ class _QuranTafsirReflectionSheetState extends State<QuranTafsirReflectionSheet>
                       Text(
                         'الجُزْءُ ${widget.ayah.juz} • ص ${widget.ayah.page}',
                         style: AppTextStyles.caption.copyWith(
-                          color: AppColors.mutedSilver,
+                          color: colors.textSecondary,
                           fontWeight: FontWeight.w600,
                           fontSize: 11.sp,
                         ),

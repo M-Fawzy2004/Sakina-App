@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:sakina_app/core/theme/app_colors.dart';
+import 'package:sakina_app/core/theme/app_colors_scheme.dart';
 import 'package:sakina_app/core/theme/app_text_styles.dart';
 import 'package:sakina_app/core/utils/haptic_service.dart';
 import 'package:sakina_app/features/quran_reading/presentation/cubit/quran_state.dart';
 
 /// Refined stadium capsule segmented tab bar matching the user's design reference:
-/// Contains 4 tabs («الصَّفْحَة», «السُّورَة», «الجُزْء», «الحِزْب») inside a floating rounded
+/// Contains 3 tabs («السُّورَة», «الجُزْء», «الحِزْب») inside a floating rounded
 /// container with smooth animated pill selection, clean typography, and tactile feedback.
 class QuranTabBar extends StatelessWidget {
   final QuranTab selectedTab;
@@ -20,16 +20,18 @@ class QuranTabBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
+
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.w),
       child: Container(
         height: 48.h,
         padding: EdgeInsets.all(4.r),
         decoration: BoxDecoration(
-          color: AppColors.carbonSlate,
+          color: colors.cardSurface,
           borderRadius: BorderRadius.circular(28.r),
           border: Border.all(
-            color: AppColors.goldBorderStroke.withValues(alpha: 0.3),
+            color: colors.borderHairline,
             width: 1.r,
           ),
         ),
@@ -37,18 +39,9 @@ class QuranTabBar extends StatelessWidget {
           children: [
             Expanded(
               child: _TabPillItem(
-                title: 'الصَّفْحَة',
-                isSelected: selectedTab == QuranTab.page,
-                onTap: () {
-                  HapticService.selectionClick();
-                  onTabSelected(QuranTab.page);
-                },
-              ),
-            ),
-            Expanded(
-              child: _TabPillItem(
                 title: 'السُّورَة',
-                isSelected: selectedTab == QuranTab.surahs,
+                isSelected: selectedTab == QuranTab.surahs ||
+                    selectedTab == QuranTab.page,
                 onTap: () {
                   HapticService.selectionClick();
                   onTabSelected(QuranTab.surahs);
@@ -96,6 +89,8 @@ class _TabPillItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
+
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -105,7 +100,7 @@ class _TabPillItem extends StatelessWidget {
           duration: const Duration(milliseconds: 220),
           curve: Curves.easeInOutCubic,
           decoration: BoxDecoration(
-            color: isSelected ? AppColors.champagneGold : Colors.transparent,
+            color: isSelected ? colors.accentGold : Colors.transparent,
             borderRadius: BorderRadius.circular(22.r),
           ),
           child: Center(
@@ -114,8 +109,12 @@ class _TabPillItem extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: isSelected
-                  ? AppTextStyles.tabActiveText
-                  : AppTextStyles.tabInactiveText,
+                  ? AppTextStyles.tabActiveText.copyWith(
+                      color: colors.background,
+                    )
+                  : AppTextStyles.tabInactiveText.copyWith(
+                      color: colors.textSecondary,
+                    ),
             ),
           ),
         ),

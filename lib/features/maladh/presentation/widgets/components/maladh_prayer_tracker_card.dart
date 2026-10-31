@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:hugeicons/hugeicons.dart';
-import 'package:sakina_app/core/theme/app_colors.dart';
+import 'package:iconsax/iconsax.dart';
+import 'package:sakina_app/core/theme/app_colors_scheme.dart';
 import 'package:sakina_app/core/theme/app_spacing.dart';
 import 'package:sakina_app/core/theme/app_text_styles.dart';
 import 'package:sakina_app/core/utils/haptic_service.dart';
@@ -15,17 +15,14 @@ import 'package:sakina_app/features/maladh/presentation/widgets/components/praye
 class MaladhPrayerTrackerCard extends StatefulWidget {
   final ValueChanged<String>? onPrayerToggled;
 
-  const MaladhPrayerTrackerCard({
-    super.key,
-    this.onPrayerToggled,
-  });
+  const MaladhPrayerTrackerCard({super.key, this.onPrayerToggled});
 
   @override
-  State<MaladhPrayerTrackerCard> createState() => _MaladhPrayerTrackerCardState();
+  State<MaladhPrayerTrackerCard> createState() =>
+      _MaladhPrayerTrackerCardState();
 }
 
 class _MaladhPrayerTrackerCardState extends State<MaladhPrayerTrackerCard> {
-  // Mutable prayer schedule list initialized cleanly without unmodifiable list locks
   late List<PrayerTimeItem> _prayers;
 
   @override
@@ -117,7 +114,7 @@ class _MaladhPrayerTrackerCardState extends State<MaladhPrayerTrackerCard> {
 
   @override
   Widget build(BuildContext context) {
-    // Count completed mandatory prayers (excluding sunrise)
+    final colors = context.colors;
     final mandatoryPrayers = _prayers.where((p) => p.id != 'sunrise').toList();
     final completedCount = mandatoryPrayers.where((p) => p.isCompleted).length;
 
@@ -136,16 +133,12 @@ class _MaladhPrayerTrackerCardState extends State<MaladhPrayerTrackerCard> {
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    HugeIcon(
-                      icon: HugeIcons.strokeRoundedClock01,
-                      color: AppColors.champagneGold,
-                      size: 19.r,
-                    ),
+                    Icon(Iconsax.clock, color: colors.accentGold, size: 19.r),
                     SizedBox(width: 8.w),
                     Text(
                       'مَوَاقِيتُ الصَّلَاةِ',
                       style: AppTextStyles.titleMedium.copyWith(
-                        color: AppColors.pureChalk,
+                        color: colors.textPrimary,
                         fontSize: 14.5.sp,
                         fontWeight: FontWeight.bold,
                       ),
@@ -157,12 +150,12 @@ class _MaladhPrayerTrackerCardState extends State<MaladhPrayerTrackerCard> {
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 9.w, vertical: 4.h),
                   decoration: BoxDecoration(
-                    color: AppColors.carbonSlate,
+                    color: colors.surfaceElevated,
                     borderRadius: BorderRadius.circular(12.r),
                     border: Border.all(
                       color: completedCount == 5
-                          ? AppColors.emeraldGlow
-                          : AppColors.goldBorderStroke,
+                          ? colors.accentEmerald
+                          : colors.borderHairline,
                       width: 1.r,
                     ),
                   ),
@@ -170,8 +163,8 @@ class _MaladhPrayerTrackerCardState extends State<MaladhPrayerTrackerCard> {
                     'أُدِّيَت $completedCount من 5',
                     style: AppTextStyles.caption.copyWith(
                       color: completedCount == 5
-                          ? AppColors.emeraldGlow
-                          : AppColors.champagneGold,
+                          ? colors.accentEmerald
+                          : colors.accentGold,
                       fontWeight: FontWeight.w700,
                       fontSize: 11.sp,
                     ),
@@ -209,27 +202,20 @@ class _MaladhPrayerTrackerCardState extends State<MaladhPrayerTrackerCard> {
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    HugeIcon(
-                      icon: HugeIcons.strokeRoundedTouch01,
-                      color: AppColors.champagneGold,
+                    Icon(
+                      Iconsax.finger_cricle,
+                      color: colors.accentGold,
                       size: 13.r,
                     ),
                     SizedBox(width: 5.w),
                     Text(
                       'اضغط لتحديد (أُدِّيَت ✓ / لم تُؤَدَّ) • المس الدائرة للتبديل السريع',
                       style: AppTextStyles.caption.copyWith(
-                        color: AppColors.mutedSilver,
-                        fontSize: 10.sp,
+                        color: colors.textSecondary,
+                        fontSize: 10.5.sp,
                       ),
                     ),
                   ],
-                ),
-                Text(
-                  'توقيت القاهرة',
-                  style: AppTextStyles.caption.copyWith(
-                    color: AppColors.mutedSilver,
-                    fontSize: 10.5.sp,
-                  ),
                 ),
               ],
             ),
@@ -240,8 +226,6 @@ class _MaladhPrayerTrackerCardState extends State<MaladhPrayerTrackerCard> {
   }
 }
 
-/// An individual prayer slot presenting the name, status checkmark or pending circle,
-/// and English numeral clock time.
 class _PrayerSlotItem extends StatelessWidget {
   final PrayerTimeItem prayer;
   final VoidCallback onTap;
@@ -255,6 +239,7 @@ class _PrayerSlotItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
     final isNext = prayer.isNext;
     final isCompleted = prayer.isCompleted;
 
@@ -264,18 +249,20 @@ class _PrayerSlotItem extends StatelessWidget {
         onTap: onTap,
         onLongPress: onQuickToggle,
         borderRadius: BorderRadius.circular(14.r),
-        splashColor: AppColors.goldGlowSoft,
+        splashColor: colors.accentGold.withValues(alpha: 0.1),
         child: Container(
           padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 8.h),
           decoration: BoxDecoration(
             color: isCompleted
-                ? const Color(0x1F10B981)
-                : (isNext ? const Color(0x22D4AF37) : AppColors.surfaceElevated),
+                ? colors.accentEmerald.withValues(alpha: 0.15)
+                : (isNext
+                      ? colors.accentGold.withValues(alpha: 0.18)
+                      : colors.surfaceElevated),
             borderRadius: BorderRadius.circular(14.r),
             border: Border.all(
               color: isCompleted
-                  ? AppColors.emeraldGlow
-                  : (isNext ? AppColors.champagneGold : AppColors.goldBorderStroke),
+                  ? colors.accentEmerald
+                  : (isNext ? colors.accentGold : colors.borderHairline),
               width: 1.r,
             ),
           ),
@@ -289,16 +276,18 @@ class _PrayerSlotItem extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 style: AppTextStyles.caption.copyWith(
                   color: isCompleted
-                      ? AppColors.emeraldGlow
-                      : (isNext ? AppColors.champagneGold : AppColors.pureChalk),
-                  fontWeight: (isNext || isCompleted) ? FontWeight.w800 : FontWeight.w600,
+                      ? colors.accentEmerald
+                      : (isNext ? colors.accentGold : colors.textPrimary),
+                  fontWeight: (isNext || isCompleted)
+                      ? FontWeight.w800
+                      : FontWeight.w600,
                   fontSize: 11.sp,
                 ),
               ),
 
               SizedBox(height: 6.h),
 
-              // Status Badge (Interactive Checkmark ✓ if completed / Empty target ring if pending)
+              // Status Badge
               GestureDetector(
                 onTap: onQuickToggle,
                 behavior: HitTestBehavior.opaque,
@@ -309,32 +298,36 @@ class _PrayerSlotItem extends StatelessWidget {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: isCompleted
-                        ? AppColors.emeraldGlow
-                        : (isNext ? const Color(0x33D4AF37) : Colors.transparent),
+                        ? colors.accentEmerald
+                        : (isNext
+                              ? colors.accentGold.withValues(alpha: 0.2)
+                              : Colors.transparent),
                     border: Border.all(
                       color: isCompleted
-                          ? AppColors.emeraldGlow
-                          : (isNext ? AppColors.champagneGold : AppColors.goldBorderStroke),
+                          ? colors.accentEmerald
+                          : (isNext
+                                ? colors.accentGold
+                                : colors.borderHairline),
                       width: 1.2.r,
                     ),
                   ),
                   child: Center(
                     child: isCompleted
                         ? Icon(
-                            Icons.check_rounded,
-                            color: AppColors.obsidianCore,
+                            Iconsax.tick_circle,
+                            color: colors.background,
                             size: 16.r,
                           )
                         : (isNext
-                            ? Container(
-                                width: 6.r,
-                                height: 6.r,
-                                decoration: const BoxDecoration(
-                                  color: AppColors.champagneGold,
-                                  shape: BoxShape.circle,
-                                ),
-                              )
-                            : const SizedBox.shrink()),
+                              ? Container(
+                                  width: 6.r,
+                                  height: 6.r,
+                                  decoration: BoxDecoration(
+                                    color: colors.accentGold,
+                                    shape: BoxShape.circle,
+                                  ),
+                                )
+                              : const SizedBox.shrink()),
                   ),
                 ),
               ),
@@ -346,8 +339,8 @@ class _PrayerSlotItem extends StatelessWidget {
                 isCompleted ? 'أُدِّيَت' : (isNext ? 'القادمة' : 'لم تُؤَدَّ'),
                 style: AppTextStyles.caption.copyWith(
                   color: isCompleted
-                      ? AppColors.emeraldGlow
-                      : (isNext ? AppColors.champagneGold : AppColors.mutedSilver),
+                      ? colors.accentEmerald
+                      : (isNext ? colors.accentGold : colors.textSecondary),
                   fontSize: 9.sp,
                   fontWeight: isCompleted ? FontWeight.w700 : FontWeight.w500,
                 ),
@@ -355,16 +348,14 @@ class _PrayerSlotItem extends StatelessWidget {
 
               SizedBox(height: 4.h),
 
-              // English Clock Time (Clean English Numerals)
+              // English Clock Time
               FittedBox(
                 fit: BoxFit.scaleDown,
                 child: Text(
                   prayer.timeEnglish.replaceAll(' ', '\n'),
                   textAlign: TextAlign.center,
                   style: AppTextStyles.caption.copyWith(
-                    color: isCompleted
-                        ? AppColors.pureChalk
-                        : (isNext ? AppColors.pureChalk : AppColors.mutedSilver),
+                    color: colors.textPrimary,
                     fontWeight: isNext ? FontWeight.w700 : FontWeight.w600,
                     fontSize: 9.5.sp,
                     height: 1.15,

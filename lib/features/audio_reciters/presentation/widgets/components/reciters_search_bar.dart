@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:sakina_app/core/theme/app_colors.dart';
+import 'package:sakina_app/core/theme/app_colors_scheme.dart';
 import 'package:sakina_app/core/theme/app_spacing.dart';
 
 /// Tactile glass search input for reciters and surahs without drop shadows.
@@ -37,15 +37,17 @@ class _RecitersSearchBarState extends State<RecitersSearchBar> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
+
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.w),
       child: Container(
         height: 48.h,
         decoration: BoxDecoration(
-          color: AppColors.carbonSlate,
+          color: colors.cardSurface,
           borderRadius: AppSpacing.radiusMd,
           border: Border.all(
-            color: AppColors.goldBorderStroke,
+            color: colors.borderHairline,
             width: 1.r,
           ),
         ),
@@ -54,7 +56,7 @@ class _RecitersSearchBarState extends State<RecitersSearchBar> {
           children: [
             Icon(
               Iconsax.search_normal_1,
-              color: AppColors.champagneGold,
+              color: colors.accentGold,
               size: 20.r,
             ),
             SizedBox(width: 10.w),
@@ -63,14 +65,14 @@ class _RecitersSearchBarState extends State<RecitersSearchBar> {
                 controller: _controller,
                 textAlignVertical: TextAlignVertical.center,
                 style: GoogleFonts.cairo(
-                  color: AppColors.pureChalk,
+                  color: colors.textPrimary,
                   fontSize: 14.sp,
                   fontWeight: FontWeight.w600,
                 ),
                 decoration: InputDecoration(
                   hintText: 'ابحث عن قارئ أو سورة...',
                   hintStyle: GoogleFonts.cairo(
-                    color: AppColors.mutedSilver,
+                    color: colors.textSecondary,
                     fontSize: 13.sp,
                     fontWeight: FontWeight.w500,
                   ),
@@ -91,10 +93,13 @@ class _RecitersSearchBarState extends State<RecitersSearchBar> {
                   setState(() {});
                   widget.onClear();
                 },
-                child: Icon(
-                  Iconsax.close_circle,
-                  color: AppColors.mutedSilver,
-                  size: 18.r,
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 4.w),
+                  child: Icon(
+                    Iconsax.close_circle,
+                    size: 18.r,
+                    color: colors.textSecondary,
+                  ),
                 ),
               ),
           ],

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:hugeicons/hugeicons.dart';
-import 'package:sakina_app/core/theme/app_colors.dart';
+import 'package:iconsax/iconsax.dart';
+import 'package:sakina_app/core/theme/app_colors_scheme.dart';
 import 'package:sakina_app/core/theme/app_text_styles.dart';
 
 /// Section header for "بَوَّابَاتُ السَّكِينَةِ" with compass emblem and direct access tag.
@@ -15,6 +15,8 @@ class MaladhPortalsHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
+
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 4.h),
       child: Row(
@@ -24,9 +26,9 @@ class MaladhPortalsHeader extends StatelessWidget {
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              HugeIcon(
-                icon: HugeIcons.strokeRoundedCompass,
-                color: AppColors.champagneGold,
+              Icon(
+                Iconsax.discover_1,
+                color: colors.accentGold,
                 size: 20.r,
               ),
               SizedBox(width: 8.w),
@@ -34,7 +36,7 @@ class MaladhPortalsHeader extends StatelessWidget {
                 'بَوَّابَاتُ السَّكِينَةِ',
                 style: AppTextStyles.titleLarge.copyWith(
                   fontSize: 17.sp,
-                  color: AppColors.champagneGold,
+                  color: colors.accentGold,
                   fontWeight: FontWeight.w800,
                 ),
               ),
@@ -50,7 +52,7 @@ class MaladhPortalsHeader extends StatelessWidget {
               child: Text(
                 'الوصول المباشر',
                 style: AppTextStyles.caption.copyWith(
-                  color: AppColors.mutedSilver,
+                  color: colors.textSecondary,
                   fontSize: 11.5.sp,
                 ),
               ),

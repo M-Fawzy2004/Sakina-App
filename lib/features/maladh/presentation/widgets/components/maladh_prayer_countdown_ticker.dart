@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:sakina_app/core/theme/app_colors.dart';
+import 'package:sakina_app/core/theme/app_colors_scheme.dart';
 import 'package:sakina_app/core/theme/app_text_styles.dart';
 
 /// Reactive live countdown ticker actively updating remaining time
@@ -56,6 +56,7 @@ class _MaladhPrayerCountdownTickerState extends State<MaladhPrayerCountdownTicke
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
     final hours = _remainingDuration.inHours;
     final minutes = _remainingDuration.inMinutes % 60;
     final seconds = _remainingDuration.inSeconds % 60;
@@ -73,8 +74,8 @@ class _MaladhPrayerCountdownTickerState extends State<MaladhPrayerCountdownTicke
         Container(
           width: 7.r,
           height: 7.r,
-          decoration: const BoxDecoration(
-            color: AppColors.emeraldGlow,
+          decoration: BoxDecoration(
+            color: colors.accentEmerald,
             shape: BoxShape.circle,
           ),
         ),
@@ -83,7 +84,7 @@ class _MaladhPrayerCountdownTickerState extends State<MaladhPrayerCountdownTicke
         Text(
           '${widget.prayerName}: $countdownText',
           style: AppTextStyles.caption.copyWith(
-            color: AppColors.paleRadiance,
+            color: colors.textPrimary,
             fontWeight: FontWeight.w700,
             fontSize: 11.5.sp,
             letterSpacing: 0.5,
@@ -93,4 +94,3 @@ class _MaladhPrayerCountdownTickerState extends State<MaladhPrayerCountdownTicke
     );
   }
 }
-

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_islamic_icons/flutter_islamic_icons.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hugeicons/hugeicons.dart';
-import 'package:sakina_app/core/theme/app_colors.dart';
+import 'package:sakina_app/core/theme/app_colors_scheme.dart';
 import 'package:sakina_app/core/widgets/navigation/sakina_nav_item.dart';
 
 class SakinaBottomNavBar extends StatelessWidget {
@@ -18,6 +18,8 @@ class SakinaBottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
+
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Container(
@@ -33,10 +35,10 @@ class SakinaBottomNavBar extends StatelessWidget {
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 6.w),
               decoration: BoxDecoration(
-                color: AppColors.carbonSlate.withValues(alpha: 0.92),
+                color: colors.cardSurface.withValues(alpha: 0.94),
                 borderRadius: BorderRadius.circular(36.r),
                 border: Border.all(
-                  color: AppColors.goldBorderStroke,
+                  color: colors.borderHairline,
                   width: 1.r,
                 ),
               ),
@@ -54,8 +56,8 @@ class SakinaBottomNavBar extends StatelessWidget {
                           : FlutterIslamicIcons.crescentMoon,
                       size: 24.r,
                       color: currentIndex == 0
-                          ? AppColors.champagneGold
-                          : AppColors.mutedSilver,
+                          ? colors.accentGold
+                          : colors.textSecondary,
                     ),
                   ),
 
@@ -70,8 +72,8 @@ class SakinaBottomNavBar extends StatelessWidget {
                           : FlutterIslamicIcons.quran2,
                       size: 23.r,
                       color: currentIndex == 1
-                          ? AppColors.champagneGold
-                          : AppColors.mutedSilver,
+                          ? colors.accentGold
+                          : colors.textSecondary,
                     ),
                   ),
 
@@ -83,8 +85,8 @@ class SakinaBottomNavBar extends StatelessWidget {
                     iconWidget: HugeIcon(
                       icon: HugeIcons.strokeRoundedAudioWaveform,
                       color: currentIndex == 2
-                          ? AppColors.champagneGold
-                          : AppColors.mutedSilver,
+                          ? colors.accentGold
+                          : colors.textSecondary,
                       size: 23.r,
                     ),
                   ),
@@ -97,8 +99,8 @@ class SakinaBottomNavBar extends StatelessWidget {
                     iconWidget: HugeIcon(
                       icon: HugeIcons.strokeRoundedFlower01,
                       color: currentIndex == 3
-                          ? AppColors.champagneGold
-                          : AppColors.mutedSilver,
+                          ? colors.accentGold
+                          : colors.textSecondary,
                       size: 23.r,
                     ),
                   ),
@@ -111,8 +113,8 @@ class SakinaBottomNavBar extends StatelessWidget {
                     iconWidget: HugeIcon(
                       icon: HugeIcons.strokeRoundedSlidersHorizontal,
                       color: currentIndex == 4
-                          ? AppColors.champagneGold
-                          : AppColors.mutedSilver,
+                          ? colors.accentGold
+                          : colors.textSecondary,
                       size: 23.r,
                     ),
                   ),

@@ -8,6 +8,7 @@ import 'package:sakina_app/features/onboarding/presentation/widgets/onboarding_s
 import 'package:sakina_app/features/quran_reading/domain/entities/surah_entity.dart';
 import 'package:sakina_app/features/quran_reading/presentation/widgets/quran_screen.dart';
 import 'package:sakina_app/features/quran_reading/presentation/widgets/surah_reader_screen.dart';
+import 'package:sakina_app/features/settings/presentation/widgets/settings_screen.dart';
 import 'package:sakina_app/features/splash/presentation/widgets/splash_screen.dart';
 
 final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -102,11 +103,7 @@ final GoRouter appRouter = GoRouter(
           routes: [
             GoRoute(
               path: AppRoutes.settings,
-              builder: (context, state) => const Scaffold(
-                body: Center(
-                  child: Text('الإِعْدَادَاتُ'),
-                ),
-              ),
+              builder: (context, state) => const SettingsScreen(),
             ),
           ],
         ),

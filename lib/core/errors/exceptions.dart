@@ -6,7 +6,8 @@ abstract class AppException implements Exception {
   const AppException({required this.message, this.statusCode});
 
   @override
-  String toString() => '$runtimeType(message: $message, statusCode: $statusCode)';
+  String toString() =>
+      '$runtimeType(message: $message, statusCode: $statusCode)';
 }
 
 /// Thrown when remote API communication fails or returns non-2xx status.

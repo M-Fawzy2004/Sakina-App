@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:sakina_app/core/theme/app_colors.dart';
+import 'package:sakina_app/core/theme/app_colors_scheme.dart';
 import 'package:sakina_app/core/theme/app_text_styles.dart';
 import 'package:sakina_app/features/quran_reading/domain/entities/surah_entity.dart';
 import 'package:sakina_app/features/quran_reading/presentation/widgets/components/quran_surah_mockup_card.dart';
@@ -18,6 +18,8 @@ class QuranSurahsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
+
     if (surahs.isEmpty) {
       return SliverToBoxAdapter(
         child: Padding(
@@ -26,7 +28,7 @@ class QuranSurahsList extends StatelessWidget {
             child: Text(
               'لم يتم العثور على سور مطابقة للبحث',
               style: AppTextStyles.bodyMedium.copyWith(
-                color: AppColors.mutedSilver,
+                color: colors.textSecondary,
                 fontSize: 13.sp,
               ),
             ),

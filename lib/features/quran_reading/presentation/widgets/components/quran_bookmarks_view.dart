@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:hugeicons/hugeicons.dart';
-import 'package:sakina_app/core/theme/app_colors.dart';
+import 'package:iconsax/iconsax.dart';
+import 'package:sakina_app/core/theme/app_colors_scheme.dart';
 import 'package:sakina_app/core/theme/app_spacing.dart';
 import 'package:sakina_app/core/theme/app_text_styles.dart';
 import 'package:sakina_app/core/utils/haptic_service.dart';
@@ -20,6 +20,8 @@ class QuranBookmarksView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
+
     if (lastReadBookmark == null) {
       return Center(
         child: Padding(
@@ -27,16 +29,16 @@ class QuranBookmarksView extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              HugeIcon(
-                icon: HugeIcons.strokeRoundedBookmark02,
-                color: AppColors.mutedSilver,
+              Icon(
+                Iconsax.bookmark,
+                color: colors.textSecondary,
                 size: 40.r,
               ),
               AppSpacing.verticalMd,
               Text(
                 'لا توجد علامات محفوظة بعد',
                 style: AppTextStyles.titleMedium.copyWith(
-                  color: AppColors.pureChalk,
+                  color: colors.textPrimary,
                   fontWeight: FontWeight.w700,
                   fontSize: 15.sp,
                 ),
@@ -46,7 +48,7 @@ class QuranBookmarksView extends StatelessWidget {
                 'اضغط على أي آية أثناء القراءة لحفظ موضعك والرجوع إليه بسهولة',
                 textAlign: TextAlign.center,
                 style: AppTextStyles.caption.copyWith(
-                  color: AppColors.mutedSilver,
+                  color: colors.textSecondary,
                   fontSize: 12.sp,
                 ),
               ),
@@ -67,7 +69,7 @@ class QuranBookmarksView extends StatelessWidget {
           child: Text(
             'مَوْضِعُ القِرَاءَةِ الحَالِيّ',
             style: AppTextStyles.caption.copyWith(
-              color: AppColors.champagneGold,
+              color: colors.accentGold,
               fontWeight: FontWeight.w700,
               fontSize: 12.sp,
             ),
@@ -83,14 +85,13 @@ class QuranBookmarksView extends StatelessWidget {
               onBookmarkTap(bookmark);
             },
             borderRadius: BorderRadius.circular(16.r),
-            splashColor: AppColors.emeraldGlow.withValues(alpha: 0.2),
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
               decoration: BoxDecoration(
-                color: AppColors.surfaceElevated,
+                color: colors.cardSurface,
                 borderRadius: BorderRadius.circular(16.r),
                 border: Border.all(
-                  color: AppColors.emeraldGlow,
+                  color: colors.accentEmerald,
                   width: 1.r,
                 ),
               ),
@@ -101,17 +102,17 @@ class QuranBookmarksView extends StatelessWidget {
                     height: 42.r,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: const Color(0x2210B981),
+                      color: colors.accentEmerald.withValues(alpha: 0.12),
                       border: Border.all(
-                        color: AppColors.emeraldGlow,
+                        color: colors.accentEmerald,
                         width: 1.r,
                       ),
                     ),
                     child: Center(
-                      child: HugeIcon(
-                        icon: HugeIcons.strokeRoundedBookmark02,
-                        color: AppColors.emeraldGlow,
-                        size: 22.r,
+                      child: Icon(
+                        Iconsax.bookmark,
+                        color: colors.accentEmerald,
+                        size: 20.r,
                       ),
                     ),
                   ),
@@ -123,7 +124,7 @@ class QuranBookmarksView extends StatelessWidget {
                         Text(
                           bookmark.surahName,
                           style: AppTextStyles.titleMedium.copyWith(
-                            color: AppColors.pureChalk,
+                            color: colors.textPrimary,
                             fontWeight: FontWeight.w700,
                             fontSize: 15.sp,
                           ),
@@ -132,7 +133,7 @@ class QuranBookmarksView extends StatelessWidget {
                         Text(
                           'الآية ${bookmark.ayahNumber} • ص ${bookmark.pageNumber}',
                           style: AppTextStyles.caption.copyWith(
-                            color: AppColors.mutedSilver,
+                            color: colors.textSecondary,
                             fontSize: 11.5.sp,
                           ),
                         ),
@@ -142,13 +143,13 @@ class QuranBookmarksView extends StatelessWidget {
                   Container(
                     padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
                     decoration: BoxDecoration(
-                      color: AppColors.champagneGold,
+                      color: colors.accentGold,
                       borderRadius: BorderRadius.circular(10.r),
                     ),
                     child: Text(
                       'مُتَابَعَة',
                       style: AppTextStyles.caption.copyWith(
-                        color: AppColors.obsidianCore,
+                        color: colors.background,
                         fontWeight: FontWeight.w800,
                         fontSize: 11.sp,
                       ),

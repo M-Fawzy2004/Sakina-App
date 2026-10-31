@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:sakina_app/core/theme/app_colors.dart';
+import 'package:iconsax/iconsax.dart';
+import 'package:sakina_app/core/theme/app_colors_scheme.dart';
 import 'package:sakina_app/core/theme/app_spacing.dart';
 import 'package:sakina_app/core/theme/app_text_styles.dart';
 import 'package:sakina_app/core/utils/haptic_service.dart';
@@ -37,6 +38,8 @@ class _MaladhFeaturedRecitationCardState
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
+
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.w),
       child: TactileGlassCard(
@@ -55,8 +58,8 @@ class _MaladhFeaturedRecitationCardState
                     Container(
                       width: 8.r,
                       height: 8.r,
-                      decoration: const BoxDecoration(
-                        color: AppColors.emeraldGlow,
+                      decoration: BoxDecoration(
+                        color: colors.accentEmerald,
                         shape: BoxShape.circle,
                       ),
                     ),
@@ -64,7 +67,7 @@ class _MaladhFeaturedRecitationCardState
                     Text(
                       'تِلَاوَةُ اللَّحْظَةِ المُخْتَارَةِ',
                       style: AppTextStyles.titleMedium.copyWith(
-                        color: AppColors.pureChalk,
+                        color: colors.textPrimary,
                         fontSize: 14.5.sp,
                         fontWeight: FontWeight.bold,
                       ),
@@ -76,17 +79,17 @@ class _MaladhFeaturedRecitationCardState
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
                   decoration: BoxDecoration(
-                    color: const Color(0x2210B981),
+                    color: colors.accentEmerald.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(14.r),
                     border: Border.all(
-                      color: const Color(0x5510B981),
+                      color: colors.accentEmerald.withValues(alpha: 0.35),
                       width: 1.r,
                     ),
                   ),
                   child: Text(
                     'نَادِرَةٌ وَمُؤَثِّرَةٌ',
                     style: AppTextStyles.caption.copyWith(
-                      color: AppColors.emeraldGlow,
+                      color: colors.accentEmerald,
                       fontWeight: FontWeight.w700,
                       fontSize: 10.5.sp,
                     ),
@@ -101,10 +104,10 @@ class _MaladhFeaturedRecitationCardState
             Container(
               padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
               decoration: BoxDecoration(
-                color: AppColors.carbonSlate,
+                color: colors.surfaceElevated,
                 borderRadius: BorderRadius.circular(16.r),
                 border: Border.all(
-                  color: AppColors.goldBorderStroke,
+                  color: colors.borderHairline,
                   width: 1.r,
                 ),
               ),
@@ -117,7 +120,7 @@ class _MaladhFeaturedRecitationCardState
                     style: AppTextStyles.quranAyah.copyWith(
                       fontSize: 18.sp,
                       height: 1.8,
-                      color: AppColors.champagneGold,
+                      color: colors.accentGold,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -127,7 +130,7 @@ class _MaladhFeaturedRecitationCardState
                     'سُورَةُ البَقَرَةِ • الآيَة 186 • بِصَوْتِ الشَّيْخِ عَبْدِ البَاسِطِ عَبْدِ الصَّمَدِ',
                     textAlign: TextAlign.center,
                     style: AppTextStyles.caption.copyWith(
-                      color: AppColors.mutedSilver,
+                      color: colors.textSecondary,
                       fontSize: 10.5.sp,
                     ),
                   ),
@@ -151,7 +154,7 @@ class _MaladhFeaturedRecitationCardState
                 Text(
                   '04:18',
                   style: AppTextStyles.caption.copyWith(
-                    color: AppColors.mutedSilver,
+                    color: colors.textSecondary,
                     fontSize: 12.sp,
                     fontWeight: FontWeight.w600,
                   ),
@@ -163,19 +166,18 @@ class _MaladhFeaturedRecitationCardState
                   child: InkWell(
                     onTap: _togglePlayback,
                     customBorder: const CircleBorder(),
-                    splashColor: AppColors.goldGlowSoft,
                     child: Container(
                       width: 52.r,
                       height: 52.r,
-                      decoration: const BoxDecoration(
-                        color: AppColors.emeraldGlow,
+                      decoration: BoxDecoration(
+                        color: colors.accentEmerald,
                         shape: BoxShape.circle,
                       ),
                       child: Center(
                         child: Icon(
-                          _isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
-                          color: AppColors.obsidianCore,
-                          size: 28.r,
+                          _isPlaying ? Iconsax.pause : Iconsax.play,
+                          color: colors.background,
+                          size: 24.r,
                         ),
                       ),
                     ),
@@ -186,7 +188,7 @@ class _MaladhFeaturedRecitationCardState
                 Text(
                   '07:30',
                   style: AppTextStyles.caption.copyWith(
-                    color: AppColors.mutedSilver,
+                    color: colors.textSecondary,
                     fontSize: 12.sp,
                     fontWeight: FontWeight.w600,
                   ),

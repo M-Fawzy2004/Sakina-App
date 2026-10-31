@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_islamic_icons/flutter_islamic_icons.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:sakina_app/core/theme/app_colors.dart';
+import 'package:sakina_app/core/theme/app_colors_scheme.dart';
 import 'package:sakina_app/core/theme/app_text_styles.dart';
 import 'package:sakina_app/core/utils/haptic_service.dart';
 import 'package:sakina_app/core/utils/surah_metadata_utils.dart';
@@ -12,7 +12,7 @@ import 'package:sakina_app/features/quran_reading/domain/entities/surah_entity.d
 /// - Beside ID: English Surah Name in Emerald Glow (Al-Fatihah, Al-Baqarah...)
 /// - Subtitle: English translation/meaning + Revelation icon (Kaaba for Makki / Mosque for Madani)
 /// - Right: Authentic Classical Arabic calligraphic title in Amiri font («سُورَةُ الفَاتِحَةِ»)
-/// - Styled in luxury Obsidian & Champagne Gold tokens with 1px hairline border.
+/// - Styled in tactile luxury surface tokens with 1px hairline border.
 class QuranSurahMockupCard extends StatelessWidget {
   final SurahEntity surah;
   final VoidCallback onTap;
@@ -25,6 +25,7 @@ class QuranSurahMockupCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
     final englishTranslation =
         SurahMetadataUtils.getEnglishTranslation(surah.id);
     final calligraphicTitle =
@@ -42,15 +43,14 @@ class QuranSurahMockupCard extends StatelessWidget {
             onTap();
           },
           borderRadius: BorderRadius.circular(16.r),
-          splashColor: AppColors.goldGlowSoft,
           highlightColor: Colors.transparent,
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
             decoration: BoxDecoration(
-              color: AppColors.surfaceElevated,
+              color: colors.cardSurface,
               borderRadius: BorderRadius.circular(16.r),
               border: Border.all(
-                color: AppColors.goldBorderStroke.withValues(alpha: 0.28),
+                color: colors.borderHairline,
                 width: 1.r,
               ),
             ),
@@ -64,7 +64,9 @@ class QuranSurahMockupCard extends StatelessWidget {
                     child: Text(
                       '${surah.id}',
                       textAlign: TextAlign.start,
-                      style: AppTextStyles.surahCardIndex,
+                      style: AppTextStyles.surahCardIndex.copyWith(
+                        color: colors.textPrimary,
+                      ),
                     ),
                   ),
 
@@ -80,7 +82,9 @@ class QuranSurahMockupCard extends StatelessWidget {
                           surah.englishName,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: AppTextStyles.surahCardEnglishTitle,
+                          style: AppTextStyles.surahCardEnglishTitle.copyWith(
+                            color: colors.accentEmerald,
+                          ),
                         ),
                         SizedBox(height: 2.h),
                         Row(
@@ -91,7 +95,9 @@ class QuranSurahMockupCard extends StatelessWidget {
                                 englishTranslation,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
-                                style: AppTextStyles.surahCardEnglishSubtitle,
+                                style: AppTextStyles.surahCardEnglishSubtitle.copyWith(
+                                  color: colors.textSecondary,
+                                ),
                               ),
                             ),
                             SizedBox(width: 5.w),
@@ -100,7 +106,7 @@ class QuranSurahMockupCard extends StatelessWidget {
                                   ? FlutterIslamicIcons.solidKaaba
                                   : FlutterIslamicIcons.locationMosque,
                               size: 11.r,
-                              color: AppColors.mutedSilver,
+                              color: colors.textSecondary,
                             ),
                           ],
                         ),
@@ -116,7 +122,9 @@ class QuranSurahMockupCard extends StatelessWidget {
                     child: Text(
                       calligraphicTitle,
                       textAlign: TextAlign.end,
-                      style: AppTextStyles.surahCardArabicTitle,
+                      style: AppTextStyles.surahCardArabicTitle.copyWith(
+                        color: colors.accentGold,
+                      ),
                     ),
                   ),
                 ],

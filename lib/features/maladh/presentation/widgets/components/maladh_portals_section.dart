@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_islamic_icons/flutter_islamic_icons.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:hugeicons/hugeicons.dart';
-import 'package:sakina_app/core/theme/app_colors.dart';
+import 'package:iconsax/iconsax.dart';
+import 'package:sakina_app/core/theme/app_colors_scheme.dart';
 import 'package:sakina_app/core/theme/app_spacing.dart';
 import 'package:sakina_app/features/maladh/presentation/widgets/components/maladh_portal_card.dart';
 import 'package:sakina_app/features/maladh/presentation/widgets/components/maladh_portals_header.dart';
@@ -26,6 +26,8 @@ class MaladhPortalsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -52,7 +54,7 @@ class MaladhPortalsSection extends StatelessWidget {
                       badgeText: 'ص 531',
                       iconWidget: Icon(
                         FlutterIslamicIcons.solidQuran2,
-                        color: AppColors.champagneGold,
+                        color: colors.accentGold,
                         size: 20.r,
                       ),
                       onTap: onMushafTap,
@@ -68,10 +70,10 @@ class MaladhPortalsSection extends StatelessWidget {
                       subtitle: 'استماع نقي بدون إنترنت',
                       badgeText: 'محفوظ',
                       isEmerald: true,
-                      iconWidget: HugeIcon(
-                        icon: HugeIcons.strokeRoundedAudioWaveform,
-                        color: AppColors.emeraldGlow,
-                        size: 19.r,
+                      iconWidget: Icon(
+                        Iconsax.volume_high,
+                        color: colors.accentEmerald,
+                        size: 20.r,
                       ),
                       onTap: onMaqraTap,
                     ),
@@ -90,10 +92,10 @@ class MaladhPortalsSection extends StatelessWidget {
                       title: 'صَانِعُ بِطَاقَاتِ الآيَاتِ',
                       subtitle: 'تصميم بدقة 4K للمشاركة',
                       badgeText: 'مشاركة',
-                      iconWidget: HugeIcon(
-                        icon: HugeIcons.strokeRoundedPaintBoard,
-                        color: AppColors.champagneGold,
-                        size: 19.r,
+                      iconWidget: Icon(
+                        Iconsax.brush_1,
+                        color: colors.accentGold,
+                        size: 20.r,
                       ),
                       onTap: onCardMakerTap,
                     ),
@@ -108,10 +110,10 @@ class MaladhPortalsSection extends StatelessWidget {
                       subtitle: 'تسبيح لمسي تفاعلي',
                       badgeText: '33',
                       isEmerald: true,
-                      iconWidget: HugeIcon(
-                        icon: HugeIcons.strokeRoundedTouch01,
-                        color: AppColors.emeraldGlow,
-                        size: 19.r,
+                      iconWidget: Icon(
+                        Iconsax.finger_cricle,
+                        color: colors.accentEmerald,
+                        size: 20.r,
                       ),
                       onTap: onAthkarTap,
                     ),

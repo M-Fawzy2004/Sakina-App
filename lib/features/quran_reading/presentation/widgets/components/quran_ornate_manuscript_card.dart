@@ -225,6 +225,8 @@ class _AyahRow extends StatelessWidget {
                 QuranIslamicRosetteBadge(
                   number: ayah.numberInSurah,
                   isHighlighted: isSelected,
+                  color: isSelected ? theme.accentColor : theme.accentColor.withValues(alpha: 0.9),
+                  backgroundColor: theme.cardColor,
                   size: 38.r,
                 ),
 
@@ -354,6 +356,8 @@ class _ContinuousManuscriptFlowState extends State<_ContinuousManuscriptFlow> {
               child: QuranIslamicRosetteBadge(
                 number: ayah.numberInSurah,
                 isHighlighted: isSelected,
+                color: isSelected ? theme.accentColor : theme.accentColor.withValues(alpha: 0.9),
+                backgroundColor: theme.cardColor,
                 size: 26.r,
               ),
             ),

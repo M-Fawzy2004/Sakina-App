@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_islamic_icons/flutter_islamic_icons.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:hugeicons/hugeicons.dart';
-import 'package:sakina_app/core/theme/app_colors.dart';
+import 'package:iconsax/iconsax.dart';
+import 'package:sakina_app/core/theme/app_colors_scheme.dart';
 import 'package:sakina_app/core/theme/app_spacing.dart';
 import 'package:sakina_app/core/theme/app_text_styles.dart';
 import 'package:sakina_app/core/utils/haptic_service.dart';
@@ -23,6 +23,8 @@ class MaladhContinueQuranCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
+
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.w),
       child: TactileGlassCard(
@@ -38,10 +40,10 @@ class MaladhContinueQuranCard extends StatelessWidget {
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 5.h),
                   decoration: BoxDecoration(
-                    color: AppColors.carbonSlate,
+                    color: colors.surfaceElevated,
                     borderRadius: BorderRadius.circular(16.r),
                     border: Border.all(
-                      color: AppColors.goldBorderStroke,
+                      color: colors.borderHairline,
                       width: 1.r,
                     ),
                   ),
@@ -51,8 +53,8 @@ class MaladhContinueQuranCard extends StatelessWidget {
                       Container(
                         width: 6.r,
                         height: 6.r,
-                        decoration: const BoxDecoration(
-                          color: AppColors.champagneGold,
+                        decoration: BoxDecoration(
+                          color: colors.accentGold,
                           shape: BoxShape.circle,
                         ),
                       ),
@@ -60,7 +62,7 @@ class MaladhContinueQuranCard extends StatelessWidget {
                       Text(
                         'واصل وردك القرآني',
                         style: AppTextStyles.caption.copyWith(
-                          color: AppColors.champagneGold,
+                          color: colors.accentGold,
                           fontWeight: FontWeight.w700,
                           fontSize: 11.5.sp,
                         ),
@@ -79,7 +81,7 @@ class MaladhContinueQuranCard extends StatelessWidget {
               textAlign: TextAlign.start,
               style: AppTextStyles.headlineLarge.copyWith(
                 fontSize: 27.sp,
-                color: AppColors.champagneGold,
+                color: colors.accentGold,
                 height: 1.3,
               ),
             ),
@@ -91,7 +93,7 @@ class MaladhContinueQuranCard extends StatelessWidget {
               'الآية 27 • الجزء السابع والعشرون',
               textAlign: TextAlign.start,
               style: AppTextStyles.bodyMedium.copyWith(
-                color: AppColors.mutedSilver,
+                color: colors.textSecondary,
                 fontSize: 12.sp,
               ),
             ),
@@ -102,10 +104,10 @@ class MaladhContinueQuranCard extends StatelessWidget {
             Container(
               padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
               decoration: BoxDecoration(
-                color: AppColors.carbonSlate,
+                color: colors.surfaceElevated,
                 borderRadius: BorderRadius.circular(16.r),
                 border: Border.all(
-                  color: AppColors.goldBorderStroke,
+                  color: colors.borderHairline,
                   width: 1.r,
                 ),
               ),
@@ -121,16 +123,16 @@ class MaladhContinueQuranCard extends StatelessWidget {
                           height: 40.r,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: AppColors.surfaceElevated,
+                            color: colors.cardSurface,
                             border: Border.all(
-                              color: AppColors.emeraldGlow,
+                              color: colors.accentEmerald,
                               width: 1.5.r,
                             ),
                           ),
                           child: Center(
                             child: Icon(
                               FlutterIslamicIcons.quran2,
-                              color: AppColors.champagneGold,
+                              color: colors.accentGold,
                               size: 18.r,
                             ),
                           ),
@@ -150,7 +152,7 @@ class MaladhContinueQuranCard extends StatelessWidget {
                                 overflow: TextOverflow.ellipsis,
                                 style: AppTextStyles.titleMedium.copyWith(
                                   fontSize: 12.5.sp,
-                                  color: AppColors.pureChalk,
+                                  color: colors.textPrimary,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -158,10 +160,10 @@ class MaladhContinueQuranCard extends StatelessWidget {
                               Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  HugeIcon(
-                                    icon: HugeIcons.strokeRoundedHeadphones,
-                                    color: AppColors.champagneGold,
-                                    size: 12.r,
+                                  Icon(
+                                    Iconsax.headphone,
+                                    color: colors.accentGold,
+                                    size: 13.r,
                                   ),
                                   SizedBox(width: 4.w),
                                   Flexible(
@@ -170,7 +172,7 @@ class MaladhContinueQuranCard extends StatelessWidget {
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                       style: AppTextStyles.caption.copyWith(
-                                        color: AppColors.mutedSilver,
+                                        color: colors.textSecondary,
                                         fontSize: 10.5.sp,
                                       ),
                                     ),
@@ -198,23 +200,16 @@ class MaladhContinueQuranCard extends StatelessWidget {
                       child: Container(
                         padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 7.h),
                         decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [
-                              AppColors.paleRadiance,
-                              AppColors.champagneGold,
-                            ],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
+                          color: colors.accentGold,
                           borderRadius: BorderRadius.circular(20.r),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Icon(
-                              Icons.play_arrow_rounded,
-                              color: AppColors.obsidianCore,
-                              size: 18.r,
+                              Iconsax.play,
+                              color: colors.background,
+                              size: 16.r,
                             ),
                             SizedBox(width: 4.w),
                             Text(
@@ -222,6 +217,7 @@ class MaladhContinueQuranCard extends StatelessWidget {
                               style: AppTextStyles.button.copyWith(
                                 fontSize: 11.5.sp,
                                 fontWeight: FontWeight.bold,
+                                color: colors.background,
                               ),
                             ),
                           ],

@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:sakina_app/core/constants/app_assets.dart';
 import 'package:sakina_app/core/theme/app_colors.dart';
+import 'package:sakina_app/core/theme/app_colors_scheme.dart';
 import 'package:sakina_app/core/theme/app_text_styles.dart';
 import 'package:sakina_app/core/utils/haptic_service.dart';
 import 'package:sakina_app/features/quran_reading/domain/entities/ayah_entity.dart';
@@ -54,6 +55,18 @@ class _QuranReaderViewState extends State<QuranReaderView> {
   int? _selectedAyahNumber;
   Timer? _autoScrollTimer;
   bool _isAutoScrollPaused = false;
+  bool _hasThemeInitialized = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_hasThemeInitialized) {
+      _hasThemeInitialized = true;
+      if (!context.isDark && _preferences.theme == QuranReaderTheme.obsidian) {
+        _preferences = _preferences.copyWith(theme: QuranReaderTheme.parchment);
+      }
+    }
+  }
 
   @override
   void dispose() {
@@ -101,6 +114,7 @@ class _QuranReaderViewState extends State<QuranReaderView> {
 
   void _toggleBookmark() {
     final activeAyah = _selectedAyahNumber ?? 1;
+    final activeTheme = _preferences.theme;
 
     widget.onBookmarkSaved(
       QuranBookmarkEntity(
@@ -114,12 +128,12 @@ class _QuranReaderViewState extends State<QuranReaderView> {
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        backgroundColor: AppColors.carbonSlate,
+        backgroundColor: activeTheme.cardColor,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12.r),
           side: BorderSide(
-            color: _preferences.theme.accentColor,
+            color: activeTheme.accentColor,
             width: 1.r,
           ),
         ),
@@ -127,7 +141,7 @@ class _QuranReaderViewState extends State<QuranReaderView> {
           children: [
             Icon(
               Iconsax.bookmark,
-              color: _preferences.theme.accentColor,
+              color: activeTheme.accentColor,
               size: 18.r,
             ),
             SizedBox(width: 8.w),
@@ -135,7 +149,7 @@ class _QuranReaderViewState extends State<QuranReaderView> {
               child: Text(
                 'تم تثبيت علامة الحفظ عند الآية $activeAyah من سورة ${widget.surah.nameArabic} ✓',
                 style: AppTextStyles.caption.copyWith(
-                  color: _preferences.theme.accentColor,
+                  color: activeTheme.textColor,
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -148,6 +162,7 @@ class _QuranReaderViewState extends State<QuranReaderView> {
 
   void _copyContent(AyahEntity activeAyahEntity) {
     HapticService.selectionClick();
+    final activeTheme = _preferences.theme;
 
     if (_selectedAyahNumber != null) {
       Clipboard.setData(
@@ -158,12 +173,12 @@ class _QuranReaderViewState extends State<QuranReaderView> {
       );
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          backgroundColor: AppColors.carbonSlate,
+          backgroundColor: activeTheme.cardColor,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12.r),
             side: BorderSide(
-              color: _preferences.theme.accentColor,
+              color: activeTheme.accentColor,
               width: 1.r,
             ),
           ),
@@ -171,14 +186,14 @@ class _QuranReaderViewState extends State<QuranReaderView> {
             children: [
               Icon(
                 Iconsax.tick_circle,
-                color: _preferences.theme.accentColor,
+                color: activeTheme.accentColor,
                 size: 18.r,
               ),
               SizedBox(width: 8.w),
               Text(
                 'تم نسخ الآية الكريمة بنجاح ✓',
                 style: AppTextStyles.caption.copyWith(
-                  color: _preferences.theme.accentColor,
+                  color: activeTheme.textColor,
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -198,12 +213,12 @@ class _QuranReaderViewState extends State<QuranReaderView> {
       );
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          backgroundColor: AppColors.carbonSlate,
+          backgroundColor: activeTheme.cardColor,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12.r),
             side: BorderSide(
-              color: _preferences.theme.accentColor,
+              color: activeTheme.accentColor,
               width: 1.r,
             ),
           ),
@@ -211,14 +226,14 @@ class _QuranReaderViewState extends State<QuranReaderView> {
             children: [
               Icon(
                 Iconsax.tick_circle,
-                color: _preferences.theme.accentColor,
+                color: activeTheme.accentColor,
                 size: 18.r,
               ),
               SizedBox(width: 8.w),
               Text(
                 'تم نسخ آيات السورة الكريمة بنجاح ✓',
                 style: AppTextStyles.caption.copyWith(
-                  color: _preferences.theme.accentColor,
+                  color: activeTheme.textColor,
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -363,6 +378,7 @@ class _QuranReaderViewState extends State<QuranReaderView> {
                   onOpenSurahSwitch: _openSurahQuickSwitch,
                   onOpenSettings: _openSettings,
                   accentColor: activeTheme.accentColor,
+                  cardColor: activeTheme.cardColor,
                 ),
 
                 // Center Ornate Illuminated Manuscript Card with Verses
@@ -382,6 +398,8 @@ class _QuranReaderViewState extends State<QuranReaderView> {
                   _AutoScrollControlBar(
                     isPaused: _isAutoScrollPaused,
                     accentColor: activeTheme.accentColor,
+                    cardColor: activeTheme.cardColor,
+                    textColor: activeTheme.textColor,
                     speed: _preferences.autoScrollSpeed,
                     onTogglePause: _toggleAutoScrollPause,
                     onSpeedChanged: (speed) {
@@ -416,6 +434,7 @@ class _QuranReaderViewState extends State<QuranReaderView> {
                   onCopy: () => _copyContent(activeAyahEntity),
                   onBookmark: _toggleBookmark,
                   accentColor: activeTheme.accentColor,
+                  cardColor: activeTheme.cardColor,
                 ),
               ],
             ),
@@ -430,6 +449,8 @@ class _QuranReaderViewState extends State<QuranReaderView> {
 class _AutoScrollControlBar extends StatelessWidget {
   final bool isPaused;
   final Color accentColor;
+  final Color? cardColor;
+  final Color? textColor;
   final double speed;
   final VoidCallback onTogglePause;
   final ValueChanged<double> onSpeedChanged;
@@ -438,6 +459,8 @@ class _AutoScrollControlBar extends StatelessWidget {
   const _AutoScrollControlBar({
     required this.isPaused,
     required this.accentColor,
+    this.cardColor,
+    this.textColor,
     required this.speed,
     required this.onTogglePause,
     required this.onSpeedChanged,
@@ -450,7 +473,7 @@ class _AutoScrollControlBar extends StatelessWidget {
       margin: EdgeInsets.symmetric(horizontal: 24.w, vertical: 4.h),
       padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 6.h),
       decoration: BoxDecoration(
-        color: AppColors.carbonSlate.withValues(alpha: 0.95),
+        color: (cardColor ?? AppColors.carbonSlate).withValues(alpha: 0.95),
         borderRadius: BorderRadius.circular(20.r),
         border: Border.all(
           color: accentColor.withValues(alpha: 0.6),
@@ -471,7 +494,7 @@ class _AutoScrollControlBar extends StatelessWidget {
           Text(
             isPaused ? 'مُتَوَقِّفٌ' : 'تَمْرِيرٌ تِلْقَائِيٌّ',
             style: AppTextStyles.caption.copyWith(
-              color: AppColors.pureChalk,
+              color: textColor ?? AppColors.pureChalk,
               fontWeight: FontWeight.w700,
               fontSize: 11.sp,
             ),

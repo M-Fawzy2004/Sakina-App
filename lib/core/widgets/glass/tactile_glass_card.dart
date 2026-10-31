@@ -1,10 +1,11 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:sakina_app/core/theme/app_colors.dart';
+import 'package:sakina_app/core/theme/app_colors_scheme.dart';
 
 /// Elevated tactile frosted glass card featuring specular backdrop filter,
-/// 1px hairline gold border stroke, and clean surface presentation without harsh shadows.
+/// 1px hairline border stroke, and clean surface presentation without harsh shadows.
+/// Adapts dynamically to OLED Dark and Calming Parchment Light Mode.
 class TactileGlassCard extends StatelessWidget {
   final Widget child;
   final EdgeInsetsGeometry? padding;
@@ -27,6 +28,7 @@ class TactileGlassCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
     final effectiveRadius = borderRadius ?? BorderRadius.circular(20.r);
 
     return ClipRRect(
@@ -38,15 +40,15 @@ class TactileGlassCard extends StatelessWidget {
           child: InkWell(
             onTap: onTap,
             borderRadius: effectiveRadius,
-            splashColor: AppColors.goldGlowSoft,
+            splashColor: colors.accentGold.withValues(alpha: 0.1),
             highlightColor: Colors.transparent,
             child: Container(
               padding: padding ?? EdgeInsets.all(16.r),
               decoration: BoxDecoration(
-                color: backgroundColor ?? AppColors.frostedGlass,
+                color: backgroundColor ?? colors.cardSurface,
                 borderRadius: effectiveRadius,
                 border: Border.all(
-                  color: borderColor ?? AppColors.goldBorderStroke,
+                  color: borderColor ?? colors.borderHairline,
                   width: 1.r,
                 ),
                 boxShadow: boxShadow,

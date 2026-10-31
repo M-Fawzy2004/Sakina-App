@@ -53,4 +53,3 @@ class UnexpectedFailure extends Failure {
     super.statusCode,
   });
 }
-

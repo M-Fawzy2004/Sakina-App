@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:sakina_app/core/theme/app_colors.dart';
+import 'package:sakina_app/core/theme/app_colors_scheme.dart';
 import 'package:sakina_app/core/theme/app_spacing.dart';
 
 /// Horizontal category filter bar matching the reciter curation tags.
@@ -54,6 +54,8 @@ class _FilterChipItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
+
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
@@ -61,10 +63,14 @@ class _FilterChipItem extends StatelessWidget {
         padding: EdgeInsets.symmetric(horizontal: 14.w),
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.surfaceElevated : AppColors.frostedGlass,
+          color: isSelected
+              ? colors.accentGold.withValues(alpha: 0.15)
+              : colors.cardSurface,
           borderRadius: AppSpacing.radiusSm,
           border: Border.all(
-            color: isSelected ? AppColors.champagneGold : AppColors.goldBorderStroke,
+            color: isSelected
+                ? colors.accentGold
+                : colors.borderHairline,
             width: isSelected ? 1.2.r : 1.r,
           ),
         ),
@@ -73,7 +79,7 @@ class _FilterChipItem extends StatelessWidget {
           style: GoogleFonts.cairo(
             fontSize: 12.5.sp,
             fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-            color: isSelected ? AppColors.champagneGold : AppColors.mutedSilver,
+            color: isSelected ? colors.accentGold : colors.textSecondary,
           ),
         ),
       ),

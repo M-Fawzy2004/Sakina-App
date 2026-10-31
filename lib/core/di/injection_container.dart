@@ -31,6 +31,12 @@ import 'package:sakina_app/features/quran_reading/domain/usecases/get_surah_vers
 import 'package:sakina_app/features/quran_reading/domain/usecases/get_surahs_usecase.dart';
 import 'package:sakina_app/features/quran_reading/domain/usecases/save_last_read_bookmark_usecase.dart';
 import 'package:sakina_app/features/quran_reading/presentation/cubit/quran_cubit.dart';
+import 'package:sakina_app/features/settings/data/datasources/settings_local_data_source.dart';
+import 'package:sakina_app/features/settings/data/repositories/settings_repository_impl.dart';
+import 'package:sakina_app/features/settings/domain/repositories/settings_repository.dart';
+import 'package:sakina_app/features/settings/domain/usecases/get_theme_mode_usecase.dart';
+import 'package:sakina_app/features/settings/domain/usecases/set_theme_mode_usecase.dart';
+import 'package:sakina_app/features/settings/presentation/cubit/settings_cubit.dart';
 import 'package:sakina_app/features/splash/domain/usecases/check_initial_app_state_usecase.dart';
 import 'package:sakina_app/features/splash/presentation/cubit/splash_cubit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -47,7 +53,9 @@ Future<void> initServiceLocator() async {
   sl.registerLazySingleton<SharedPreferences>(() => sharedPreferences);
 
   sl.registerLazySingleton<Connectivity>(() => Connectivity());
-  sl.registerLazySingleton<FlutterSecureStorage>(() => const FlutterSecureStorage());
+  sl.registerLazySingleton<FlutterSecureStorage>(
+    () => const FlutterSecureStorage(),
+  );
 
   // ---------------------------------------------------------------------------
   // 2. Core Infrastructure & Networking
@@ -59,8 +67,12 @@ Future<void> initServiceLocator() async {
   // ---------------------------------------------------------------------------
   // 3. Core Storage & Database Services
   // ---------------------------------------------------------------------------
-  sl.registerLazySingleton<PreferencesService>(() => PreferencesServiceImpl(sl()));
-  sl.registerLazySingleton<SecureStorageService>(() => SecureStorageServiceImpl(sl()));
+  sl.registerLazySingleton<PreferencesService>(
+    () => PreferencesServiceImpl(sl()),
+  );
+  sl.registerLazySingleton<SecureStorageService>(
+    () => SecureStorageServiceImpl(sl()),
+  );
   sl.registerLazySingleton<DatabaseHelper>(() => DatabaseHelperImpl());
 
   // ---------------------------------------------------------------------------
@@ -163,5 +175,25 @@ void _initFeatureModules() {
       getReciterTracksUseCase: sl(),
       audioPlayerHandler: sl(),
     ),
+  );
+
+  // Al-I'dadat (Settings & Preferences) Feature
+  sl.registerLazySingleton<SettingsLocalDataSource>(
+    () => SettingsLocalDataSourceImpl(preferencesService: sl()),
+  );
+  sl.registerLazySingleton<SettingsRepository>(
+    () => SettingsRepositoryImpl(localDataSource: sl()),
+  );
+  sl.registerLazySingleton<GetThemeModeUseCase>(
+    () => GetThemeModeUseCase(repository: sl()),
+  );
+  sl.registerLazySingleton<SetThemeModeUseCase>(
+    () => SetThemeModeUseCase(repository: sl()),
+  );
+  sl.registerLazySingleton<SettingsCubit>(
+    () => SettingsCubit(
+      getThemeModeUseCase: sl(),
+      setThemeModeUseCase: sl(),
+    )..loadSettings(),
   );
 }
