@@ -225,7 +225,7 @@ class _SurahSwitchTile extends StatelessWidget {
               ),
               if (isCurrent)
                 Icon(
-                  Icons.check_circle_rounded,
+                  Iconsax.tick_circle,
                   color: AppColors.champagneGold,
                   size: 18.r,
                 ),

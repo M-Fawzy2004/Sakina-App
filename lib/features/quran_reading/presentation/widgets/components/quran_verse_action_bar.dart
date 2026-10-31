@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:hugeicons/hugeicons.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:sakina_app/core/theme/app_colors.dart';
 import 'package:sakina_app/core/theme/app_text_styles.dart';
 import 'package:sakina_app/core/utils/haptic_service.dart';
@@ -39,7 +39,7 @@ class QuranVerseActionBar extends StatelessWidget {
         children: [
           // 1. Play Recitation
           _ActionPillItem(
-            icon: Icons.play_arrow_rounded,
+            icon: Iconsax.play,
             label: 'play',
             subLabel: 'تلاوة',
             onTap: onPlay,
@@ -49,7 +49,7 @@ class QuranVerseActionBar extends StatelessWidget {
 
           // 2. Copy Verse Text
           _ActionPillItem(
-            icon: Icons.copy_rounded,
+            icon: Iconsax.copy,
             label: 'copy',
             subLabel: 'نسخ',
             onTap: onCopy,
@@ -59,7 +59,7 @@ class QuranVerseActionBar extends StatelessWidget {
 
           // 3. Bookmark
           _ActionPillItem(
-            icon: Icons.bookmark_add_rounded,
+            icon: Iconsax.bookmark,
             label: 'bookmark',
             subLabel: 'حفظ',
             onTap: onBookmark,
@@ -69,7 +69,7 @@ class QuranVerseActionBar extends StatelessWidget {
 
           // 4. Tafsir & Reflection
           _ActionPillItem(
-            icon: HugeIcons.strokeRoundedBookOpen01,
+            icon: Iconsax.book_1,
             label: 'reflection',
             subLabel: 'تدبر',
             isHighlighted: true,
@@ -95,7 +95,7 @@ class _VerseActionDivider extends StatelessWidget {
 }
 
 class _ActionPillItem extends StatelessWidget {
-  final dynamic icon;
+  final IconData icon;
   final String label;
   final String subLabel;
   final bool isHighlighted;
@@ -128,18 +128,11 @@ class _ActionPillItem extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              if (icon is IconData)
-                Icon(
-                  icon as IconData,
-                  color: activeColor,
-                  size: 15.r,
-                )
-              else if (icon is List<List<dynamic>>)
-                HugeIcon(
-                  icon: icon as List<List<dynamic>>,
-                  color: activeColor,
-                  size: 14.r,
-                ),
+              Icon(
+                icon,
+                color: activeColor,
+                size: 15.r,
+              ),
               SizedBox(width: 4.w),
               Text(
                 label,

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:hugeicons/hugeicons.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:sakina_app/core/theme/app_colors.dart';
 import 'package:sakina_app/core/theme/app_spacing.dart';
 import 'package:sakina_app/core/theme/app_text_styles.dart';
@@ -44,7 +44,8 @@ class QuranTafsirReflectionSheet extends StatefulWidget {
   }
 
   @override
-  State<QuranTafsirReflectionSheet> createState() => _QuranTafsirReflectionSheetState();
+  State<QuranTafsirReflectionSheet> createState() =>
+      _QuranTafsirReflectionSheetState();
 }
 
 class _QuranTafsirReflectionSheetState extends State<QuranTafsirReflectionSheet>
@@ -81,7 +82,8 @@ class _QuranTafsirReflectionSheetState extends State<QuranTafsirReflectionSheet>
 
   void _shareAyah(BuildContext context) {
     HapticService.selectionClick();
-    final shareText = '«${widget.ayah.text}»\n'
+    final shareText =
+        '«${widget.ayah.text}»\n'
         'سورة ${widget.surah.nameArabic} - الآية ${widget.ayah.numberInSurah}\n\n'
         'التفسير: ${widget.ayah.tafsir ?? ""}\n'
         'التدبر: ${widget.ayah.reflection ?? ""}';
@@ -109,19 +111,18 @@ class _QuranTafsirReflectionSheetState extends State<QuranTafsirReflectionSheet>
 
   @override
   Widget build(BuildContext context) {
-    final tafsirText = widget.ayah.tafsir ??
+    final tafsirText =
+        widget.ayah.tafsir ??
         'الآية الكريمة تتضمن بياناً شاملاً من آيات الذكر الحكيم، تزيد القلب إيماناً ورسوخاً.';
-    final reflectionText = widget.ayah.reflection ??
+    final reflectionText =
+        widget.ayah.reflection ??
         'تدبر هذه الآية يورث الطمأنينة والانقياد لأمر الله والعمل بمقتضى كلامه.';
 
     return Container(
       decoration: BoxDecoration(
         color: AppColors.obsidianCore,
         borderRadius: BorderRadius.vertical(top: Radius.circular(28.r)),
-        border: Border.all(
-          color: AppColors.goldBorderStroke,
-          width: 1.r,
-        ),
+        border: Border.all(color: AppColors.goldBorderStroke, width: 1.r),
       ),
       padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
       child: SafeArea(
@@ -199,7 +200,7 @@ class _QuranTafsirReflectionSheetState extends State<QuranTafsirReflectionSheet>
                 IconButton(
                   onPressed: widget.onClose,
                   icon: Icon(
-                    Icons.close_rounded,
+                    Iconsax.close_circle,
                     color: AppColors.mutedSilver,
                     size: 20.r,
                   ),
@@ -215,10 +216,7 @@ class _QuranTafsirReflectionSheetState extends State<QuranTafsirReflectionSheet>
               decoration: BoxDecoration(
                 color: AppColors.emeraldGlow.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(16.r),
-                border: Border.all(
-                  color: AppColors.emeraldGlow,
-                  width: 1.2.r,
-                ),
+                border: Border.all(color: AppColors.emeraldGlow, width: 1.2.r),
               ),
               child: Text(
                 '«${widget.ayah.text}»',
@@ -263,9 +261,9 @@ class _QuranTafsirReflectionSheetState extends State<QuranTafsirReflectionSheet>
                         ),
                         child: Center(
                           child: Icon(
-                            _isPlayingAudio ? Icons.pause_rounded : Icons.play_arrow_rounded,
+                            _isPlayingAudio ? Iconsax.pause : Iconsax.play,
                             color: AppColors.obsidianCore,
-                            size: 26.r,
+                            size: 24.r,
                           ),
                         ),
                       ),
@@ -283,14 +281,25 @@ class _QuranTafsirReflectionSheetState extends State<QuranTafsirReflectionSheet>
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: List.generate(24, (i) {
                             final factor = _isPlayingAudio
-                                ? (0.2 + 0.8 * (0.5 + 0.5 * ((i * 0.4) + _waveController.value * 6.28).abs() % 1.0))
+                                ? (0.2 +
+                                      0.8 *
+                                          (0.5 +
+                                              0.5 *
+                                                  ((i * 0.4) +
+                                                          _waveController
+                                                                  .value *
+                                                              6.28)
+                                                      .abs() %
+                                                  1.0))
                                 : 0.25;
                             final isGold = i % 2 == 0;
                             return Container(
                               width: 3.w,
                               height: (28.h * factor).clamp(6.h, 28.h),
                               decoration: BoxDecoration(
-                                color: isGold ? AppColors.champagneGold : AppColors.emeraldGlow,
+                                color: isGold
+                                    ? AppColors.champagneGold
+                                    : AppColors.emeraldGlow,
                                 borderRadius: BorderRadius.circular(2.r),
                               ),
                             );
@@ -331,8 +340,8 @@ class _QuranTafsirReflectionSheetState extends State<QuranTafsirReflectionSheet>
                           fontSize: 12.sp,
                         ),
                       ),
-                      HugeIcon(
-                        icon: HugeIcons.strokeRoundedBookOpen01,
+                      Icon(
+                        Iconsax.book_1,
                         color: AppColors.champagneGold,
                         size: 16.r,
                       ),
@@ -367,7 +376,12 @@ class _QuranTafsirReflectionSheetState extends State<QuranTafsirReflectionSheet>
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('💡 ', style: AppTextStyles.caption.copyWith(fontSize: 13.sp)),
+                        Text(
+                          '💡 ',
+                          style: AppTextStyles.caption.copyWith(
+                            fontSize: 13.sp,
+                          ),
+                        ),
                         Expanded(
                           child: Text(
                             reflectionText,
@@ -391,8 +405,8 @@ class _QuranTafsirReflectionSheetState extends State<QuranTafsirReflectionSheet>
                       // Share Button
                       TextButton.icon(
                         onPressed: () => _shareAyah(context),
-                        icon: HugeIcon(
-                          icon: HugeIcons.strokeRoundedShare01,
+                        icon: Icon(
+                          Iconsax.share,
                           color: AppColors.champagneGold,
                           size: 16.r,
                         ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:hugeicons/hugeicons.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:sakina_app/core/theme/app_colors.dart';
 import 'package:sakina_app/core/theme/app_text_styles.dart';
 
@@ -73,8 +73,8 @@ class _QuranSearchBarState extends State<QuranSearchBar> {
             ),
             prefixIcon: Padding(
               padding: EdgeInsets.symmetric(horizontal: 12.w),
-              child: HugeIcon(
-                icon: HugeIcons.strokeRoundedSearch01,
+              child: Icon(
+                Iconsax.search_normal,
                 color: AppColors.champagneGold,
                 size: 18.r,
               ),
@@ -86,7 +86,7 @@ class _QuranSearchBarState extends State<QuranSearchBar> {
             suffixIcon: _controller.text.isNotEmpty
                 ? IconButton(
                     icon: Icon(
-                      Icons.clear_rounded,
+                      Iconsax.close_circle,
                       color: AppColors.mutedSilver,
                       size: 18.r,
                     ),

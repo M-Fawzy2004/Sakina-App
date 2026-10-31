@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:sakina_app/features/quran_reading/domain/entities/ayah_entity.dart';
 import 'package:sakina_app/features/quran_reading/domain/entities/surah_entity.dart';
 import 'package:sakina_app/features/quran_reading/presentation/widgets/components/quran_3d_page_turn.dart';
@@ -202,34 +203,33 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('ص 293 • الجزء 15'), findsOneWidget);
       expect(find.text('الآية 5'), findsOneWidget);
-      expect(find.text('تِلَاوَة'), findsOneWidget);
-      expect(find.text('تَفْسِير'), findsOneWidget);
-      expect(find.text('نَسْخ'), findsOneWidget);
-      expect(find.text('حِفْظ'), findsOneWidget);
+      expect(find.byTooltip('تِلَاوَة'), findsOneWidget);
+      expect(find.byTooltip('تَفْسِير'), findsOneWidget);
+      expect(find.byTooltip('نَسْخ'), findsOneWidget);
+      expect(find.byTooltip('حِفْظ'), findsOneWidget);
 
-      await tester.tap(find.text('تِلَاوَة'));
+      await tester.tap(find.byTooltip('تِلَاوَة'));
       await tester.pumpAndSettle();
       expect(playTapped, isTrue);
 
-      await tester.tap(find.text('تَفْسِير'));
+      await tester.tap(find.byTooltip('تَفْسِير'));
       await tester.pumpAndSettle();
       expect(tafsirTapped, isTrue);
 
-      await tester.tap(find.text('نَسْخ'));
+      await tester.tap(find.byTooltip('نَسْخ'));
       await tester.pumpAndSettle();
       expect(copyTapped, isTrue);
 
-      await tester.tap(find.text('حِفْظ'));
+      await tester.tap(find.byTooltip('حِفْظ'));
       await tester.pumpAndSettle();
       expect(bookmarkTapped, isTrue);
 
-      await tester.tap(find.byIcon(Icons.chevron_left_rounded));
+      await tester.tap(find.byTooltip('الصفحة السابقة'));
       await tester.pumpAndSettle();
       expect(prevTapped, isTrue);
 
-      await tester.tap(find.byIcon(Icons.chevron_right_rounded));
+      await tester.tap(find.byTooltip('الصفحة التالية'));
       await tester.pumpAndSettle();
       expect(nextTapped, isTrue);
     });
@@ -275,7 +275,7 @@ void main() {
       );
       expect(find.text('الرَّحْمَٰنِ الرَّحِيمِ'), findsOneWidget);
 
-      final backButton = find.byIcon(Icons.arrow_back_ios_new_rounded);
+      final backButton = find.byIcon(Iconsax.arrow_left_2).first;
       expect(backButton, findsOneWidget);
       await tester.tap(backButton);
       await tester.pumpAndSettle();

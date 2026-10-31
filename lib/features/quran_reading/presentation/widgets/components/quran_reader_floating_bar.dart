@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:hugeicons/hugeicons.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:sakina_app/core/theme/app_colors.dart';
 import 'package:sakina_app/core/theme/app_text_styles.dart';
 import 'package:sakina_app/core/utils/haptic_service.dart';
 
-/// Compact single-row floating bar for the Al-Mushaf reader.
+/// Compact single-row floating bar for the Al-Mushaf reader powered 100% by Iconsax icons:
 /// - If an ayah is selected: actions apply to that ayah.
 /// - Otherwise: actions apply to the current page / surah.
 class QuranReaderFloatingBar extends StatelessWidget {
@@ -18,6 +18,7 @@ class QuranReaderFloatingBar extends StatelessWidget {
   final VoidCallback onTafsir;
   final VoidCallback onCopy;
   final VoidCallback onBookmark;
+  final Color? accentColor;
 
   const QuranReaderFloatingBar({
     super.key,
@@ -30,12 +31,14 @@ class QuranReaderFloatingBar extends StatelessWidget {
     required this.onTafsir,
     required this.onCopy,
     required this.onBookmark,
+    this.accentColor,
   });
 
   @override
   Widget build(BuildContext context) {
     final hasSelection = selectedAyahNumber != null;
     final isRtl = Directionality.of(context) == TextDirection.rtl;
+    final activeAccent = accentColor ?? AppColors.champagneGold;
 
     return SafeArea(
       top: false,
@@ -57,11 +60,10 @@ class QuranReaderFloatingBar extends StatelessWidget {
         child: Row(
           children: [
             _IconBtn(
-              icon: isRtl
-                  ? Icons.chevron_left_rounded
-                  : Icons.chevron_right_rounded,
+              icon: isRtl ? Iconsax.arrow_left_2 : Iconsax.arrow_right_3,
               tooltip: 'الصفحة السابقة',
-              size: 22,
+              color: activeAccent,
+              size: 20,
               onTap: onPreviousPage,
             ),
 
@@ -82,51 +84,53 @@ class QuranReaderFloatingBar extends StatelessWidget {
                       : _Badge(
                           key: ValueKey('page-$pageNumber-$juzNumber'),
                           text: 'ص $pageNumber • جزء $juzNumber',
-                          color: AppColors.champagneGold,
+                          color: activeAccent,
                         ),
                 ),
               ),
             ),
 
             _IconBtn(
-              icon: isRtl
-                  ? Icons.chevron_right_rounded
-                  : Icons.chevron_left_rounded,
+              icon: isRtl ? Iconsax.arrow_right_3 : Iconsax.arrow_left_2,
               tooltip: 'الصفحة التالية',
-              size: 22,
+              color: activeAccent,
+              size: 20,
               onTap: onNextPage,
             ),
 
             Container(
-              width: 1,
+              width: 1.w,
               height: 20.h,
               margin: EdgeInsets.symmetric(horizontal: 4.w),
               color: AppColors.goldBorderStroke.withValues(alpha: 0.5),
             ),
 
             _IconBtn(
-              icon: Icons.play_arrow_rounded,
+              icon: Iconsax.play,
               tooltip: 'تِلَاوَة',
-              size: 24,
+              color: activeAccent,
+              size: 20,
               onTap: onPlay,
             ),
             _IconBtn(
-              icon: HugeIcons.strokeRoundedBookOpen01,
+              icon: Iconsax.book_1,
               tooltip: 'تَفْسِير',
               color: AppColors.emeraldGlow,
-              size: 19,
+              size: 20,
               onTap: onTafsir,
             ),
             _IconBtn(
-              icon: Icons.copy_rounded,
+              icon: Iconsax.copy,
               tooltip: 'نَسْخ',
-              size: 18,
+              color: activeAccent,
+              size: 19,
               onTap: onCopy,
             ),
             _IconBtn(
-              icon: Icons.bookmark_add_rounded,
+              icon: Iconsax.bookmark,
               tooltip: 'حِفْظ',
-              size: 20,
+              color: activeAccent,
+              size: 19,
               onTap: onBookmark,
             ),
           ],
@@ -174,7 +178,7 @@ class _Badge extends StatelessWidget {
 }
 
 class _IconBtn extends StatelessWidget {
-  final dynamic icon; // IconData | List<List<dynamic>> (HugeIcons)
+  final IconData icon;
   final String tooltip;
   final Color color;
   final double size;
@@ -190,19 +194,6 @@ class _IconBtn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget child;
-    if (icon is IconData) {
-      child = Icon(icon as IconData, color: color, size: size.r);
-    } else if (icon is List<List<dynamic>>) {
-      child = HugeIcon(
-        icon: icon as List<List<dynamic>>,
-        color: color,
-        size: size.r,
-      );
-    } else {
-      child = const SizedBox.shrink();
-    }
-
     return Semantics(
       button: true,
       label: tooltip,
@@ -217,7 +208,9 @@ class _IconBtn extends StatelessWidget {
           child: SizedBox(
             width: 34.r,
             height: 34.r,
-            child: Center(child: child),
+            child: Center(
+              child: Icon(icon, color: color, size: size.r),
+            ),
           ),
         ),
       ),

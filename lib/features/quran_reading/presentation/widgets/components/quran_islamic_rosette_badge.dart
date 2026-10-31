@@ -9,11 +9,13 @@ import 'package:sakina_app/core/theme/app_text_styles.dart';
 class QuranIslamicRosetteBadge extends StatelessWidget {
   final int number;
   final bool isHighlighted;
+  final double? size;
 
   const QuranIslamicRosetteBadge({
     super.key,
     required this.number,
     this.isHighlighted = false,
+    this.size,
   });
 
   @override
@@ -22,9 +24,13 @@ class QuranIslamicRosetteBadge extends StatelessWidget {
         ? AppColors.emeraldGlow
         : AppColors.champagneGold;
 
-    return Container(
-      width: 45.r,
-      height: 45.r,
+    final effectiveSize = size ?? 38.r;
+    final innerDimension = effectiveSize * 0.62;
+    final fontSize = (effectiveSize * 0.28).sp;
+
+    return SizedBox(
+      width: effectiveSize,
+      height: effectiveSize,
       child: Stack(
         alignment: Alignment.center,
         children: [
@@ -32,10 +38,10 @@ class QuranIslamicRosetteBadge extends StatelessWidget {
           Transform.rotate(
             angle: 0.785398, // 45 degrees
             child: Container(
-              width: 26.r,
-              height: 26.r,
+              width: innerDimension,
+              height: innerDimension,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(4.r),
+                borderRadius: BorderRadius.circular(3.r),
                 border: Border.all(
                   color: activeColor.withValues(alpha: 0.65),
                   width: 1.r,
@@ -46,12 +52,12 @@ class QuranIslamicRosetteBadge extends StatelessWidget {
 
           // Inner circle
           Container(
-            width: 26.r,
-            height: 26.r,
+            width: innerDimension,
+            height: innerDimension,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: AppColors.obsidianCore,
-              border: Border.all(color: activeColor, width: 1.2.r),
+              border: Border.all(color: activeColor, width: 1.1.r),
             ),
             child: Center(
               child: Text(
@@ -59,7 +65,7 @@ class QuranIslamicRosetteBadge extends StatelessWidget {
                 style: AppTextStyles.caption.copyWith(
                   color: activeColor,
                   fontWeight: FontWeight.w800,
-                  fontSize: 10.5.sp,
+                  fontSize: fontSize,
                 ),
               ),
             ),
