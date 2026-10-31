@@ -20,6 +20,9 @@ class SakinaApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           theme: AppTheme.darkLuxury,
           routerConfig: appRouter,
+          scrollBehavior: const ScrollBehavior().copyWith(
+            physics: const BouncingScrollPhysics(),
+          ),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           locale: DevicePreview.locale(context) ?? const Locale('ar'),

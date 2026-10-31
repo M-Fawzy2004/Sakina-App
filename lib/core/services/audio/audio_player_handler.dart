@@ -18,6 +18,7 @@ abstract interface class AudioPlayerHandler {
   Future<void> stop();
   Future<void> seek(Duration position);
   Future<void> setVolume(double volume);
+  Future<void> setSpeed(double speed);
   Future<void> duckVolumeAndPause();
   Future<void> dispose();
 }
@@ -93,6 +94,15 @@ class AudioPlayerHandlerImpl implements AudioPlayerHandler {
   @override
   Future<void> setVolume(double volume) async {
     await _player.setVolume(volume.clamp(0.0, 1.0));
+  }
+
+  @override
+  Future<void> setSpeed(double speed) async {
+    try {
+      await _player.setSpeed(speed.clamp(0.5, 2.5));
+    } catch (e) {
+      throw AudioPlaybackException(message: 'فشل ضبط سرعة التلاوة: $e');
+    }
   }
 
   /// Gradually ducks volume over 15 seconds before pausing smoothly.

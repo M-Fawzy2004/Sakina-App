@@ -8,6 +8,13 @@ import 'package:sakina_app/core/services/audio/audio_player_handler.dart';
 import 'package:sakina_app/core/services/storage/database_helper.dart';
 import 'package:sakina_app/core/services/storage/preferences_service.dart';
 import 'package:sakina_app/core/services/storage/secure_storage_service.dart';
+import 'package:sakina_app/features/audio_reciters/data/datasources/audio_reciters_local_data_source.dart';
+import 'package:sakina_app/features/audio_reciters/data/repositories/audio_reciters_repository_impl.dart';
+import 'package:sakina_app/features/audio_reciters/domain/repositories/audio_reciters_repository.dart';
+import 'package:sakina_app/features/audio_reciters/domain/usecases/get_featured_reciter_usecase.dart';
+import 'package:sakina_app/features/audio_reciters/domain/usecases/get_reciter_tracks_usecase.dart';
+import 'package:sakina_app/features/audio_reciters/domain/usecases/get_reciters_usecase.dart';
+import 'package:sakina_app/features/audio_reciters/presentation/cubit/audio_reciters_cubit.dart';
 import 'package:sakina_app/features/maladh/data/datasources/maladh_local_data_source.dart';
 import 'package:sakina_app/features/maladh/data/repositories/maladh_repository_impl.dart';
 import 'package:sakina_app/features/maladh/domain/repositories/maladh_repository.dart';
@@ -130,6 +137,31 @@ void _initFeatureModules() {
       getSurahVersesUseCase: sl(),
       getLastReadBookmarkUseCase: sl(),
       saveLastReadBookmarkUseCase: sl(),
+    ),
+  );
+
+  // Al-Tilawat (Quran Recitations & Audio Player) Feature
+  sl.registerLazySingleton<AudioRecitersLocalDataSource>(
+    () => AudioRecitersLocalDataSourceImpl(),
+  );
+  sl.registerLazySingleton<AudioRecitersRepository>(
+    () => AudioRecitersRepositoryImpl(localDataSource: sl()),
+  );
+  sl.registerLazySingleton<GetRecitersUseCase>(
+    () => GetRecitersUseCase(repository: sl()),
+  );
+  sl.registerLazySingleton<GetFeaturedReciterUseCase>(
+    () => GetFeaturedReciterUseCase(repository: sl()),
+  );
+  sl.registerLazySingleton<GetReciterTracksUseCase>(
+    () => GetReciterTracksUseCase(repository: sl()),
+  );
+  sl.registerFactory<AudioRecitersCubit>(
+    () => AudioRecitersCubit(
+      getRecitersUseCase: sl(),
+      getFeaturedReciterUseCase: sl(),
+      getReciterTracksUseCase: sl(),
+      audioPlayerHandler: sl(),
     ),
   );
 }
