@@ -2,7 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_islamic_icons/flutter_islamic_icons.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:hugeicons/hugeicons.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:sakina_app/core/theme/app_colors_scheme.dart';
 import 'package:sakina_app/core/widgets/navigation/sakina_nav_item.dart';
 
@@ -82,26 +82,26 @@ class SakinaBottomNavBar extends StatelessWidget {
                     label: 'التِّلَاوَاتُ',
                     isSelected: currentIndex == 2,
                     onTap: () => onItemSelected(2),
-                    iconWidget: HugeIcon(
-                      icon: HugeIcons.strokeRoundedAudioWaveform,
+                    iconWidget: Icon(
+                      Iconsax.music,
+                      size: 23.r,
                       color: currentIndex == 2
                           ? colors.accentGold
                           : colors.textSecondary,
-                      size: 23.r,
                     ),
                   ),
 
-                  // Tab 3: Al-Inaba (Spiritual Recovery / Purity Lotus)
+                  // Tab 3: Al-Inaba (Spiritual Recovery / Purity & Repentance)
                   SakinaNavItem(
                     label: 'الإِنَابَةُ',
                     isSelected: currentIndex == 3,
                     onTap: () => onItemSelected(3),
-                    iconWidget: HugeIcon(
-                      icon: HugeIcons.strokeRoundedFlower01,
+                    iconWidget: Icon(
+                      FlutterIslamicIcons.prayingPerson,
+                      size: 23.r,
                       color: currentIndex == 3
                           ? colors.accentGold
                           : colors.textSecondary,
-                      size: 23.r,
                     ),
                   ),
 
@@ -110,12 +110,12 @@ class SakinaBottomNavBar extends StatelessWidget {
                     label: 'الإِعْدَادَاتُ',
                     isSelected: currentIndex == 4,
                     onTap: () => onItemSelected(4),
-                    iconWidget: HugeIcon(
-                      icon: HugeIcons.strokeRoundedSlidersHorizontal,
+                    iconWidget: Icon(
+                      Iconsax.setting_2,
+                      size: 23.r,
                       color: currentIndex == 4
                           ? colors.accentGold
                           : colors.textSecondary,
-                      size: 23.r,
                     ),
                   ),
                 ],

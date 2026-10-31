@@ -36,6 +36,7 @@ class AudioPlayerSettingsSheet extends StatefulWidget {
   }) {
     return showModalBottomSheet(
       context: context,
+      useRootNavigator: true,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
       builder: (_) => AudioPlayerSettingsSheet(

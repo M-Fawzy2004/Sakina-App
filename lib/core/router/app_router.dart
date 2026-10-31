@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:sakina_app/core/router/route_constants.dart';
 import 'package:sakina_app/core/widgets/navigation/main_scaffold_shell.dart';
 import 'package:sakina_app/features/audio_reciters/presentation/widgets/audio_reciters_screen.dart';
+import 'package:sakina_app/features/inaba_recovery/presentation/widgets/inaba_screen.dart';
 import 'package:sakina_app/features/maladh/presentation/widgets/maladh_screen.dart';
 import 'package:sakina_app/features/onboarding/presentation/widgets/onboarding_screen.dart';
 import 'package:sakina_app/features/quran_reading/domain/entities/surah_entity.dart';
@@ -89,11 +90,7 @@ final GoRouter appRouter = GoRouter(
           routes: [
             GoRoute(
               path: AppRoutes.inaba,
-              builder: (context, state) => const Scaffold(
-                body: Center(
-                  child: Text('الإِنَابَةُ'),
-                ),
-              ),
+              builder: (context, state) => const InabaScreen(),
             ),
           ],
         ),

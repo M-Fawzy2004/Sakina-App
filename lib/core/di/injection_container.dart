@@ -15,6 +15,24 @@ import 'package:sakina_app/features/audio_reciters/domain/usecases/get_featured_
 import 'package:sakina_app/features/audio_reciters/domain/usecases/get_reciter_tracks_usecase.dart';
 import 'package:sakina_app/features/audio_reciters/domain/usecases/get_reciters_usecase.dart';
 import 'package:sakina_app/features/audio_reciters/presentation/cubit/audio_reciters_cubit.dart';
+import 'package:sakina_app/features/inaba_recovery/data/datasources/inaba_local_data_source.dart';
+import 'package:sakina_app/features/inaba_recovery/data/repositories/inaba_repository_impl.dart';
+import 'package:sakina_app/features/inaba_recovery/domain/repositories/inaba_repository.dart';
+import 'package:sakina_app/features/inaba_recovery/domain/usecases/add_custom_good_deed_usecase.dart';
+import 'package:sakina_app/features/inaba_recovery/domain/usecases/delete_spiritual_reflection_usecase.dart';
+import 'package:sakina_app/features/inaba_recovery/domain/usecases/get_daily_hope_doses_usecase.dart';
+import 'package:sakina_app/features/inaba_recovery/domain/usecases/get_good_deeds_usecase.dart';
+import 'package:sakina_app/features/inaba_recovery/domain/usecases/get_inaba_overview_usecase.dart';
+import 'package:sakina_app/features/inaba_recovery/domain/usecases/get_repentance_steps_usecase.dart';
+import 'package:sakina_app/features/inaba_recovery/domain/usecases/get_spiritual_levels_usecase.dart';
+import 'package:sakina_app/features/inaba_recovery/domain/usecases/get_spiritual_reflections_usecase.dart';
+import 'package:sakina_app/features/inaba_recovery/domain/usecases/log_spiritual_victory_usecase.dart';
+import 'package:sakina_app/features/inaba_recovery/domain/usecases/renew_covenant_usecase.dart';
+import 'package:sakina_app/features/inaba_recovery/domain/usecases/save_spiritual_reflection_usecase.dart';
+import 'package:sakina_app/features/inaba_recovery/domain/usecases/toggle_good_deed_usecase.dart';
+import 'package:sakina_app/features/inaba_recovery/domain/usecases/toggle_repentance_step_usecase.dart';
+import 'package:sakina_app/features/inaba_recovery/domain/usecases/toggle_save_hope_dose_usecase.dart';
+import 'package:sakina_app/features/inaba_recovery/presentation/cubit/inaba_cubit.dart';
 import 'package:sakina_app/features/maladh/data/datasources/maladh_local_data_source.dart';
 import 'package:sakina_app/features/maladh/data/repositories/maladh_repository_impl.dart';
 import 'package:sakina_app/features/maladh/domain/repositories/maladh_repository.dart';
@@ -195,5 +213,73 @@ void _initFeatureModules() {
       getThemeModeUseCase: sl(),
       setThemeModeUseCase: sl(),
     )..loadSettings(),
+  );
+
+  // Al-Inaba (Spiritual Recovery & Repentance) Feature
+  sl.registerLazySingleton<InabaLocalDataSource>(
+    () => InabaLocalDataSourceImpl(sl()),
+  );
+  sl.registerLazySingleton<InabaRepository>(
+    () => InabaRepositoryImpl(localDataSource: sl()),
+  );
+  sl.registerLazySingleton<GetInabaOverviewUseCase>(
+    () => GetInabaOverviewUseCase(sl()),
+  );
+  sl.registerLazySingleton<GetGoodDeedsUseCase>(
+    () => GetGoodDeedsUseCase(sl()),
+  );
+  sl.registerLazySingleton<ToggleGoodDeedUseCase>(
+    () => ToggleGoodDeedUseCase(sl()),
+  );
+  sl.registerLazySingleton<AddCustomGoodDeedUseCase>(
+    () => AddCustomGoodDeedUseCase(sl()),
+  );
+  sl.registerLazySingleton<GetDailyHopeDosesUseCase>(
+    () => GetDailyHopeDosesUseCase(sl()),
+  );
+  sl.registerLazySingleton<ToggleSaveHopeDoseUseCase>(
+    () => ToggleSaveHopeDoseUseCase(sl()),
+  );
+  sl.registerLazySingleton<GetSpiritualLevelsUseCase>(
+    () => GetSpiritualLevelsUseCase(sl()),
+  );
+  sl.registerLazySingleton<GetSpiritualReflectionsUseCase>(
+    () => GetSpiritualReflectionsUseCase(sl()),
+  );
+  sl.registerLazySingleton<SaveSpiritualReflectionUseCase>(
+    () => SaveSpiritualReflectionUseCase(sl()),
+  );
+  sl.registerLazySingleton<DeleteSpiritualReflectionUseCase>(
+    () => DeleteSpiritualReflectionUseCase(sl()),
+  );
+  sl.registerLazySingleton<GetRepentanceStepsUseCase>(
+    () => GetRepentanceStepsUseCase(sl()),
+  );
+  sl.registerLazySingleton<ToggleRepentanceStepUseCase>(
+    () => ToggleRepentanceStepUseCase(sl()),
+  );
+  sl.registerLazySingleton<RenewCovenantUseCase>(
+    () => RenewCovenantUseCase(sl()),
+  );
+  sl.registerLazySingleton<LogSpiritualVictoryUseCase>(
+    () => LogSpiritualVictoryUseCase(sl()),
+  );
+  sl.registerFactory<InabaCubit>(
+    () => InabaCubit(
+      getInabaOverviewUseCase: sl(),
+      getGoodDeedsUseCase: sl(),
+      toggleGoodDeedUseCase: sl(),
+      addCustomGoodDeedUseCase: sl(),
+      getDailyHopeDosesUseCase: sl(),
+      toggleSaveHopeDoseUseCase: sl(),
+      getSpiritualLevelsUseCase: sl(),
+      getSpiritualReflectionsUseCase: sl(),
+      saveSpiritualReflectionUseCase: sl(),
+      deleteSpiritualReflectionUseCase: sl(),
+      getRepentanceStepsUseCase: sl(),
+      toggleRepentanceStepUseCase: sl(),
+      renewCovenantUseCase: sl(),
+      logSpiritualVictoryUseCase: sl(),
+    ),
   );
 }

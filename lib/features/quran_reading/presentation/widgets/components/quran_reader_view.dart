@@ -258,6 +258,7 @@ class _QuranReaderViewState extends State<QuranReaderView> {
 
     showModalBottomSheet<void>(
       context: context,
+      useRootNavigator: true,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
       builder: (bottomSheetContext) => QuranSurahQuickSwitchSheet(
@@ -276,6 +277,7 @@ class _QuranReaderViewState extends State<QuranReaderView> {
 
     showModalBottomSheet<void>(
       context: context,
+      useRootNavigator: true,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
       builder: (bottomSheetContext) => StatefulBuilder(
