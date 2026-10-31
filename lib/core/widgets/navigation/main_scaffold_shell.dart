@@ -15,9 +15,11 @@ class MainScaffoldShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bottomPadding = MediaQuery.paddingOf(context).bottom;
+    final isKeyboardOpen = MediaQuery.viewInsetsOf(context).bottom > 0;
 
     return Scaffold(
       backgroundColor: AppColors.obsidianCore,
+      resizeToAvoidBottomInset: false,
       body: Stack(
         fit: StackFit.expand,
         children: [
@@ -26,21 +28,22 @@ class MainScaffoldShell extends StatelessWidget {
             child: navigationShell,
           ),
 
-          // 2. Floating Luxury Stadium Bottom Navigation Bar
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: bottomPadding + 12.h,
-            child: SakinaBottomNavBar(
-              currentIndex: navigationShell.currentIndex,
-              onItemSelected: (index) {
-                navigationShell.goBranch(
-                  index,
-                  initialLocation: index == navigationShell.currentIndex,
-                );
-              },
+          // 2. Floating Luxury Stadium Bottom Navigation Bar (Hidden when keyboard is active)
+          if (!isKeyboardOpen)
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: bottomPadding + 12.h,
+              child: SakinaBottomNavBar(
+                currentIndex: navigationShell.currentIndex,
+                onItemSelected: (index) {
+                  navigationShell.goBranch(
+                    index,
+                    initialLocation: index == navigationShell.currentIndex,
+                  );
+                },
+              ),
             ),
-          ),
         ],
       ),
     );

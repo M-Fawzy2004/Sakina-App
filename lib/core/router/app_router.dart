@@ -4,6 +4,9 @@ import 'package:sakina_app/core/router/route_constants.dart';
 import 'package:sakina_app/core/widgets/navigation/main_scaffold_shell.dart';
 import 'package:sakina_app/features/maladh/presentation/widgets/maladh_screen.dart';
 import 'package:sakina_app/features/onboarding/presentation/widgets/onboarding_screen.dart';
+import 'package:sakina_app/features/quran_reading/domain/entities/surah_entity.dart';
+import 'package:sakina_app/features/quran_reading/presentation/widgets/quran_screen.dart';
+import 'package:sakina_app/features/quran_reading/presentation/widgets/surah_reader_screen.dart';
 import 'package:sakina_app/features/splash/presentation/widgets/splash_screen.dart';
 
 final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -43,11 +46,28 @@ final GoRouter appRouter = GoRouter(
           routes: [
             GoRoute(
               path: AppRoutes.quran,
-              builder: (context, state) => const Scaffold(
-                body: Center(
-                  child: Text('المُصْحَفُ'),
+              builder: (context, state) => const QuranScreen(),
+              routes: [
+                GoRoute(
+                  path: '${AppRoutes.surahDetail}/:id',
+                  parentNavigatorKey: rootNavigatorKey,
+                  builder: (context, state) {
+                    final surahId =
+                        int.tryParse(state.pathParameters['id'] ?? '18') ?? 18;
+                    final surah = state.extra as SurahEntity? ??
+                        SurahEntity(
+                          id: surahId,
+                          nameArabic: 'الكَهْفِ',
+                          englishName: 'Al-Kahf',
+                          revelationType: 'مَكِّيَّة',
+                          versesCount: 110,
+                          pageNumber: 293,
+                          juzNumber: 15,
+                        );
+                    return SurahReaderScreen(surah: surah);
+                  },
                 ),
-              ),
+              ],
             ),
           ],
         ),

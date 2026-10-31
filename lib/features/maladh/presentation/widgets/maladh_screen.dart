@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:sakina_app/core/di/injection_container.dart';
+import 'package:sakina_app/core/router/route_constants.dart';
 import 'package:sakina_app/core/theme/app_colors.dart';
 import 'package:sakina_app/core/theme/app_spacing.dart';
 import 'package:sakina_app/core/theme/app_text_styles.dart';
@@ -90,7 +92,7 @@ class _MaladhView extends StatelessWidget {
                             // 4. "واصل وردك القرآني" - Continue Quranic Portion Card
                             MaladhContinueQuranCard(
                               onResumeTap: () {
-                                // Resume recitation
+                                context.go(AppRoutes.quran);
                               },
                             ),
 
@@ -99,10 +101,10 @@ class _MaladhView extends StatelessWidget {
                             // 5. "بَوَّابَاتُ السَّكِينَةِ" - 2x2 Quick Access Spiritual Portals
                             MaladhPortalsSection(
                               onDirectAccessTap: () {
-                                // View all portals
+                                context.go(AppRoutes.quran);
                               },
                               onMushafTap: () {
-                                // Navigate to Mushaf reader
+                                context.go(AppRoutes.quran);
                               },
                               onMaqraTap: () {
                                 // Navigate to reciter library

@@ -15,6 +15,15 @@ import 'package:sakina_app/features/maladh/domain/usecases/get_maladh_header_dat
 import 'package:sakina_app/features/maladh/presentation/cubit/maladh_cubit.dart';
 import 'package:sakina_app/features/onboarding/domain/usecases/complete_onboarding_usecase.dart';
 import 'package:sakina_app/features/onboarding/presentation/cubit/onboarding_cubit.dart';
+import 'package:sakina_app/features/quran_reading/data/datasources/quran_local_data_source.dart';
+import 'package:sakina_app/features/quran_reading/data/repositories/quran_repository_impl.dart';
+import 'package:sakina_app/features/quran_reading/domain/repositories/quran_repository.dart';
+import 'package:sakina_app/features/quran_reading/domain/usecases/get_juzs_usecase.dart';
+import 'package:sakina_app/features/quran_reading/domain/usecases/get_last_read_bookmark_usecase.dart';
+import 'package:sakina_app/features/quran_reading/domain/usecases/get_surah_verses_usecase.dart';
+import 'package:sakina_app/features/quran_reading/domain/usecases/get_surahs_usecase.dart';
+import 'package:sakina_app/features/quran_reading/domain/usecases/save_last_read_bookmark_usecase.dart';
+import 'package:sakina_app/features/quran_reading/presentation/cubit/quran_cubit.dart';
 import 'package:sakina_app/features/splash/domain/usecases/check_initial_app_state_usecase.dart';
 import 'package:sakina_app/features/splash/presentation/cubit/splash_cubit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -90,5 +99,37 @@ void _initFeatureModules() {
   );
   sl.registerFactory<MaladhCubit>(
     () => MaladhCubit(getMaladhHeaderDataUseCase: sl()),
+  );
+
+  // Al-Mushaf (Holy Quran Reading) Feature
+  sl.registerLazySingleton<QuranLocalDataSource>(
+    () => QuranLocalDataSourceImpl(preferencesService: sl()),
+  );
+  sl.registerLazySingleton<QuranRepository>(
+    () => QuranRepositoryImpl(localDataSource: sl()),
+  );
+  sl.registerLazySingleton<GetSurahsUseCase>(
+    () => GetSurahsUseCase(repository: sl()),
+  );
+  sl.registerLazySingleton<GetJuzsUseCase>(
+    () => GetJuzsUseCase(repository: sl()),
+  );
+  sl.registerLazySingleton<GetSurahVersesUseCase>(
+    () => GetSurahVersesUseCase(repository: sl()),
+  );
+  sl.registerLazySingleton<GetLastReadBookmarkUseCase>(
+    () => GetLastReadBookmarkUseCase(repository: sl()),
+  );
+  sl.registerLazySingleton<SaveLastReadBookmarkUseCase>(
+    () => SaveLastReadBookmarkUseCase(repository: sl()),
+  );
+  sl.registerFactory<QuranCubit>(
+    () => QuranCubit(
+      getSurahsUseCase: sl(),
+      getJuzsUseCase: sl(),
+      getSurahVersesUseCase: sl(),
+      getLastReadBookmarkUseCase: sl(),
+      saveLastReadBookmarkUseCase: sl(),
+    ),
   );
 }
