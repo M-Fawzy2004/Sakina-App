@@ -215,6 +215,7 @@ void _initFeatureModules() {
     () => SettingsCubit(
       getThemeModeUseCase: sl(),
       setThemeModeUseCase: sl(),
+      repository: sl(),
     )..loadSettings(),
   );
 

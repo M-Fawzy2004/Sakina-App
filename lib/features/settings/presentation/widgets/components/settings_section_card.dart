@@ -54,12 +54,14 @@ class SettingsSectionCard extends StatelessWidget {
                 ),
               ),
               SizedBox(width: 10.w),
-              Text(
-                title,
-                style: GoogleFonts.cairo(
-                  fontSize: 14.sp,
-                  fontWeight: FontWeight.w700,
-                  color: colors.textPrimary,
+              Expanded(
+                child: Text(
+                  title,
+                  style: GoogleFonts.cairo(
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w700,
+                    color: colors.textPrimary,
+                  ),
                 ),
               ),
             ],

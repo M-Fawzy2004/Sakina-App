@@ -8,7 +8,12 @@ import 'package:sakina_app/features/settings/domain/entities/app_theme_mode.dart
 
 abstract final class AppTheme {
   /// Modern Charcoal Slate Luxury Theme (Primary Default Theme from user specifications)
-  static ThemeData get charcoalLuxury {
+  static ThemeData get charcoalLuxury => charcoalLuxuryTheme();
+
+  static ThemeData charcoalLuxuryTheme({Color? accent}) {
+    final customAccent = accent ?? AppColors.charcoalAccent;
+    final scheme = AppColorsScheme.charcoal.copyWith(accentGold: customAccent);
+
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
@@ -20,10 +25,10 @@ abstract final class AppTheme {
       scaffoldBackgroundColor: AppColors.charcoalCore,
       canvasColor: AppColors.charcoalCore,
       cardColor: AppColors.charcoalCard,
-      primaryColor: AppColors.charcoalAccent,
-      extensions: const [AppColorsScheme.charcoal],
-      colorScheme: const ColorScheme.dark(
-        primary: AppColors.charcoalAccent,
+      primaryColor: customAccent,
+      extensions: [scheme],
+      colorScheme: ColorScheme.dark(
+        primary: customAccent,
         onPrimary: AppColors.charcoalCore,
         secondary: AppColors.emeraldGlow,
         onSecondary: AppColors.pureChalk,
@@ -53,7 +58,12 @@ abstract final class AppTheme {
   }
 
   /// OLED Tactile Luxury Dark Theme (Obsidian & Pure Gold)
-  static ThemeData get darkLuxury {
+  static ThemeData get darkLuxury => darkLuxuryTheme();
+
+  static ThemeData darkLuxuryTheme({Color? accent}) {
+    final customAccent = accent ?? AppColors.champagneGold;
+    final scheme = AppColorsScheme.dark.copyWith(accentGold: customAccent);
+
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
@@ -65,10 +75,10 @@ abstract final class AppTheme {
       scaffoldBackgroundColor: AppColors.obsidianCore,
       canvasColor: AppColors.obsidianCore,
       cardColor: AppColors.carbonSlate,
-      primaryColor: AppColors.champagneGold,
-      extensions: const [AppColorsScheme.dark],
-      colorScheme: const ColorScheme.dark(
-        primary: AppColors.champagneGold,
+      primaryColor: customAccent,
+      extensions: [scheme],
+      colorScheme: ColorScheme.dark(
+        primary: customAccent,
         onPrimary: AppColors.obsidianCore,
         secondary: AppColors.emeraldGlow,
         onSecondary: AppColors.pureChalk,
@@ -98,7 +108,12 @@ abstract final class AppTheme {
   }
 
   /// Calming Sacred Parchment Light Theme (Zero Eye-Strain Cream Canvas)
-  static ThemeData get lightLuxury {
+  static ThemeData get lightLuxury => lightLuxuryTheme();
+
+  static ThemeData lightLuxuryTheme({Color? accent}) {
+    final customAccent = accent ?? AppColors.warmGold;
+    final scheme = AppColorsScheme.light.copyWith(accentGold: customAccent);
+
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
@@ -110,10 +125,10 @@ abstract final class AppTheme {
       scaffoldBackgroundColor: AppColors.parchmentCore,
       canvasColor: AppColors.parchmentCore,
       cardColor: AppColors.parchmentCard,
-      primaryColor: AppColors.warmGold,
-      extensions: const [AppColorsScheme.light],
-      colorScheme: const ColorScheme.light(
-        primary: AppColors.warmGold,
+      primaryColor: customAccent,
+      extensions: [scheme],
+      colorScheme: ColorScheme.light(
+        primary: customAccent,
         onPrimary: AppColors.parchmentCore,
         secondary: AppColors.forestEmerald,
         onSecondary: AppColors.parchmentCore,
@@ -127,7 +142,8 @@ abstract final class AppTheme {
         elevation: 0,
         centerTitle: true,
         iconTheme: const IconThemeData(color: AppColors.inkDeep),
-        titleTextStyle: AppTextStyles.headlineMedium.copyWith(color: AppColors.warmGold),
+        titleTextStyle:
+            AppTextStyles.headlineMedium.copyWith(color: customAccent),
         systemOverlayStyle: const SystemUiOverlayStyle(
           statusBarColor: Colors.transparent,
           statusBarIconBrightness: Brightness.dark,
@@ -143,7 +159,12 @@ abstract final class AppTheme {
   }
 
   /// Royal Emerald Sanctuary Theme (Chic 4th Regal Serenity Theme)
-  static ThemeData get emeraldLuxury {
+  static ThemeData get emeraldLuxury => emeraldLuxuryTheme();
+
+  static ThemeData emeraldLuxuryTheme({Color? accent}) {
+    final customAccent = accent ?? AppColors.emeraldGlow;
+    final scheme = AppColorsScheme.emerald.copyWith(accentGold: customAccent);
+
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
@@ -155,10 +176,10 @@ abstract final class AppTheme {
       scaffoldBackgroundColor: AppColors.emeraldSanctuaryCore,
       canvasColor: AppColors.emeraldSanctuaryCore,
       cardColor: AppColors.emeraldSanctuaryCard,
-      primaryColor: AppColors.emeraldGlow,
-      extensions: const [AppColorsScheme.emerald],
-      colorScheme: const ColorScheme.dark(
-        primary: AppColors.emeraldGlow,
+      primaryColor: customAccent,
+      extensions: [scheme],
+      colorScheme: ColorScheme.dark(
+        primary: customAccent,
         onPrimary: AppColors.emeraldSanctuaryCore,
         secondary: AppColors.champagneGold,
         onSecondary: AppColors.pureChalk,
@@ -172,7 +193,8 @@ abstract final class AppTheme {
         elevation: 0,
         centerTitle: true,
         iconTheme: const IconThemeData(color: AppColors.pureChalk),
-        titleTextStyle: AppTextStyles.headlineMedium.copyWith(color: AppColors.emeraldGlow),
+        titleTextStyle:
+            AppTextStyles.headlineMedium.copyWith(color: customAccent),
         systemOverlayStyle: const SystemUiOverlayStyle(
           statusBarColor: Colors.transparent,
           statusBarIconBrightness: Brightness.light,
@@ -188,13 +210,19 @@ abstract final class AppTheme {
   }
 
   /// Resolves the corresponding ThemeData for any [AppThemeMode].
-  static ThemeData themeFor(AppThemeMode mode, {bool isSystemDark = true}) {
+  static ThemeData themeFor(
+    AppThemeMode mode, {
+    bool isSystemDark = true,
+    Color? primaryAccent,
+  }) {
     return switch (mode) {
-      AppThemeMode.charcoal => charcoalLuxury,
-      AppThemeMode.dark => darkLuxury,
-      AppThemeMode.light => lightLuxury,
-      AppThemeMode.emerald => emeraldLuxury,
-      AppThemeMode.system => isSystemDark ? charcoalLuxury : lightLuxury,
+      AppThemeMode.charcoal => charcoalLuxuryTheme(accent: primaryAccent),
+      AppThemeMode.dark => darkLuxuryTheme(accent: primaryAccent),
+      AppThemeMode.light => lightLuxuryTheme(accent: primaryAccent),
+      AppThemeMode.emerald => emeraldLuxuryTheme(accent: primaryAccent),
+      AppThemeMode.system => isSystemDark
+          ? charcoalLuxuryTheme(accent: primaryAccent)
+          : lightLuxuryTheme(accent: primaryAccent),
     };
   }
 }

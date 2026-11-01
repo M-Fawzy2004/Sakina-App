@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:sakina_app/core/errors/failures.dart';
 import 'package:sakina_app/features/settings/data/datasources/settings_local_data_source.dart';
@@ -26,6 +27,36 @@ class SettingsRepositoryImpl implements SettingsRepository {
       return const Right(null);
     } catch (e) {
       return Left(CacheFailure(message: 'Failed to save theme mode: $e'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, Color>> getPrimaryAccentColor() async {
+    try {
+      final color = await localDataSource.getPrimaryAccentColor();
+      return Right(color);
+    } catch (e) {
+      return Left(CacheFailure(message: 'Failed to retrieve accent color: $e'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> setPrimaryAccentColor(Color color) async {
+    try {
+      await localDataSource.setPrimaryAccentColor(color);
+      return const Right(null);
+    } catch (e) {
+      return Left(CacheFailure(message: 'Failed to save accent color: $e'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> resetSettings() async {
+    try {
+      await localDataSource.resetSettings();
+      return const Right(null);
+    } catch (e) {
+      return Left(CacheFailure(message: 'Failed to reset settings: $e'));
     }
   }
 }
