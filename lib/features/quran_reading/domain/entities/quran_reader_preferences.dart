@@ -24,6 +24,46 @@ enum QuranReadingStyle {
   });
 }
 
+/// Calligraphic and typography script styles for Holy Quran text:
+enum QuranScriptStyle {
+  uthmani(
+    title: 'الرَّسْمُ العُثْمَانِيُّ',
+    description: 'حَفْص عَنْ عَاصِم - مُصْحَفُ المَدِينَةِ المُنَوَّرَةِ',
+    badgeText: 'مُعْتَمَد',
+    fontFamily: 'Amiri',
+  ),
+  imlaei(
+    title: 'الرَّسْمُ الإِمْلائِيُّ المَرِن',
+    description: 'خَطٌّ قِيَاسِيٌّ مُبَسَّطٌ لِلتَّيْسِيرِ وَسُرْعَةِ التَّدَبُّرِ',
+    badgeText: 'مُيَسَّر',
+    fontFamily: 'Cairo',
+  ),
+  amiri(
+    title: 'الخَطُّ الأَمِيرِيُّ القُرْآنِيُّ',
+    description: 'طِبَاعَةٌ كِلاسِيكِيَّةٌ فَاخِرَةٌ تَنْبِضُ بِأَصَالَةِ النَّسْخِ',
+    badgeText: 'كِلاسِيكِي',
+    fontFamily: 'Amiri',
+  ),
+  indopak(
+    title: 'الرَّسْمُ النَّسْتَعْلِيق / المَشْرِقِيُّ',
+    description: 'رَسْمُ المَصَاحِفِ التَّقْلِيدِيِّ بِبِلادِ المَشْرِقِ وَآسِيَا',
+    badgeText: 'مَشْرِقِي',
+    fontFamily: 'Amiri',
+  );
+
+  final String title;
+  final String description;
+  final String badgeText;
+  final String fontFamily;
+
+  const QuranScriptStyle({
+    required this.title,
+    required this.description,
+    required this.badgeText,
+    required this.fontFamily,
+  });
+}
+
 /// The four discrete calibrated font sizes for Quranic scripture:
 enum QuranFontSize {
   small(
@@ -136,6 +176,7 @@ enum QuranLineSpacing {
 /// Immutable configuration model capturing all luxury reader preferences.
 class QuranReaderPreferences extends Equatable {
   final QuranReadingStyle style;
+  final QuranScriptStyle scriptStyle;
   final QuranFontSize fontSize;
   final QuranReaderTheme theme;
   final QuranLineSpacing lineSpacing;
@@ -146,6 +187,7 @@ class QuranReaderPreferences extends Equatable {
 
   const QuranReaderPreferences({
     this.style = QuranReadingStyle.verseByVerse,
+    this.scriptStyle = QuranScriptStyle.uthmani,
     this.fontSize = QuranFontSize.medium,
     this.theme = QuranReaderTheme.obsidian,
     this.lineSpacing = QuranLineSpacing.relaxed,
@@ -157,6 +199,7 @@ class QuranReaderPreferences extends Equatable {
 
   QuranReaderPreferences copyWith({
     QuranReadingStyle? style,
+    QuranScriptStyle? scriptStyle,
     QuranFontSize? fontSize,
     QuranReaderTheme? theme,
     QuranLineSpacing? lineSpacing,
@@ -167,6 +210,7 @@ class QuranReaderPreferences extends Equatable {
   }) {
     return QuranReaderPreferences(
       style: style ?? this.style,
+      scriptStyle: scriptStyle ?? this.scriptStyle,
       fontSize: fontSize ?? this.fontSize,
       theme: theme ?? this.theme,
       lineSpacing: lineSpacing ?? this.lineSpacing,
@@ -180,6 +224,7 @@ class QuranReaderPreferences extends Equatable {
   @override
   List<Object?> get props => [
         style,
+        scriptStyle,
         fontSize,
         theme,
         lineSpacing,

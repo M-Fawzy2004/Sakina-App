@@ -18,6 +18,7 @@ class QuranReaderFloatingBar extends StatelessWidget {
   final VoidCallback onTafsir;
   final VoidCallback onCopy;
   final VoidCallback onBookmark;
+  final String? pageLabel;
   final Color? accentColor;
   final Color? cardColor;
 
@@ -32,6 +33,7 @@ class QuranReaderFloatingBar extends StatelessWidget {
     required this.onTafsir,
     required this.onCopy,
     required this.onBookmark,
+    this.pageLabel,
     this.accentColor,
     this.cardColor,
   });
@@ -84,8 +86,8 @@ class QuranReaderFloatingBar extends StatelessWidget {
                           filled: true,
                         )
                       : _Badge(
-                          key: ValueKey('page-$pageNumber-$juzNumber'),
-                          text: 'ص $pageNumber • جزء $juzNumber',
+                          key: ValueKey(pageLabel ?? 'page-$pageNumber-$juzNumber'),
+                          text: pageLabel ?? 'ص $pageNumber • جزء $juzNumber',
                           color: activeAccent,
                         ),
                 ),

@@ -9,11 +9,14 @@ import 'package:sakina_app/features/quran_reading/domain/entities/surah_entity.d
 import 'package:sakina_app/features/quran_reading/domain/failures/quran_failure.dart';
 import 'package:sakina_app/features/quran_reading/domain/repositories/quran_repository.dart';
 
-/// Repository implementation fulfilling the Quran domain contract using local caching.
+/// 100% Offline (Local-First) Repository implementation fulfilling the Quran domain contract.
+/// Guarantees 0ms network latency by reading directly from packaged JSON assets.
 class QuranRepositoryImpl implements QuranRepository {
   final QuranLocalDataSource localDataSource;
 
-  const QuranRepositoryImpl({required this.localDataSource});
+  const QuranRepositoryImpl({
+    required this.localDataSource,
+  });
 
   @override
   Future<Either<Failure, List<SurahEntity>>> getSurahs() async {
@@ -72,4 +75,3 @@ class QuranRepositoryImpl implements QuranRepository {
     }
   }
 }
-

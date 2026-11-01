@@ -268,11 +268,6 @@ void main() {
 
       expect(find.text('سُورَةُ الكَهْفِ'), findsOneWidget);
       expect(find.text('الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ'), findsOneWidget);
-
-      await tester.scrollUntilVisible(
-        find.text('الرَّحْمَٰنِ الرَّحِيمِ'),
-        100.0,
-      );
       expect(find.text('الرَّحْمَٰنِ الرَّحِيمِ'), findsOneWidget);
 
       final backButton = find.byIcon(Iconsax.arrow_right_3).first;
@@ -281,6 +276,60 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(closed, isTrue);
+    });
+
+    testWidgets('paginates verses into 10 per page and supports horizontal navigation', (tester) async {
+      // 25 verses: page 1 (1-10), page 2 (11-20), page 3 (21-25)
+      final testVerses = List.generate(
+        25,
+        (i) => AyahEntity(
+          numberInSurah: i + 1,
+          text: 'آيَةُ رَقْمِ ${i + 1}',
+          page: 1,
+          juz: 1,
+        ),
+      );
+
+      await tester.pumpWidget(
+        createTestWidget(
+          QuranReaderView(
+            surah: testSurah,
+            verses: testVerses,
+            onClose: () {},
+            onBookmarkSaved: (_) {},
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Check first page shows verses 1-10
+      expect(find.text('آيَةُ رَقْمِ 1'), findsOneWidget);
+      expect(find.text('آيَةُ رَقْمِ 10'), findsOneWidget);
+      // Verse 15 is on page 2, so not on page 1
+      expect(find.text('آيَةُ رَقْمِ 15'), findsNothing);
+
+      // Verify page label on bottom bar: الآيَاتُ 1 - 10 • ص 1/3
+      expect(find.textContaining('ص 1/3'), findsOneWidget);
+
+      // Swipe horizontally to page 2 (drag left for LTR or right for RTL depending on locale)
+      // Or tap the next page button on the floating bar
+      final nextPageBtn = find.byTooltip('الصفحة التالية');
+      expect(nextPageBtn, findsOneWidget);
+      await tester.tap(nextPageBtn);
+      await tester.pumpAndSettle();
+
+      // Now on page 2: verses 11-20
+      expect(find.text('آيَةُ رَقْمِ 11'), findsOneWidget);
+      expect(find.text('آيَةُ رَقْمِ 20'), findsOneWidget);
+      expect(find.textContaining('ص 2/3'), findsOneWidget);
+
+      // Tap next page again to go to page 3 (verses 21-25)
+      await tester.tap(nextPageBtn);
+      await tester.pumpAndSettle();
+
+      expect(find.text('آيَةُ رَقْمِ 21'), findsOneWidget);
+      expect(find.text('آيَةُ رَقْمِ 25'), findsOneWidget);
+      expect(find.textContaining('ص 3/3'), findsOneWidget);
     });
   });
 }

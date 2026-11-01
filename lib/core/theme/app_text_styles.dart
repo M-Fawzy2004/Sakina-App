@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sakina_app/core/theme/app_colors.dart';
 import 'package:sakina_app/core/theme/app_colors_scheme.dart';
+import 'package:sakina_app/features/quran_reading/domain/entities/quran_reader_preferences.dart';
 
 /// Standard Typography Tokens for Sakina Sanctuary.
 /// Universally powered by GoogleFonts.cairo for modern, crisp, bold Arabic aesthetics,
@@ -12,6 +13,23 @@ abstract final class AppTextStyles {
   // ---------------------------------------------------------------------------
   // Context-Aware Dynamic Text Styles (Theme Adaptive)
   // ---------------------------------------------------------------------------
+  /// Resolves the sacred scripture font family and baseline style based on selected [QuranScriptStyle].
+  static TextStyle quranScriptStyleOf(QuranScriptStyle style) {
+    switch (style) {
+      case QuranScriptStyle.imlaei:
+        return GoogleFonts.cairo(
+          fontWeight: FontWeight.w700,
+          letterSpacing: 0.2,
+        );
+      case QuranScriptStyle.amiri:
+      case QuranScriptStyle.indopak:
+      case QuranScriptStyle.uthmani:
+        return GoogleFonts.amiri(
+          fontWeight: FontWeight.w700,
+          letterSpacing: 0.3,
+        );
+    }
+  }
   static TextStyle quranAyahOf(BuildContext context) => GoogleFonts.cairo(
         fontSize: 23.sp,
         fontWeight: FontWeight.w700,

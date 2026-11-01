@@ -138,12 +138,14 @@ void _initFeatureModules() {
     () => MaladhCubit(getMaladhHeaderDataUseCase: sl()),
   );
 
-  // Al-Mushaf (Holy Quran Reading) Feature
+  // Al-Mushaf (Holy Quran Reading) Feature - 100% Offline Local-First
   sl.registerLazySingleton<QuranLocalDataSource>(
     () => QuranLocalDataSourceImpl(preferencesService: sl()),
   );
   sl.registerLazySingleton<QuranRepository>(
-    () => QuranRepositoryImpl(localDataSource: sl()),
+    () => QuranRepositoryImpl(
+      localDataSource: sl(),
+    ),
   );
   sl.registerLazySingleton<GetSurahsUseCase>(
     () => GetSurahsUseCase(repository: sl()),

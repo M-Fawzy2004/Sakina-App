@@ -20,6 +20,10 @@ class QuranOrnateManuscriptCard extends StatelessWidget {
   final int? selectedAyahNumber;
   final ValueChanged<int> onAyahTap;
   final ScrollController? scrollController;
+  final int pageIndex;
+  final int totalPages;
+  final bool showBasmalahOnThisPage;
+  final String? verseRangeLabel;
 
   const QuranOrnateManuscriptCard({
     super.key,
@@ -29,11 +33,15 @@ class QuranOrnateManuscriptCard extends StatelessWidget {
     required this.selectedAyahNumber,
     required this.onAyahTap,
     this.scrollController,
+    this.pageIndex = 0,
+    this.totalPages = 1,
+    this.showBasmalahOnThisPage = true,
+    this.verseRangeLabel,
   });
 
   @override
   Widget build(BuildContext context) {
-    final showBasmalah = surah.id != 9 && surah.id != 1;
+    final showBasmalah = showBasmalahOnThisPage && surah.id != 9;
     final theme = preferences.theme;
 
     return Container(
@@ -60,8 +68,35 @@ class QuranOrnateManuscriptCard extends StatelessWidget {
           physics: const BouncingScrollPhysics(),
           padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 14.h),
           children: [
+            // Page Indicator Pill (when totalPages > 1)
+            if (totalPages > 1 && verseRangeLabel != null)
+              Padding(
+                padding: EdgeInsets.only(bottom: 8.h),
+                child: Center(
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 4.h),
+                    decoration: BoxDecoration(
+                      color: theme.accentColor.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(16.r),
+                      border: Border.all(
+                        color: theme.accentColor.withValues(alpha: 0.35),
+                        width: 0.8.r,
+                      ),
+                    ),
+                    child: Text(
+                      '$verseRangeLabel  •  صَفْحَةُ ${pageIndex + 1} مِنْ $totalPages',
+                      style: AppTextStyles.caption.copyWith(
+                        color: theme.accentColor,
+                        fontSize: 10.5.sp,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+
             // Classical Basmalah Banner with Star Divider
-            if (showBasmalah || surah.id == 1) ...[
+            if (showBasmalah) ...[
               _BasmalahHeader(
                 fontSizeDelta: preferences.fontSize.scaleDelta,
                 accentColor: theme.accentColor,
@@ -235,9 +270,9 @@ class _AyahRow extends StatelessWidget {
                   child: Directionality(
                     textDirection: TextDirection.rtl,
                     child: Text(
-                      ayah.text,
+                      ayah.textForStyle(preferences.scriptStyle),
                       textAlign: TextAlign.right,
-                      style: AppTextStyles.quranIlluminatedAyah.copyWith(
+                      style: AppTextStyles.quranScriptStyleOf(preferences.scriptStyle).copyWith(
                         fontSize: 22.sp + preferences.fontSize.scaleDelta,
                         color: isSelected
                             ? theme.accentColor
@@ -331,9 +366,9 @@ class _ContinuousManuscriptFlowState extends State<_ContinuousManuscriptFlow> {
       // Ayah Text
       spans.add(
         TextSpan(
-          text: '${ayah.text} ',
+          text: '${ayah.textForStyle(widget.preferences.scriptStyle)} ',
           recognizer: recognizer,
-          style: AppTextStyles.quranIlluminatedAyah.copyWith(
+          style: AppTextStyles.quranScriptStyleOf(widget.preferences.scriptStyle).copyWith(
             fontSize: fontSize,
             height: lineSpacing,
             color: isSelected ? theme.accentColor : theme.textColor,

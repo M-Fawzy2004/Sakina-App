@@ -89,12 +89,16 @@ void main() {
 
   group('QuranReaderSettingsSheet Widget Tests', () {
     testWidgets('renders all 5 setting sections with 4 font sizes and style switcher', (tester) async {
+      tester.view.physicalSize = const Size(800, 1400);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+
       QuranReaderPreferences currentPrefs = const QuranReaderPreferences();
 
       await tester.pumpWidget(
         createTestWidget(
           SizedBox(
-            height: 750,
+            height: 900,
             child: QuranReaderSettingsSheet(
               preferences: currentPrefs,
               onPreferencesChanged: (newPrefs) => currentPrefs = newPrefs,
@@ -107,6 +111,7 @@ void main() {
       // Check header and titles
       expect(find.text('إِعْدَادَاتُ المَصْحَفِ الشَّرِيفِ'), findsOneWidget);
       expect(find.text('نَمَطُ عَرْضِ القِرَاءَةِ'), findsOneWidget);
+      expect(find.text('رَسْمُ وَخَطُّ الكِتَابَةِ القُرْآنِيَّةِ'), findsOneWidget);
       expect(find.text('حَجْمُ الخَطِّ القُرْآنِيِّ (4 أَحْجَامٍ)'), findsOneWidget);
 
       // Check style cards
@@ -117,6 +122,16 @@ void main() {
       await tester.tap(find.text('مُصْحَفٌ مُتَّصِلٌ'));
       await tester.pumpAndSettle();
       expect(currentPrefs.style, equals(QuranReadingStyle.continuous));
+
+      // Tap script style card (الرسم الإملائي المرن)
+      expect(find.text('الرَّسْمُ الإِمْلائِيُّ المَرِن'), findsOneWidget);
+      await tester.tap(find.text('الرَّسْمُ الإِمْلائِيُّ المَرِن'));
+      await tester.pumpAndSettle();
+      expect(currentPrefs.scriptStyle, equals(QuranScriptStyle.imlaei));
+
+      // Scroll down to reveal font size buttons
+      await tester.drag(find.byType(ListView), const Offset(0, -250));
+      await tester.pumpAndSettle();
 
       // Check font size 4 segmented buttons
       expect(find.text('صَغِير'), findsOneWidget);

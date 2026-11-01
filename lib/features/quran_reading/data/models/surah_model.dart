@@ -24,6 +24,35 @@ class SurahModel extends SurahEntity {
     );
   }
 
+  /// Parses chapter directly from Quran Foundation / Quran.com API v4 response.
+  factory SurahModel.fromQuranFoundationJson(Map<String, dynamic> json) {
+    final id = json['id'] as int;
+    final nameArabic = (json['name_arabic'] as String?)?.trim() ?? '';
+    final englishName = (json['name_simple'] as String?) ??
+        (json['name_complex'] as String?) ??
+        'Surah $id';
+    final place = (json['revelation_place'] as String?)?.toLowerCase();
+    final revelationType = (place == 'makkah' || place == 'meccan') ? 'مكية' : 'مدنية';
+    final versesCount = (json['verses_count'] as num?)?.toInt() ?? 0;
+    final pagesList = json['pages'] as List<dynamic>?;
+    final pageNumber = (pagesList != null && pagesList.isNotEmpty)
+        ? (pagesList.first as num).toInt()
+        : (json['page_number'] as num?)?.toInt() ?? 1;
+    // Approximating juz number from page if not provided
+    final juzNumber = (json['juz_number'] as num?)?.toInt() ??
+        ((pageNumber - 1) ~/ 20 + 1).clamp(1, 30);
+
+    return SurahModel(
+      id: id,
+      nameArabic: nameArabic,
+      englishName: englishName,
+      revelationType: revelationType,
+      versesCount: versesCount,
+      pageNumber: pageNumber,
+      juzNumber: juzNumber,
+    );
+  }
+
   Map<String, dynamic> toJson() => {
         'id': id,
         'name_arabic': nameArabic,

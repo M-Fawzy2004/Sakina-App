@@ -100,9 +100,25 @@ class _QuranReaderSettingsSheetState extends State<QuranReaderSettingsSheet> {
 
                 AppSpacing.verticalMd,
 
-                // 2. Font Size (4 discrete sizes + Live Preview)
+                // 2. Quranic Calligraphy Script Style
+                _ScriptStyleSection(
+                  selectedScriptStyle: _currentPreferences.scriptStyle,
+                  accentColor: activeAccent,
+                  activeTheme: activeTheme,
+                  onScriptStyleChanged: (newScript) {
+                    HapticService.selectionClick();
+                    _updatePreferences(
+                      _currentPreferences.copyWith(scriptStyle: newScript),
+                    );
+                  },
+                ),
+
+                AppSpacing.verticalMd,
+
+                // 3. Font Size (4 discrete sizes + Live Preview)
                 _FontSizeSection(
                   selectedSize: _currentPreferences.fontSize,
+                  scriptStyle: _currentPreferences.scriptStyle,
                   accentColor: activeAccent,
                   activeTheme: activeTheme,
                   lineSpacing: _currentPreferences.lineSpacing,
@@ -370,9 +386,139 @@ class _ReadingStyleCard extends StatelessWidget {
   }
 }
 
+/// Script Style Section: Calligraphy & writing style selection.
+class _ScriptStyleSection extends StatelessWidget {
+  final QuranScriptStyle selectedScriptStyle;
+  final Color accentColor;
+  final QuranReaderTheme activeTheme;
+  final ValueChanged<QuranScriptStyle> onScriptStyleChanged;
+
+  const _ScriptStyleSection({
+    required this.selectedScriptStyle,
+    required this.accentColor,
+    required this.activeTheme,
+    required this.onScriptStyleChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _SectionTitle(
+          icon: Iconsax.edit_2,
+          title: 'رَسْمُ وَخَطُّ الكِتَابَةِ القُرْآنِيَّةِ',
+          accentColor: accentColor,
+        ),
+        AppSpacing.verticalXs,
+        GridView.count(
+          crossAxisCount: 2,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          mainAxisSpacing: 8.h,
+          crossAxisSpacing: 8.w,
+          childAspectRatio: 2.1,
+          children: QuranScriptStyle.values.map((style) {
+            final isSelected = style == selectedScriptStyle;
+            return _ScriptStyleCard(
+              style: style,
+              isSelected: isSelected,
+              accentColor: accentColor,
+              activeTheme: activeTheme,
+              onTap: () => onScriptStyleChanged(style),
+            );
+          }).toList(),
+        ),
+      ],
+    );
+  }
+}
+
+class _ScriptStyleCard extends StatelessWidget {
+  final QuranScriptStyle style;
+  final bool isSelected;
+  final Color accentColor;
+  final QuranReaderTheme activeTheme;
+  final VoidCallback onTap;
+
+  const _ScriptStyleCard({
+    required this.style,
+    required this.isSelected,
+    required this.accentColor,
+    required this.activeTheme,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: isSelected
+          ? accentColor.withValues(alpha: 0.16)
+          : activeTheme.itemBackgroundColor,
+      borderRadius: BorderRadius.circular(14.r),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(14.r),
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(14.r),
+            border: Border.all(
+              color: isSelected
+                  ? accentColor
+                  : activeTheme.borderColor.withValues(alpha: 0.35),
+              width: isSelected ? 1.5.r : 0.8.r,
+            ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Text(
+                      style.title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTextStyles.bodyMedium.copyWith(
+                        color: isSelected ? accentColor : activeTheme.textColor,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 12.sp,
+                      ),
+                    ),
+                  ),
+                  if (isSelected)
+                    Icon(
+                      Iconsax.tick_circle,
+                      size: 15.r,
+                      color: accentColor,
+                    ),
+                ],
+              ),
+              SizedBox(height: 2.h),
+              Text(
+                style.description,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: AppTextStyles.caption.copyWith(
+                  color: activeTheme.secondaryTextColor,
+                  fontSize: 9.sp,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 /// Font Size Section with 4 calibrated steps and live verse preview.
 class _FontSizeSection extends StatelessWidget {
   final QuranFontSize selectedSize;
+  final QuranScriptStyle scriptStyle;
   final Color accentColor;
   final QuranReaderTheme activeTheme;
   final QuranLineSpacing lineSpacing;
@@ -380,6 +526,7 @@ class _FontSizeSection extends StatelessWidget {
 
   const _FontSizeSection({
     required this.selectedSize,
+    required this.scriptStyle,
     required this.accentColor,
     required this.activeTheme,
     required this.lineSpacing,
@@ -453,6 +600,7 @@ class _FontSizeSection extends StatelessWidget {
         SizedBox(height: 10.h),
         _LiveFontPreviewBox(
           fontSizeDelta: selectedSize.scaleDelta,
+          scriptStyle: scriptStyle,
           accentColor: accentColor,
           activeTheme: activeTheme,
           lineSpacing: lineSpacing,
@@ -526,15 +674,17 @@ class _FontSizeSegmentedBar extends StatelessWidget {
   }
 }
 
-/// Live preview card rendering a sacred Quran verse at the selected size.
+/// Live preview card rendering a sacred Quran verse at the selected size and script style.
 class _LiveFontPreviewBox extends StatelessWidget {
   final double fontSizeDelta;
+  final QuranScriptStyle scriptStyle;
   final Color accentColor;
   final QuranReaderTheme activeTheme;
   final QuranLineSpacing lineSpacing;
 
   const _LiveFontPreviewBox({
     required this.fontSizeDelta,
+    required this.scriptStyle,
     required this.accentColor,
     required this.activeTheme,
     required this.lineSpacing,
@@ -542,6 +692,12 @@ class _LiveFontPreviewBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final previewText = scriptStyle == QuranScriptStyle.uthmani
+        ? '﴿ بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ ﴾'
+        : (scriptStyle == QuranScriptStyle.indopak
+            ? '﴿ بِسۡمِ اللهِ الرَّحۡمٰنِ الرَّحِيۡمِ ﴾'
+            : '﴿ بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ ﴾');
+
     return Container(
       width: double.infinity,
       padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
@@ -556,7 +712,7 @@ class _LiveFontPreviewBox extends StatelessWidget {
       child: Column(
         children: [
           Text(
-            'مُعَايَنَةُ الخَطِّ الحَيَّة',
+            'مُعَايَنَةُ الخَطِّ الحَيَّة (${scriptStyle.title})',
             style: AppTextStyles.caption.copyWith(
               color: activeTheme.secondaryTextColor,
               fontSize: 10.sp,
@@ -566,9 +722,9 @@ class _LiveFontPreviewBox extends StatelessWidget {
           Directionality(
             textDirection: TextDirection.rtl,
             child: Text(
-              '﴿ بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ ﴾',
+              previewText,
               textAlign: TextAlign.center,
-              style: AppTextStyles.quranIlluminatedAyah.copyWith(
+              style: AppTextStyles.quranScriptStyleOf(scriptStyle).copyWith(
                 fontSize: 22.sp + fontSizeDelta,
                 color: activeTheme.textColor,
                 height: lineSpacing.height,
