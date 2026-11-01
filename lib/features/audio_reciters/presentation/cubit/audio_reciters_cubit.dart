@@ -9,6 +9,7 @@ import 'package:sakina_app/features/audio_reciters/domain/usecases/get_featured_
 import 'package:sakina_app/features/audio_reciters/domain/usecases/get_reciter_tracks_usecase.dart';
 import 'package:sakina_app/features/audio_reciters/domain/usecases/get_reciters_usecase.dart';
 import 'package:sakina_app/features/audio_reciters/presentation/cubit/audio_reciters_state.dart';
+import 'package:sakina_app/features/audio_reciters/presentation/widgets/components/live_stream_channels_card.dart';
 
 class AudioRecitersCubit extends Cubit<AudioRecitersState> {
   final GetRecitersUseCase getRecitersUseCase;
@@ -143,6 +144,29 @@ class AudioRecitersCubit extends Cubit<AudioRecitersState> {
     );
   }
 
+  Future<void> loadReciterTracks(ReciterEntity reciter) async {
+    emit(state.copyWith(
+      selectedReciter: reciter,
+      isLoadingTracks: true,
+      errorMessage: null,
+    ));
+
+    final result = await getReciterTracksUseCase(
+      GetReciterTracksParams(reciterId: reciter.id),
+    );
+
+    result.fold(
+      (failure) => emit(state.copyWith(
+        isLoadingTracks: false,
+        errorMessage: failure.message,
+      )),
+      (tracks) => emit(state.copyWith(
+        isLoadingTracks: false,
+        reciterTracks: tracks,
+      )),
+    );
+  }
+
   Future<void> playTrack(RecitationTrackEntity track) async {
     try {
       emit(state.copyWith(
@@ -203,12 +227,46 @@ class AudioRecitersCubit extends Cubit<AudioRecitersState> {
     await audioPlayerHandler.pause();
   }
 
+  Future<void> stopAndDismissTrack() async {
+    try {
+      await audioPlayerHandler.stop();
+    } catch (_) {
+      try {
+        await audioPlayerHandler.pause();
+      } catch (_) {}
+    }
+    emit(state.copyWith(
+      clearCurrentTrack: true,
+      isPlaying: false,
+      position: Duration.zero,
+    ));
+  }
+
   Future<void> seekTo(Duration position) async {
     await audioPlayerHandler.seek(position);
   }
 
   Future<void> nextTrack() async {
     if (state.currentTrack == null) return;
+
+    if (state.currentTrack!.reciterId == 999) {
+      final isMakkah = state.currentTrack!.audioUrl.contains('quran');
+      final target = isMakkah ? kSanctuaryLiveChannels[1] : kSanctuaryLiveChannels[0];
+      await playTrack(target.toTrack());
+      return;
+    }
+
+    if (state.reciterTracks.isNotEmpty) {
+      final currentIndex = state.reciterTracks.indexWhere(
+        (t) => t.surahId == state.currentTrack!.surahId && t.reciterId == state.currentTrack!.reciterId,
+      );
+      if (currentIndex != -1) {
+        final nextIndex = (currentIndex + 1) % state.reciterTracks.length;
+        playTrack(state.reciterTracks[nextIndex]);
+        return;
+      }
+    }
+
     final nextReciterId = (state.currentTrack!.reciterId % 8) + 1;
     final tracksResult = await getReciterTracksUseCase(
       GetReciterTracksParams(reciterId: nextReciterId),
@@ -224,11 +282,30 @@ class AudioRecitersCubit extends Cubit<AudioRecitersState> {
   }
 
   Future<void> previousTrack() async {
+    if (state.currentTrack != null && state.currentTrack!.reciterId == 999) {
+      final isMakkah = state.currentTrack!.audioUrl.contains('quran');
+      final target = isMakkah ? kSanctuaryLiveChannels[1] : kSanctuaryLiveChannels[0];
+      await playTrack(target.toTrack());
+      return;
+    }
+
     if (state.position.inSeconds > 4) {
       await seekTo(Duration.zero);
       return;
     }
     if (state.currentTrack == null) return;
+
+    if (state.reciterTracks.isNotEmpty) {
+      final currentIndex = state.reciterTracks.indexWhere(
+        (t) => t.surahId == state.currentTrack!.surahId && t.reciterId == state.currentTrack!.reciterId,
+      );
+      if (currentIndex != -1) {
+        final prevIndex = currentIndex <= 0 ? state.reciterTracks.length - 1 : currentIndex - 1;
+        playTrack(state.reciterTracks[prevIndex]);
+        return;
+      }
+    }
+
     final prevReciterId = state.currentTrack!.reciterId <= 1 ? 8 : state.currentTrack!.reciterId - 1;
     final tracksResult = await getReciterTracksUseCase(
       GetReciterTracksParams(reciterId: prevReciterId),

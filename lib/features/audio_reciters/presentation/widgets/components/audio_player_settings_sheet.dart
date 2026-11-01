@@ -11,6 +11,7 @@ class AudioPlayerSettingsSheet extends StatefulWidget {
   final double currentSpeed;
   final int? sleepTimerMinutes;
   final bool isRepeating;
+  final bool isLive;
   final ValueChanged<double> onSpeedSelected;
   final ValueChanged<int?> onSleepTimerSelected;
   final VoidCallback onToggleRepeat;
@@ -20,6 +21,7 @@ class AudioPlayerSettingsSheet extends StatefulWidget {
     required this.currentSpeed,
     required this.sleepTimerMinutes,
     required this.isRepeating,
+    this.isLive = false,
     required this.onSpeedSelected,
     required this.onSleepTimerSelected,
     required this.onToggleRepeat,
@@ -30,6 +32,7 @@ class AudioPlayerSettingsSheet extends StatefulWidget {
     required double currentSpeed,
     required int? sleepTimerMinutes,
     required bool isRepeating,
+    bool isLive = false,
     required ValueChanged<double> onSpeedSelected,
     required ValueChanged<int?> onSleepTimerSelected,
     required VoidCallback onToggleRepeat,
@@ -43,6 +46,7 @@ class AudioPlayerSettingsSheet extends StatefulWidget {
         currentSpeed: currentSpeed,
         sleepTimerMinutes: sleepTimerMinutes,
         isRepeating: isRepeating,
+        isLive: isLive,
         onSpeedSelected: onSpeedSelected,
         onSleepTimerSelected: onSleepTimerSelected,
         onToggleRepeat: onToggleRepeat,
@@ -143,76 +147,87 @@ class _AudioPlayerSettingsSheetState extends State<AudioPlayerSettingsSheet> {
             ),
             SizedBox(height: 20.h),
 
-            // 2. Playback Speed Section
-            const _SettingsSectionTitle(
-              icon: Iconsax.speedometer,
-              title: 'سرعة التلاوة',
-              subtitle: 'اختر سرعة الاستماع المناسبة لك (تتغير فورياً)',
-            ),
-            SizedBox(height: 10.h),
-            _SpeedOptions(
-              selectedSpeed: _activeSpeed,
-              onSelected: (speed) {
-                HapticFeedback.lightImpact();
-                setState(() => _activeSpeed = speed);
-                widget.onSpeedSelected(speed);
-              },
-            ),
-            SizedBox(height: 20.h),
+            if (widget.isLive) ...[
+              // Live Sanctuary Stream Information Card
+              const _SettingsSectionTitle(
+                icon: Iconsax.radio,
+                title: 'معلومات البث الحي المباشر',
+                subtitle: 'نقل رقمي متواصل فوري بأعلى جودة استماع 320kbps',
+              ),
+              SizedBox(height: 10.h),
+              const _LiveBroadcastInfoBox(),
+            ] else ...[
+              // 2. Playback Speed Section
+              const _SettingsSectionTitle(
+                icon: Iconsax.speedometer,
+                title: 'سرعة التلاوة',
+                subtitle: 'اختر سرعة الاستماع المناسبة لك (تتغير فورياً)',
+              ),
+              SizedBox(height: 10.h),
+              _SpeedOptions(
+                selectedSpeed: _activeSpeed,
+                onSelected: (speed) {
+                  HapticFeedback.lightImpact();
+                  setState(() => _activeSpeed = speed);
+                  widget.onSpeedSelected(speed);
+                },
+              ),
+              SizedBox(height: 20.h),
 
-            // 3. Repeat Mode
-            GestureDetector(
-              onTap: () {
-                HapticFeedback.lightImpact();
-                setState(() => _activeIsRepeating = !_activeIsRepeating);
-                widget.onToggleRepeat();
-              },
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
-                decoration: BoxDecoration(
-                  color: colors.surfaceElevated,
-                  borderRadius: AppSpacing.radiusMd,
-                  border: Border.all(
-                    color: _activeIsRepeating ? colors.accentGold : colors.borderHairline,
-                    width: 1.r,
+              // 3. Repeat Mode
+              GestureDetector(
+                onTap: () {
+                  HapticFeedback.lightImpact();
+                  setState(() => _activeIsRepeating = !_activeIsRepeating);
+                  widget.onToggleRepeat();
+                },
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
+                  decoration: BoxDecoration(
+                    color: colors.surfaceElevated,
+                    borderRadius: AppSpacing.radiusMd,
+                    border: Border.all(
+                      color: _activeIsRepeating ? colors.accentGold : colors.borderHairline,
+                      width: 1.r,
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Row(
+                          children: [
+                            Icon(
+                              Iconsax.repeate_one,
+                              color: _activeIsRepeating ? colors.accentGold : colors.textSecondary,
+                              size: 20.r,
+                            ),
+                            SizedBox(width: 10.w),
+                            Expanded(
+                              child: Text(
+                                'تكرار التلاوة الحالية تلقائياً',
+                                style: GoogleFonts.cairo(
+                                  fontSize: 13.5.sp,
+                                  fontWeight: FontWeight.w600,
+                                  color: _activeIsRepeating ? colors.accentGold : colors.textPrimary,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(width: 8.w),
+                      Icon(
+                        _activeIsRepeating ? Iconsax.tick_circle : Iconsax.close_circle,
+                        color: _activeIsRepeating ? colors.accentGold : colors.textSecondary,
+                        size: 20.r,
+                      ),
+                    ],
                   ),
                 ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Row(
-                        children: [
-                          Icon(
-                            Iconsax.repeate_one,
-                            color: _activeIsRepeating ? colors.accentGold : colors.textSecondary,
-                            size: 20.r,
-                          ),
-                          SizedBox(width: 10.w),
-                          Expanded(
-                            child: Text(
-                              'تكرار التلاوة الحالية تلقائياً',
-                              style: GoogleFonts.cairo(
-                                fontSize: 13.5.sp,
-                                fontWeight: FontWeight.w600,
-                                color: _activeIsRepeating ? colors.accentGold : colors.textPrimary,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(width: 8.w),
-                    Icon(
-                      _activeIsRepeating ? Iconsax.tick_circle : Iconsax.close_circle,
-                      color: _activeIsRepeating ? colors.accentGold : colors.textSecondary,
-                      size: 20.r,
-                    ),
-                  ],
-                ),
               ),
-            ),
+            ],
             SizedBox(height: 14.h),
           ],
         ),
@@ -369,6 +384,72 @@ class _SpeedOptions extends StatelessWidget {
           ),
         );
       }).toList(),
+    );
+  }
+}
+
+class _LiveBroadcastInfoBox extends StatelessWidget {
+  const _LiveBroadcastInfoBox();
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
+      decoration: BoxDecoration(
+        color: colors.surfaceElevated,
+        borderRadius: AppSpacing.radiusMd,
+        border: Border.all(
+          color: colors.borderHairline,
+          width: 1.r,
+        ),
+      ),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Icon(
+                Iconsax.wifi,
+                color: colors.accentEmerald,
+                size: 18.r,
+              ),
+              SizedBox(width: 8.w),
+              Expanded(
+                child: Text(
+                  'البث الرسمي المباشر من شبكة MP3Quran',
+                  style: GoogleFonts.cairo(
+                    fontSize: 12.5.sp,
+                    fontWeight: FontWeight.bold,
+                    color: colors.textPrimary,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 8.h),
+          Row(
+            children: [
+              Icon(
+                Iconsax.music_dashboard,
+                color: colors.accentGold,
+                size: 18.r,
+              ),
+              SizedBox(width: 8.w),
+              Expanded(
+                child: Text(
+                  'جودة الصوت: استريو فائق النقاء 320kbps HLS',
+                  style: GoogleFonts.cairo(
+                    fontSize: 12.sp,
+                    fontWeight: FontWeight.w500,
+                    color: colors.textSecondary,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

@@ -13,13 +13,33 @@ class ReciterModel extends ReciterEntity {
     super.isFeatured = false,
     required super.availableSurahsCount,
     required super.categories,
+    super.serverUrl = '',
+    super.avatarLetter = 'ق',
   });
+
+  factory ReciterModel.fromEntity(ReciterEntity entity) {
+    return ReciterModel(
+      id: entity.id,
+      nameArabic: entity.nameArabic,
+      englishName: entity.englishName,
+      photoUrl: entity.photoUrl,
+      listenersCount: entity.listenersCount,
+      formattedListeners: entity.formattedListeners,
+      revelationStyle: entity.revelationStyle,
+      riwayah: entity.riwayah,
+      isFeatured: entity.isFeatured,
+      availableSurahsCount: entity.availableSurahsCount,
+      categories: entity.categories,
+      serverUrl: entity.serverUrl,
+      avatarLetter: entity.avatarLetter,
+    );
+  }
 
   factory ReciterModel.fromJson(Map<String, dynamic> json) {
     return ReciterModel(
       id: json['id'] as int,
       nameArabic: json['name_arabic'] as String,
-      englishName: json['english_name'] as String,
+      englishName: json['english_name'] as String? ?? '',
       photoUrl: json['photo_url'] as String?,
       listenersCount: json['listeners_count'] as int? ?? 0,
       formattedListeners: json['formatted_listeners'] as String? ?? '0',
@@ -31,6 +51,8 @@ class ReciterModel extends ReciterEntity {
               ?.map((e) => e.toString())
               .toList() ??
           const [],
+      serverUrl: json['server_url'] as String? ?? '',
+      avatarLetter: json['avatar_letter'] as String? ?? 'ق',
     );
   }
 
@@ -47,6 +69,8 @@ class ReciterModel extends ReciterEntity {
       'is_featured': isFeatured,
       'available_surahs_count': availableSurahsCount,
       'categories': categories,
+      'server_url': serverUrl,
+      'avatar_letter': avatarLetter,
     };
   }
 
@@ -62,6 +86,7 @@ class ReciterModel extends ReciterEntity {
         isFeatured: isFeatured,
         availableSurahsCount: availableSurahsCount,
         categories: categories,
+        serverUrl: serverUrl,
+        avatarLetter: avatarLetter,
       );
 }
-

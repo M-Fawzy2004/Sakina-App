@@ -279,6 +279,7 @@ class QuranLocalDataSourceImpl implements QuranLocalDataSource {
   // ---------------------------------------------------------------------------
   // Complete Index of all 114 Quranic Surahs
   // ---------------------------------------------------------------------------
+  static List<SurahModel> get allSurahs => _surahs;
   static const List<SurahModel> _surahs = [
     SurahModel(
       id: 1,

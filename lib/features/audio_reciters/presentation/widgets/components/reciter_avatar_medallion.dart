@@ -4,13 +4,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sakina_app/core/theme/app_colors.dart';
 
-/// Ornate circular medallion avatar with concentric metallic gold borders.
+/// Ornate circular medallion avatar with concentric metallic gold borders and zero drop-shadows.
 /// If offline or image is unavailable, renders a magnificent illuminated Islamic rosette medallion.
 class ReciterAvatarMedallion extends StatelessWidget {
   final String? photoUrl;
   final String nameArabic;
   final double size;
   final bool isGlowing;
+  final String? avatarLetter;
 
   const ReciterAvatarMedallion({
     super.key,
@@ -18,6 +19,7 @@ class ReciterAvatarMedallion extends StatelessWidget {
     required this.nameArabic,
     this.size = 54,
     this.isGlowing = false,
+    this.avatarLetter,
   });
 
   @override
@@ -56,14 +58,23 @@ class ReciterAvatarMedallion extends StatelessWidget {
                 headers: const {'User-Agent': 'Sakina/1.0 (IslamicQuranSanctuary)'},
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) {
-                  return _ReciterFallbackAvatar(nameArabic: nameArabic);
+                  return _ReciterFallbackAvatar(
+                    nameArabic: nameArabic,
+                    avatarLetter: avatarLetter,
+                  );
                 },
                 loadingBuilder: (context, child, loadingProgress) {
                   if (loadingProgress == null) return child;
-                  return _ReciterFallbackAvatar(nameArabic: nameArabic);
+                  return _ReciterFallbackAvatar(
+                    nameArabic: nameArabic,
+                    avatarLetter: avatarLetter,
+                  );
                 },
               )
-            : _ReciterFallbackAvatar(nameArabic: nameArabic),
+            : _ReciterFallbackAvatar(
+                nameArabic: nameArabic,
+                avatarLetter: avatarLetter,
+              ),
       ),
     );
   }
@@ -72,15 +83,23 @@ class ReciterAvatarMedallion extends StatelessWidget {
 /// Royal illuminated Islamic rosette medallion with Arabic calligraphy.
 class _ReciterFallbackAvatar extends StatelessWidget {
   final String nameArabic;
+  final String? avatarLetter;
 
-  const _ReciterFallbackAvatar({required this.nameArabic});
+  const _ReciterFallbackAvatar({
+    required this.nameArabic,
+    this.avatarLetter,
+  });
 
   @override
   Widget build(BuildContext context) {
-    // Extract honorific title/initials (e.g. "عبد الباسط" or "المنشاوي")
-    final parts = nameArabic.trim().split(' ');
-    final displayName = parts.length > 2 ? parts[parts.length - 2] : parts.last;
-    final initial = displayName.isNotEmpty ? displayName.characters.first : 'ق';
+    final String initial;
+    if (avatarLetter != null && avatarLetter!.trim().isNotEmpty) {
+      initial = avatarLetter!.trim();
+    } else {
+      final parts = nameArabic.trim().split(' ');
+      final displayName = parts.length > 2 ? parts[parts.length - 2] : parts.last;
+      initial = displayName.isNotEmpty ? displayName.characters.first : 'ق';
+    }
 
     return Container(
       decoration: const BoxDecoration(

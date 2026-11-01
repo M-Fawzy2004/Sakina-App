@@ -137,6 +137,10 @@ class _QuranCatalogBodyState extends State<_QuranCatalogBody> {
           SliverToBoxAdapter(
             child: QuranResumeReadingHero(
               bookmark: widget.state.lastReadBookmark,
+              totalSurahVerses: widget.state.allSurahs
+                  .where((s) => s.id == (widget.state.lastReadBookmark?.surahId ?? 18))
+                  .firstOrNull
+                  ?.versesCount,
               onResumeTap: () {
                 final targetSurahId =
                     widget.state.lastReadBookmark?.surahId ?? 18;

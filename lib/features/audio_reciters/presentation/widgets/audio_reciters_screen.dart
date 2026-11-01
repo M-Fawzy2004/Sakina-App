@@ -5,17 +5,23 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:sakina_app/core/di/injection_container.dart';
 import 'package:sakina_app/core/theme/app_colors.dart';
 import 'package:sakina_app/core/theme/app_colors_scheme.dart';
+import 'package:sakina_app/features/audio_reciters/domain/entities/reciter_entity.dart';
 import 'package:sakina_app/features/audio_reciters/presentation/cubit/audio_reciters_cubit.dart';
 import 'package:sakina_app/features/audio_reciters/presentation/cubit/audio_reciters_state.dart';
 import 'package:sakina_app/features/audio_reciters/presentation/widgets/audio_recitation_player_screen.dart';
-import 'package:sakina_app/features/audio_reciters/presentation/widgets/components/featured_reciters_carousel.dart';
+import 'package:sakina_app/features/audio_reciters/presentation/widgets/components/live_stream_channels_card.dart';
+import 'package:sakina_app/features/audio_reciters/presentation/widgets/components/reciter_grid_card.dart';
 import 'package:sakina_app/features/audio_reciters/presentation/widgets/components/reciter_mini_player_bar.dart';
-import 'package:sakina_app/features/audio_reciters/presentation/widgets/components/reciter_tile_card.dart';
 import 'package:sakina_app/features/audio_reciters/presentation/widgets/components/reciters_filter_chips.dart';
 import 'package:sakina_app/features/audio_reciters/presentation/widgets/components/reciters_header_app_bar.dart';
 import 'package:sakina_app/features/audio_reciters/presentation/widgets/components/reciters_search_bar.dart';
+import 'package:sakina_app/features/audio_reciters/presentation/widgets/reciter_surahs_screen.dart';
 
-/// Recitations Discovery Screen with pure natural OLED dark canvas.
+/// Dark Luxury Recitations Discovery Screen:
+/// Features:
+/// 1. Live Holy Sanctuaries Broadcast (البث المباشر: الحرم المكي والمسجد النبوي).
+/// 2. 2-Column Responsive Grid of Curated Sheikhs Cards (No longer a single vertical list).
+/// 3. Zero drop-shadows across all surfaces for pure spiritual elegance.
 class AudioRecitersScreen extends StatelessWidget {
   const AudioRecitersScreen({super.key});
 
@@ -31,7 +37,6 @@ class AudioRecitersScreen extends StatelessWidget {
 class _AudioRecitersView extends StatelessWidget {
   const _AudioRecitersView();
 
-  /// Opens the player on the root navigator so it sits completely above the navigation shell.
   void _openPlayer(BuildContext context) {
     final cubit = context.read<AudioRecitersCubit>();
     Navigator.of(context, rootNavigator: true).push(
@@ -59,12 +64,38 @@ class _AudioRecitersView extends StatelessWidget {
     );
   }
 
+  void _openReciterSurahs(BuildContext context, ReciterEntity reciter) {
+    final cubit = context.read<AudioRecitersCubit>();
+    Navigator.of(context, rootNavigator: true).push(
+      PageRouteBuilder(
+        opaque: true,
+        transitionDuration: const Duration(milliseconds: 280),
+        reverseTransitionDuration: const Duration(milliseconds: 220),
+        pageBuilder: (context, animation, secondaryAnimation) {
+          return BlocProvider.value(
+            value: cubit,
+            child: ReciterSurahsScreen(reciter: reciter),
+          );
+        },
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          final tween = Tween<Offset>(
+            begin: const Offset(1.0, 0.0),
+            end: Offset.zero,
+          ).chain(CurveTween(curve: Curves.easeOutCubic));
+          return SlideTransition(
+            position: animation.drive(tween),
+            child: child,
+          );
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final bottomPadding = MediaQuery.paddingOf(context).bottom;
     final keyboardInset = MediaQuery.viewInsetsOf(context).bottom;
     final isKeyboardOpen = keyboardInset > 0;
-    // SakinaBottomNavBar floats at bottomPadding + 12.h with height 68.h (top edge at bottomPadding + 80.h)
     final miniPlayerBottom = bottomPadding + 84.h;
     final scrollBottomPadding = isKeyboardOpen
         ? keyboardInset + 20.h
@@ -80,8 +111,7 @@ class _AudioRecitersView extends StatelessWidget {
           bottom: false,
           child: BlocConsumer<AudioRecitersCubit, AudioRecitersState>(
             listener: (context, state) {
-              if (state.errorMessage != null &&
-                  state.errorMessage!.isNotEmpty) {
+              if (state.errorMessage != null && state.errorMessage!.isNotEmpty) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
@@ -106,8 +136,7 @@ class _AudioRecitersView extends StatelessWidget {
                 children: [
                   CustomScrollView(
                     physics: const BouncingScrollPhysics(),
-                    keyboardDismissBehavior:
-                        ScrollViewKeyboardDismissBehavior.onDrag,
+                    keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
                     slivers: [
                       // Top Sacred Header: "سكينة 🌙" and "واجهة التلاوات"
                       const SliverToBoxAdapter(child: RecitersHeaderAppBar()),
@@ -135,38 +164,32 @@ class _AudioRecitersView extends StatelessWidget {
 
                       SliverToBoxAdapter(child: SizedBox(height: 14.h)),
 
-                      // Interactive Sheikhs Carousel (if search is empty)
-                      if (state.searchQuery.isEmpty &&
-                          state.featuredReciters.isNotEmpty) ...[
-                        SliverToBoxAdapter(
-                          child: FeaturedRecitersCarousel(
-                            featuredReciters: state.featuredReciters,
-                            activeIndex: state.activeFeaturedIndex,
-                            isPlaying: state.isPlaying,
-                            currentlyPlayingReciterId:
-                                state.currentTrack?.reciterId,
-                            onPageChanged: cubit.setFeaturedIndex,
-                            onPlayTap: (reciter) async {
-                              await cubit.playReciterFeaturedTrack(reciter);
-                              if (context.mounted) {
-                                _openPlayer(context);
-                              }
-                            },
-                            onCardTap: (reciter) async {
-                              await cubit.playReciterFeaturedTrack(reciter);
-                              if (context.mounted) {
-                                _openPlayer(context);
-                              }
-                            },
-                          ),
+                      // 1. Live Sanctuary Broadcast Section (البث المباشر للحرمين الشريفين)
+                      SliverToBoxAdapter(
+                        child: LiveStreamChannelsSection(
+                          currentTrack: state.currentTrack,
+                          isPlaying: state.isPlaying,
+                          onChannelTap: (liveTrack) {
+                            if (state.isPlaying &&
+                                state.currentTrack?.audioUrl == liveTrack.audioUrl) {
+                              cubit.togglePlayPause();
+                            } else {
+                              cubit.playTrack(liveTrack);
+                            }
+                          },
                         ),
-                        SliverToBoxAdapter(child: SizedBox(height: 14.h)),
-                      ],
+                      ),
 
-                      // Reciters List Header
-                      const SliverToBoxAdapter(child: _CatalogSectionHeader()),
+                      SliverToBoxAdapter(child: SizedBox(height: 16.h)),
 
-                      // Loading Indicator
+                      // 2. Curated Top Sheikhs Section Header
+                      SliverToBoxAdapter(
+                        child: _CuratedSectionHeader(count: state.reciters.length),
+                      ),
+
+                      SliverToBoxAdapter(child: SizedBox(height: 6.h)),
+
+                      // 3. 2-Column Responsive Grid of Curated Sheikhs Cards (No longer a single vertical list)
                       if (state.isLoading)
                         const SliverToBoxAdapter(
                           child: _RecitersLoadingShimmer(),
@@ -174,35 +197,30 @@ class _AudioRecitersView extends StatelessWidget {
                       else if (state.reciters.isEmpty)
                         const SliverToBoxAdapter(child: _EmptyRecitersNotice())
                       else
-                        // Reciter Tiles List
-                        SliverList(
-                          delegate: SliverChildBuilderDelegate((
-                            context,
-                            index,
-                          ) {
-                            final reciter = state.reciters[index];
-                            final isCurrentPlaying =
-                                state.isPlaying &&
-                                state.currentTrack?.reciterId == reciter.id;
+                        SliverPadding(
+                          padding: EdgeInsets.symmetric(horizontal: 14.w),
+                          sliver: SliverGrid(
+                            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              mainAxisSpacing: 10.h,
+                              crossAxisSpacing: 10.w,
+                              mainAxisExtent: 168.h,
+                            ),
+                            delegate: SliverChildBuilderDelegate((
+                              context,
+                              index,
+                            ) {
+                              final reciter = state.reciters[index];
+                              final isCurrentPlaying = state.isPlaying &&
+                                  state.currentTrack?.reciterId == reciter.id;
 
-                            return ReciterTileCard(
-                              reciter: reciter,
-                              isCurrentPlaying: isCurrentPlaying,
-                              onTap: () async {
-                                await cubit.playReciterFeaturedTrack(reciter);
-                                if (context.mounted) {
-                                  _openPlayer(context);
-                                }
-                              },
-                              onActionTap: () async {
-                                if (isCurrentPlaying) {
-                                  await cubit.togglePlayPause();
-                                } else {
-                                  await cubit.playReciterFeaturedTrack(reciter);
-                                }
-                              },
-                            );
-                          }, childCount: state.reciters.length),
+                              return ReciterGridCard(
+                                reciter: reciter,
+                                isCurrentPlaying: isCurrentPlaying,
+                                onTap: () => _openReciterSurahs(context, reciter),
+                              );
+                            }, childCount: state.reciters.length),
+                          ),
                         ),
 
                       // Bottom spacing ensuring content scrolls completely above the floating nav bar and mini player
@@ -213,7 +231,6 @@ class _AudioRecitersView extends StatelessWidget {
                   ),
 
                   // Floating Mini Player Bar - Positioned comfortably ABOVE bottom navigation bar
-                  // Smoothly hides off-screen when keyboard is active (searching) to maximize visible search space
                   if (state.currentTrack != null)
                     AnimatedPositioned(
                       duration: const Duration(milliseconds: 200),
@@ -232,6 +249,7 @@ class _AudioRecitersView extends StatelessWidget {
                             isPlaying: state.isPlaying,
                             onTap: () => _openPlayer(context),
                             onPlayPauseTap: cubit.togglePlayPause,
+                            onDismiss: cubit.stopAndDismissTrack,
                           ),
                         ),
                       ),
@@ -247,35 +265,62 @@ class _AudioRecitersView extends StatelessWidget {
 
   double stateTrackPadding(BuildContext context, double bottomPadding) {
     final state = context.watch<AudioRecitersCubit>().state;
-    // Bottom nav bar takes ~80.h + bottomPadding. Mini player takes ~60.h.
     return bottomPadding + (state.currentTrack != null ? 154.h : 96.h);
   }
 }
 
-class _CatalogSectionHeader extends StatelessWidget {
-  const _CatalogSectionHeader();
+class _CuratedSectionHeader extends StatelessWidget {
+  final int count;
+
+  const _CuratedSectionHeader({required this.count});
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
+
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 6.h),
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 4.h),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            'قراء القرآن الكريم',
-            style: GoogleFonts.cairo(
-              fontSize: 14.5.sp,
-              fontWeight: FontWeight.bold,
-              color: AppColors.pureChalk,
-            ),
+          Row(
+            children: [
+              Text(
+                'أشهر القراء',
+                style: GoogleFonts.cairo(
+                  fontSize: 15.sp,
+                  fontWeight: FontWeight.bold,
+                  color: colors.textPrimary,
+                ),
+              ),
+              SizedBox(width: 8.w),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 2.h),
+                decoration: BoxDecoration(
+                  color: colors.surfaceElevated,
+                  borderRadius: BorderRadius.circular(10.r),
+                  border: Border.all(
+                    color: colors.borderHairline.withValues(alpha: 0.6),
+                    width: 0.8.r,
+                  ),
+                ),
+                child: Text(
+                  '$count شيوخ',
+                  style: GoogleFonts.cairo(
+                    fontSize: 11.sp,
+                    fontWeight: FontWeight.w700,
+                    color: colors.accentGold,
+                  ),
+                ),
+              ),
+            ],
           ),
           Text(
-            'عرض الكل',
+            'تسجيلات نقية كاملة',
             style: GoogleFonts.cairo(
               fontSize: 12.sp,
               fontWeight: FontWeight.w600,
-              color: AppColors.champagneGold,
+              color: colors.textSecondary,
             ),
           ),
         ],

@@ -5,6 +5,7 @@ import 'package:iconsax/iconsax.dart';
 import 'package:sakina_app/features/quran_reading/domain/entities/ayah_entity.dart';
 import 'package:sakina_app/features/quran_reading/domain/entities/hizb_entity.dart';
 import 'package:sakina_app/features/quran_reading/domain/entities/juz_entity.dart';
+import 'package:sakina_app/features/quran_reading/domain/entities/quran_bookmark_entity.dart';
 import 'package:sakina_app/features/quran_reading/domain/entities/quran_reader_preferences.dart';
 import 'package:sakina_app/features/quran_reading/domain/entities/surah_entity.dart';
 import 'package:sakina_app/features/quran_reading/presentation/widgets/components/quran_3d_page_turn.dart';
@@ -93,6 +94,32 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(resumed, isTrue);
+    });
+
+    testWidgets('calculates exact progress and renders verse count and percentage accurately', (tester) async {
+      final bookmark = QuranBookmarkEntity(
+        surahId: 5, // Al-Ma'idah (120 verses)
+        surahName: 'سُورَةُ المَائِدَةِ',
+        ayahNumber: 30, // 30 / 120 = 25%
+        pageNumber: 112,
+        timestamp: DateTime.now(),
+      );
+
+      await tester.pumpWidget(
+        createTestWidget(
+          QuranResumeReadingHero(
+            bookmark: bookmark,
+            totalSurahVerses: 120,
+            onResumeTap: () {},
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('سُورَةُ المَائِدَةِ'), findsOneWidget);
+      expect(find.text('الآية 30 من 120'), findsOneWidget);
+      expect(find.text('صفحة 112'), findsOneWidget);
+      expect(find.text('25%'), findsOneWidget);
     });
   });
 

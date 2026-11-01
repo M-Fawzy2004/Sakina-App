@@ -307,6 +307,15 @@ class _QuranReaderViewState extends State<QuranReaderView> {
           ? null
           : ayahNumber;
     });
+    widget.onBookmarkSaved(
+      QuranBookmarkEntity(
+        surahId: widget.surah.id,
+        surahName: widget.surah.nameArabic,
+        ayahNumber: ayahNumber,
+        pageNumber: widget.surah.pageNumber,
+        timestamp: DateTime.now(),
+      ),
+    );
   }
 
   void _handlePreviousPage() {
@@ -582,6 +591,19 @@ class _QuranReaderViewState extends State<QuranReaderView> {
                           _currentPageIndex = newIndex;
                           _selectedAyahNumber = null;
                         });
+                        final pageVerses = _getVersesForPage(newIndex);
+                        final activeAyah = pageVerses.isNotEmpty
+                            ? pageVerses.first.numberInSurah
+                            : (newIndex * _versesPerPage + 1);
+                        widget.onBookmarkSaved(
+                          QuranBookmarkEntity(
+                            surahId: widget.surah.id,
+                            surahName: widget.surah.nameArabic,
+                            ayahNumber: activeAyah,
+                            pageNumber: widget.surah.pageNumber,
+                            timestamp: DateTime.now(),
+                          ),
+                        );
                       },
                       itemBuilder: (context, pageIndex) {
                         final pageVerses = _getVersesForPage(pageIndex);

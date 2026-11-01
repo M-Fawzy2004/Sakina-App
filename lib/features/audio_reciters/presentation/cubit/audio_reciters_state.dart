@@ -22,6 +22,9 @@ class AudioRecitersState extends Equatable {
   final bool isFavorite;
   final int? sleepTimerMinutes;
   final String? errorMessage;
+  final List<RecitationTrackEntity> reciterTracks;
+  final bool isLoadingTracks;
+  final ReciterEntity? selectedReciter;
 
   const AudioRecitersState({
     this.isLoading = false,
@@ -48,6 +51,9 @@ class AudioRecitersState extends Equatable {
     this.isFavorite = false,
     this.sleepTimerMinutes,
     this.errorMessage,
+    this.reciterTracks = const [],
+    this.isLoadingTracks = false,
+    this.selectedReciter,
   });
 
   AudioRecitersState copyWith({
@@ -60,6 +66,7 @@ class AudioRecitersState extends Equatable {
     String? selectedCategory,
     String? searchQuery,
     RecitationTrackEntity? currentTrack,
+    bool clearCurrentTrack = false,
     bool? isPlaying,
     bool? isBuffering,
     Duration? position,
@@ -71,6 +78,9 @@ class AudioRecitersState extends Equatable {
     int? sleepTimerMinutes,
     bool clearSleepTimer = false,
     String? errorMessage,
+    List<RecitationTrackEntity>? reciterTracks,
+    bool? isLoadingTracks,
+    ReciterEntity? selectedReciter,
   }) {
     return AudioRecitersState(
       isLoading: isLoading ?? this.isLoading,
@@ -81,7 +91,7 @@ class AudioRecitersState extends Equatable {
       categories: categories ?? this.categories,
       selectedCategory: selectedCategory ?? this.selectedCategory,
       searchQuery: searchQuery ?? this.searchQuery,
-      currentTrack: currentTrack ?? this.currentTrack,
+      currentTrack: clearCurrentTrack ? null : (currentTrack ?? this.currentTrack),
       isPlaying: isPlaying ?? this.isPlaying,
       isBuffering: isBuffering ?? this.isBuffering,
       position: position ?? this.position,
@@ -92,6 +102,9 @@ class AudioRecitersState extends Equatable {
       isFavorite: isFavorite ?? this.isFavorite,
       sleepTimerMinutes: clearSleepTimer ? null : (sleepTimerMinutes ?? this.sleepTimerMinutes),
       errorMessage: errorMessage,
+      reciterTracks: reciterTracks ?? this.reciterTracks,
+      isLoadingTracks: isLoadingTracks ?? this.isLoadingTracks,
+      selectedReciter: selectedReciter ?? this.selectedReciter,
     );
   }
 
@@ -116,5 +129,8 @@ class AudioRecitersState extends Equatable {
         isFavorite,
         sleepTimerMinutes,
         errorMessage,
+        reciterTracks,
+        isLoadingTracks,
+        selectedReciter,
       ];
 }

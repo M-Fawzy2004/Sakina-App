@@ -153,5 +153,28 @@ void main() {
       expect(cubit.state.playbackSpeed, 1.5);
       verify(() => mockAudioPlayerHandler.setSpeed(1.5)).called(1);
     });
+
+    test('loadReciterTracks loads tracks for selected reciter', () async {
+      when(() => mockGetReciterTracksUseCase(any()))
+          .thenAnswer((_) async => const Right([testTrack]));
+
+      await cubit.loadReciterTracks(testReciter);
+
+      expect(cubit.state.selectedReciter, testReciter);
+      expect(cubit.state.reciterTracks, [testTrack]);
+      expect(cubit.state.isLoadingTracks, false);
+    });
+
+    test('stopAndDismissTrack stops audio handler and clears currentTrack', () async {
+      when(() => mockAudioPlayerHandler.stop()).thenAnswer((_) async {});
+      await cubit.playTrack(testTrack);
+      expect(cubit.state.currentTrack, testTrack);
+
+      await cubit.stopAndDismissTrack();
+
+      expect(cubit.state.currentTrack, isNull);
+      expect(cubit.state.isPlaying, false);
+      verify(() => mockAudioPlayerHandler.stop()).called(1);
+    });
   });
 }

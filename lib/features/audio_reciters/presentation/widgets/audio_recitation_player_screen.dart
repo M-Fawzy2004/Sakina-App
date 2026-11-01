@@ -1,21 +1,26 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:sakina_app/core/theme/app_colors.dart';
 import 'package:sakina_app/core/theme/app_colors_scheme.dart';
+import 'package:sakina_app/core/utils/haptic_service.dart';
 import 'package:sakina_app/features/audio_reciters/domain/entities/recitation_track_entity.dart';
 import 'package:sakina_app/features/audio_reciters/presentation/cubit/audio_reciters_cubit.dart';
 import 'package:sakina_app/features/audio_reciters/presentation/cubit/audio_reciters_state.dart';
 import 'package:sakina_app/features/audio_reciters/presentation/widgets/components/audio_player_settings_sheet.dart';
+import 'package:sakina_app/features/audio_reciters/presentation/widgets/components/live_broadcast_status_bar.dart';
+import 'package:sakina_app/features/audio_reciters/presentation/widgets/components/live_sanctuary_aura_medallion.dart';
+import 'package:sakina_app/features/audio_reciters/presentation/widgets/components/live_sanctuary_playback_controls.dart';
+import 'package:sakina_app/features/audio_reciters/presentation/widgets/components/live_stream_channels_card.dart';
 import 'package:sakina_app/features/audio_reciters/presentation/widgets/components/recitation_audio_waveform.dart';
 import 'package:sakina_app/features/audio_reciters/presentation/widgets/components/recitation_playback_controls.dart';
 import 'package:sakina_app/features/audio_reciters/presentation/widgets/components/recitation_scrubber_bar.dart';
 import 'package:sakina_app/features/audio_reciters/presentation/widgets/components/reciter_avatar_medallion.dart';
 
-/// Full-screen independent spiritual recitation player with gesture dismiss and floating utility capsule.
+/// Full-screen independent spiritual recitation and live sanctuary player.
+/// Features zero drop-shadows, animated expanding aura rings, and adaptive controls for live broadcasts.
 class AudioRecitationPlayerScreen extends StatefulWidget {
   final RecitationTrackEntity? initialTrack;
 
@@ -49,14 +54,20 @@ class _AudioRecitationPlayerScreenState extends State<AudioRecitationPlayerScree
 
   void _handleVerticalDrag(DragUpdateDetails details) {
     if (details.primaryDelta != null && details.primaryDelta! > 12) {
-      HapticFeedback.lightImpact();
+      HapticService.lightImpact();
       Navigator.of(context).pop();
     }
   }
 
-  void _openSettingsSheet(BuildContext context, AudioRecitersCubit cubit, AudioRecitersState state) {
+  void _openSettingsSheet(
+    BuildContext context,
+    AudioRecitersCubit cubit,
+    AudioRecitersState state,
+    bool isLive,
+  ) {
     AudioPlayerSettingsSheet.show(
       context: context,
+      isLive: isLive,
       currentSpeed: state.playbackSpeed,
       sleepTimerMinutes: state.sleepTimerMinutes,
       isRepeating: state.isRepeating,
@@ -82,6 +93,16 @@ class _AudioRecitationPlayerScreenState extends State<AudioRecitationPlayerScree
         final cubit = context.read<AudioRecitersCubit>();
         final track = state.currentTrack ?? widget.initialTrack;
 
+        final isLiveStream = track != null &&
+            (track.surahId == 0 ||
+                track.reciterId == 999 ||
+                track.riwayah.contains('بث مباشر') ||
+                track.audioUrl.contains('.m3u8'));
+
+        final isMakkah = track != null &&
+            (track.audioUrl.contains('quran') ||
+                track.reciterName.contains('مكة'));
+
         return Scaffold(
           backgroundColor: context.colors.background,
           body: GestureDetector(
@@ -96,8 +117,14 @@ class _AudioRecitationPlayerScreenState extends State<AudioRecitationPlayerScree
 
                         // Top Navigation Header
                         _PlayerTopAppBar(
+                          isLive: isLiveStream,
                           onBackTap: () => Navigator.of(context).pop(),
-                          onSettingsTap: () => _openSettingsSheet(context, cubit, state),
+                          onSettingsTap: () => _openSettingsSheet(
+                            context,
+                            cubit,
+                            state,
+                            isLiveStream,
+                          ),
                         ),
 
                         Expanded(
@@ -106,54 +133,107 @@ class _AudioRecitationPlayerScreenState extends State<AudioRecitationPlayerScree
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
-                                // Animated Rotating Central Medallion
-                                _AnimatedPlayerMedallion(
-                                  reciterName: track.reciterName,
-                                  isPlaying: state.isPlaying,
-                                  rotationAnimation: _rotationController,
-                                ),
+                                // 1. Central Medallion (Spiritual Aura if Live, Avatar if Reciter)
+                                if (isLiveStream)
+                                  LiveSanctuaryAuraMedallion(
+                                    isMakkah: isMakkah,
+                                    isPlaying: state.isPlaying,
+                                    rotationAnimation: _rotationController,
+                                  )
+                                else
+                                  _AnimatedPlayerMedallion(
+                                    reciterName: track.reciterName,
+                                    isPlaying: state.isPlaying,
+                                    rotationAnimation: _rotationController,
+                                  ),
 
-                                // Track & Reciter Calligraphy Typography
+                                // 2. Track & Reciter Typography
                                 _PlayerTypography(
+                                  isLive: isLiveStream,
                                   reciterName: track.reciterName,
                                   styleDescription: track.styleDescription,
                                 ),
 
-                                // Dynamic Glowing Acoustic Audio Waveform
+                                // 3. Dynamic Glowing Acoustic Audio Waveform
                                 RecitationAudioWaveform(
                                   isPlaying: state.isPlaying,
+                                  isLive: isLiveStream,
                                 ),
 
-                                // Audio Position Scrubber Bar
-                                RecitationScrubberBar(
-                                  position: state.position,
-                                  duration: state.duration,
-                                  onSeek: cubit.seekTo,
-                                ),
+                                // 4. Scrubber Bar or Live Status Bar (Zero seconds for Live Streams)
+                                if (isLiveStream)
+                                  LiveBroadcastStatusBar(
+                                    isPlaying: state.isPlaying,
+                                  )
+                                else
+                                  RecitationScrubberBar(
+                                    position: state.position,
+                                    duration: state.duration,
+                                    onSeek: cubit.seekTo,
+                                  ),
 
-                                // Concentric Playback Controls
-                                RecitationPlaybackControls(
-                                  isPlaying: state.isPlaying,
-                                  isBuffering: state.isBuffering,
-                                  isRepeating: state.isRepeating,
-                                  isShuffling: state.isShuffling,
-                                  onPlayPause: cubit.togglePlayPause,
-                                  onNext: cubit.nextTrack,
-                                  onPrevious: cubit.previousTrack,
-                                  onToggleRepeat: cubit.toggleRepeat,
-                                  onToggleShuffle: cubit.toggleShuffle,
-                                ),
+                                // 5. Playback Controls (Sanctuary Controls if Live, Standard if Reciter)
+                                if (isLiveStream)
+                                  LiveSanctuaryPlaybackControls(
+                                    isPlaying: state.isPlaying,
+                                    isBuffering: state.isBuffering,
+                                    isMakkah: isMakkah,
+                                    onPlayPause: cubit.togglePlayPause,
+                                    onSwitchToMakkah: () => cubit.playTrack(
+                                      kSanctuaryLiveChannels[0].toTrack(),
+                                    ),
+                                    onSwitchToMadinah: () => cubit.playTrack(
+                                      kSanctuaryLiveChannels[1].toTrack(),
+                                    ),
+                                    onReconnect: () => cubit.playTrack(track),
+                                  )
+                                else
+                                  RecitationPlaybackControls(
+                                    isPlaying: state.isPlaying,
+                                    isBuffering: state.isBuffering,
+                                    isRepeating: state.isRepeating,
+                                    isShuffling: state.isShuffling,
+                                    onPlayPause: cubit.togglePlayPause,
+                                    onNext: cubit.nextTrack,
+                                    onPrevious: cubit.previousTrack,
+                                    onToggleRepeat: cubit.toggleRepeat,
+                                    onToggleShuffle: cubit.toggleShuffle,
+                                  ),
 
-                                // Floating Luxury Utility Capsule (Side-by-side Speed, Timer, Repeat, Settings)
-                                _FloatingUtilityCapsule(
-                                  currentSpeed: state.playbackSpeed,
-                                  sleepTimerMinutes: state.sleepTimerMinutes,
-                                  isRepeating: state.isRepeating,
-                                  onSpeedChanged: cubit.setPlaybackSpeed,
-                                  onSleepTimerChanged: cubit.setSleepTimer,
-                                  onToggleRepeat: cubit.toggleRepeat,
-                                  onOpenSettings: () => _openSettingsSheet(context, cubit, state),
-                                ),
+                                // 6. Utility Capsule
+                                if (isLiveStream)
+                                  _LiveUtilityCapsule(
+                                    sleepTimerMinutes: state.sleepTimerMinutes,
+                                    isMakkah: isMakkah,
+                                    onSleepTimerChanged: cubit.setSleepTimer,
+                                    onToggleSanctuary: () {
+                                      final target = isMakkah
+                                          ? kSanctuaryLiveChannels[1]
+                                          : kSanctuaryLiveChannels[0];
+                                      cubit.playTrack(target.toTrack());
+                                    },
+                                    onOpenSettings: () => _openSettingsSheet(
+                                      context,
+                                      cubit,
+                                      state,
+                                      true,
+                                    ),
+                                  )
+                                else
+                                  _FloatingUtilityCapsule(
+                                    currentSpeed: state.playbackSpeed,
+                                    sleepTimerMinutes: state.sleepTimerMinutes,
+                                    isRepeating: state.isRepeating,
+                                    onSpeedChanged: cubit.setPlaybackSpeed,
+                                    onSleepTimerChanged: cubit.setSleepTimer,
+                                    onToggleRepeat: cubit.toggleRepeat,
+                                    onOpenSettings: () => _openSettingsSheet(
+                                      context,
+                                      cubit,
+                                      state,
+                                      false,
+                                    ),
+                                  ),
                               ],
                             ),
                           ),
@@ -176,7 +256,10 @@ class _TopDragBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: () {
+        HapticService.lightImpact();
+        onTap();
+      },
       child: Container(
         padding: EdgeInsets.symmetric(vertical: 8.h),
         alignment: Alignment.center,
@@ -194,10 +277,12 @@ class _TopDragBar extends StatelessWidget {
 }
 
 class _PlayerTopAppBar extends StatelessWidget {
+  final bool isLive;
   final VoidCallback onBackTap;
   final VoidCallback onSettingsTap;
 
   const _PlayerTopAppBar({
+    required this.isLive,
     required this.onBackTap,
     required this.onSettingsTap,
   });
@@ -212,7 +297,10 @@ class _PlayerTopAppBar extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           GestureDetector(
-            onTap: onBackTap,
+            onTap: () {
+              HapticService.lightImpact();
+              onBackTap();
+            },
             child: Container(
               width: 40.r,
               height: 40.r,
@@ -231,28 +319,55 @@ class _PlayerTopAppBar extends StatelessWidget {
               ),
             ),
           ),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'مشغل التلاوة',
-                style: GoogleFonts.cairo(
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.bold,
-                  color: colors.textPrimary,
+          if (isLive)
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 7.r,
+                  height: 7.r,
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: AppColors.errorRed,
+                  ),
                 ),
-              ),
-              SizedBox(width: 6.w),
-              Text(
-                '🌙',
-                style: TextStyle(
-                  fontSize: 14.sp,
+                SizedBox(width: 6.w),
+                Text(
+                  'بث مباشر • الحرمين الشريفين',
+                  style: GoogleFonts.cairo(
+                    fontSize: 15.sp,
+                    fontWeight: FontWeight.bold,
+                    color: colors.textPrimary,
+                  ),
                 ),
-              ),
-            ],
-          ),
+              ],
+            )
+          else
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'مشغل التلاوة',
+                  style: GoogleFonts.cairo(
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.bold,
+                    color: colors.textPrimary,
+                  ),
+                ),
+                SizedBox(width: 6.w),
+                Text(
+                  '🌙',
+                  style: TextStyle(
+                    fontSize: 14.sp,
+                  ),
+                ),
+              ],
+            ),
           GestureDetector(
-            onTap: onSettingsTap,
+            onTap: () {
+              HapticService.lightImpact();
+              onSettingsTap();
+            },
             child: Container(
               width: 40.r,
               height: 40.r,
@@ -330,10 +445,12 @@ class _AnimatedPlayerMedallion extends StatelessWidget {
 }
 
 class _PlayerTypography extends StatelessWidget {
+  final bool isLive;
   final String reciterName;
   final String styleDescription;
 
   const _PlayerTypography({
+    required this.isLive,
     required this.reciterName,
     required this.styleDescription,
   });
@@ -348,7 +465,7 @@ class _PlayerTypography extends StatelessWidget {
         Text(
           reciterName,
           style: GoogleFonts.cairo(
-            fontSize: 21.sp,
+            fontSize: isLive ? 20.sp : 21.sp,
             fontWeight: FontWeight.w800,
             color: colors.textPrimary,
           ),
@@ -374,38 +491,24 @@ class _PlayerTypography extends StatelessWidget {
   }
 }
 
-/// Floating luxury stadium capsule holding utility controls side-by-side
-class _FloatingUtilityCapsule extends StatelessWidget {
-  final double currentSpeed;
+/// Floating luxury utility capsule for live broadcast sessions
+class _LiveUtilityCapsule extends StatelessWidget {
   final int? sleepTimerMinutes;
-  final bool isRepeating;
-  final ValueChanged<double> onSpeedChanged;
+  final bool isMakkah;
   final ValueChanged<int?> onSleepTimerChanged;
-  final VoidCallback onToggleRepeat;
+  final VoidCallback onToggleSanctuary;
   final VoidCallback onOpenSettings;
 
-  const _FloatingUtilityCapsule({
-    required this.currentSpeed,
+  const _LiveUtilityCapsule({
     required this.sleepTimerMinutes,
-    required this.isRepeating,
-    required this.onSpeedChanged,
+    required this.isMakkah,
     required this.onSleepTimerChanged,
-    required this.onToggleRepeat,
+    required this.onToggleSanctuary,
     required this.onOpenSettings,
   });
 
-  void _cycleSpeed() {
-    HapticFeedback.lightImpact();
-    const speeds = [1.0, 1.25, 1.5, 2.0];
-    final currentIndex = speeds.indexOf(currentSpeed);
-    final nextSpeed = (currentIndex >= 0 && currentIndex < speeds.length - 1)
-        ? speeds[currentIndex + 1]
-        : speeds.first;
-    onSpeedChanged(nextSpeed);
-  }
-
   void _cycleSleepTimer() {
-    HapticFeedback.lightImpact();
+    HapticService.lightImpact();
     final timers = <int?>[null, 15, 30, 45, 60];
     final currentIndex = timers.indexOf(sleepTimerMinutes);
     final nextTimer = (currentIndex >= 0 && currentIndex < timers.length - 1)
@@ -431,7 +534,172 @@ class _FloatingUtilityCapsule extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          // 1. Quick Speed Toggle Pill (Changes speed immediately on tap)
+          // 1. Sleep Timer Toggle Pill
+          GestureDetector(
+            onTap: _cycleSleepTimer,
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+              decoration: BoxDecoration(
+                color: sleepTimerMinutes != null ? colors.surfaceElevated : Colors.transparent,
+                borderRadius: BorderRadius.circular(20.r),
+                border: Border.all(
+                  color: sleepTimerMinutes != null ? colors.accentGold : Colors.transparent,
+                  width: 1.r,
+                ),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Iconsax.timer_1,
+                    size: 16.r,
+                    color: sleepTimerMinutes != null ? colors.accentGold : colors.textSecondary,
+                  ),
+                  SizedBox(width: 4.w),
+                  Text(
+                    sleepTimerMinutes != null ? '$sleepTimerMinutes د' : 'مؤقت الإيقاف',
+                    style: GoogleFonts.cairo(
+                      fontSize: 12.sp,
+                      fontWeight: FontWeight.w600,
+                      color: sleepTimerMinutes != null ? colors.accentGold : colors.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          // Hairline divider
+          Container(
+            height: 16.h,
+            width: 1.w,
+            color: colors.borderHairline,
+          ),
+
+          // 2. Sanctuary Switcher Pill
+          GestureDetector(
+            onTap: () {
+              HapticService.lightImpact();
+              onToggleSanctuary();
+            },
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+              decoration: BoxDecoration(
+                color: colors.surfaceElevated,
+                borderRadius: BorderRadius.circular(20.r),
+                border: Border.all(
+                  color: colors.borderHairline,
+                  width: 1.r,
+                ),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Iconsax.repeat,
+                    size: 15.r,
+                    color: colors.accentGold,
+                  ),
+                  SizedBox(width: 5.w),
+                  Text(
+                    isMakkah ? 'المسجد النبوي 🕌' : 'المسجد الحرام 🕋',
+                    style: GoogleFonts.cairo(
+                      fontSize: 12.sp,
+                      fontWeight: FontWeight.bold,
+                      color: colors.textPrimary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          // Hairline divider
+          Container(
+            height: 16.h,
+            width: 1.w,
+            color: colors.borderHairline,
+          ),
+
+          // 3. Quick Settings / Info Opener
+          GestureDetector(
+            onTap: () {
+              HapticService.lightImpact();
+              onOpenSettings();
+            },
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
+              child: Icon(
+                Iconsax.setting_2,
+                size: 18.r,
+                color: colors.textSecondary,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Floating luxury stadium capsule holding utility controls side-by-side for recorded recitations
+class _FloatingUtilityCapsule extends StatelessWidget {
+  final double currentSpeed;
+  final int? sleepTimerMinutes;
+  final bool isRepeating;
+  final ValueChanged<double> onSpeedChanged;
+  final ValueChanged<int?> onSleepTimerChanged;
+  final VoidCallback onToggleRepeat;
+  final VoidCallback onOpenSettings;
+
+  const _FloatingUtilityCapsule({
+    required this.currentSpeed,
+    required this.sleepTimerMinutes,
+    required this.isRepeating,
+    required this.onSpeedChanged,
+    required this.onSleepTimerChanged,
+    required this.onToggleRepeat,
+    required this.onOpenSettings,
+  });
+
+  void _cycleSpeed() {
+    HapticService.lightImpact();
+    const speeds = [1.0, 1.25, 1.5, 2.0];
+    final currentIndex = speeds.indexOf(currentSpeed);
+    final nextSpeed = (currentIndex >= 0 && currentIndex < speeds.length - 1)
+        ? speeds[currentIndex + 1]
+        : speeds.first;
+    onSpeedChanged(nextSpeed);
+  }
+
+  void _cycleSleepTimer() {
+    HapticService.lightImpact();
+    final timers = <int?>[null, 15, 30, 45, 60];
+    final currentIndex = timers.indexOf(sleepTimerMinutes);
+    final nextTimer = (currentIndex >= 0 && currentIndex < timers.length - 1)
+        ? timers[currentIndex + 1]
+        : timers.first;
+    onSleepTimerChanged(nextTimer);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+      decoration: BoxDecoration(
+        color: colors.cardSurface,
+        borderRadius: BorderRadius.circular(30.r),
+        border: Border.all(
+          color: colors.borderHairline,
+          width: 1.r,
+        ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          // 1. Quick Speed Toggle Pill
           GestureDetector(
             onTap: _cycleSpeed,
             child: Container(
@@ -518,7 +786,7 @@ class _FloatingUtilityCapsule extends StatelessWidget {
           // 3. Quick Repeat Mode Toggle
           GestureDetector(
             onTap: () {
-              HapticFeedback.lightImpact();
+              HapticService.lightImpact();
               onToggleRepeat();
             },
             child: Container(
@@ -549,7 +817,7 @@ class _FloatingUtilityCapsule extends StatelessWidget {
           // 4. Quick Full Settings Opener
           GestureDetector(
             onTap: () {
-              HapticFeedback.lightImpact();
+              HapticService.lightImpact();
               onOpenSettings();
             },
             child: Container(
