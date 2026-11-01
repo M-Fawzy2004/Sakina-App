@@ -40,6 +40,8 @@ class QuranReaderView extends StatefulWidget {
   final bool isAyahAudioBuffering;
   final ValueChanged<int>? onPlayAyah;
   final VoidCallback? onStopAyah;
+  final int? initialAyahNumber;
+  final int? initialPageNumber;
 
   const QuranReaderView({
     super.key,
@@ -54,6 +56,8 @@ class QuranReaderView extends StatefulWidget {
     this.isAyahAudioBuffering = false,
     this.onPlayAyah,
     this.onStopAyah,
+    this.initialAyahNumber,
+    this.initialPageNumber,
   });
 
   @override
@@ -114,10 +118,72 @@ class _QuranReaderViewState extends State<QuranReaderView> {
     );
   }
 
+  int _calculateInitialPageIndex([List<AyahEntity>? versesOverride]) {
+    final list = versesOverride ?? widget.verses;
+    if (widget.initialAyahNumber != null && widget.initialAyahNumber! > 1) {
+      if (list.isNotEmpty) {
+        final index = list.indexWhere(
+          (v) => v.numberInSurah == widget.initialAyahNumber,
+        );
+        if (index >= 0) {
+          final target = index ~/ _versesPerPage;
+          final maxPages = _totalPages > 0 ? _totalPages - 1 : 0;
+          return target.clamp(0, maxPages);
+        }
+      }
+      final target = (widget.initialAyahNumber! - 1) ~/ _versesPerPage;
+      final maxPages = _totalPages > 0 ? _totalPages - 1 : 0;
+      return target.clamp(0, maxPages);
+    }
+
+    if (widget.initialPageNumber != null && list.isNotEmpty) {
+      final index = list.indexWhere(
+        (v) => v.page >= widget.initialPageNumber!,
+      );
+      if (index >= 0) {
+        final target = index ~/ _versesPerPage;
+        final maxPages = _totalPages > 0 ? _totalPages - 1 : 0;
+        return target.clamp(0, maxPages);
+      }
+    }
+
+    return 0;
+  }
+
+  void _scrollToTargetAyahIfPresent() {
+    final targetAyah = widget.initialAyahNumber;
+    if (targetAyah == null || widget.verses.isEmpty) return;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final pageVerses = _getVersesForPage(_currentPageIndex);
+      final indexInPage = pageVerses.indexWhere(
+        (v) => v.numberInSurah == targetAyah,
+      );
+      if (indexInPage > 0) {
+        final controller = _getScrollControllerForPage(_currentPageIndex);
+        if (controller.hasClients) {
+          final targetOffset = (indexInPage * 110.h).clamp(
+            0.0,
+            controller.position.maxScrollExtent,
+          );
+          controller.animateTo(
+            targetOffset,
+            duration: const Duration(milliseconds: 350),
+            curve: Curves.easeOutCubic,
+          );
+        }
+      }
+    });
+  }
+
   @override
   void initState() {
     super.initState();
-    _pageController = PageController();
+    _currentPageIndex = _calculateInitialPageIndex();
+    _selectedAyahNumber = widget.initialAyahNumber;
+    _pageController = PageController(initialPage: _currentPageIndex);
+    _scrollToTargetAyahIfPresent();
   }
 
   @override
@@ -135,15 +201,28 @@ class _QuranReaderViewState extends State<QuranReaderView> {
   void didUpdateWidget(covariant QuranReaderView oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.surah.id != widget.surah.id) {
-      _currentPageIndex = 0;
-      _selectedAyahNumber = null;
+      _currentPageIndex = _calculateInitialPageIndex();
+      _selectedAyahNumber = widget.initialAyahNumber;
       for (final controller in _pageScrollControllers.values) {
         controller.dispose();
       }
       _pageScrollControllers.clear();
       if (_pageController.hasClients) {
-        _pageController.jumpToPage(0);
+        _pageController.jumpToPage(_currentPageIndex);
       }
+      _scrollToTargetAyahIfPresent();
+    } else if (oldWidget.verses.isEmpty && widget.verses.isNotEmpty) {
+      final targetPage = _calculateInitialPageIndex();
+      if (targetPage != _currentPageIndex) {
+        _currentPageIndex = targetPage;
+        if (_pageController.hasClients) {
+          _pageController.jumpToPage(targetPage);
+        }
+      }
+      if (widget.initialAyahNumber != null) {
+        _selectedAyahNumber = widget.initialAyahNumber;
+      }
+      _scrollToTargetAyahIfPresent();
     } else if (widget.recitingAyahNumber != null &&
         widget.recitingAyahNumber != oldWidget.recitingAyahNumber) {
       _autoPagingForRecitation(widget.recitingAyahNumber!);

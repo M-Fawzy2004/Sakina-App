@@ -6,6 +6,7 @@ import 'package:sakina_app/core/theme/app_colors.dart';
 import 'package:sakina_app/core/theme/app_colors_scheme.dart';
 import 'package:sakina_app/core/theme/app_spacing.dart';
 import 'package:sakina_app/core/theme/app_text_styles.dart';
+import 'package:sakina_app/features/quran_reading/domain/entities/hizb_entity.dart';
 import 'package:sakina_app/features/quran_reading/domain/entities/surah_entity.dart';
 import 'package:sakina_app/features/quran_reading/presentation/cubit/quran_cubit.dart';
 import 'package:sakina_app/features/quran_reading/presentation/cubit/quran_state.dart';
@@ -88,8 +89,17 @@ class _QuranCatalogBodyState extends State<_QuranCatalogBody> {
     });
   }
 
-  void _navigateToSurah(SurahEntity surah) {
-    SurahReaderScreen.open(context, surah);
+  void _navigateToSurah(
+    SurahEntity surah, {
+    int? initialAyahNumber,
+    int? initialPageNumber,
+  }) {
+    SurahReaderScreen.open(
+      context,
+      surah,
+      initialAyahNumber: initialAyahNumber,
+      initialPageNumber: initialPageNumber,
+    );
   }
 
   @override
@@ -134,7 +144,11 @@ class _QuranCatalogBodyState extends State<_QuranCatalogBody> {
                   (s) => s.id == targetSurahId,
                   orElse: () => widget.state.allSurahs.first,
                 );
-                _navigateToSurah(targetSurah);
+                _navigateToSurah(
+                  targetSurah,
+                  initialAyahNumber: widget.state.lastReadBookmark?.ayahNumber,
+                  initialPageNumber: widget.state.lastReadBookmark?.pageNumber,
+                );
               },
             ),
           ),
@@ -155,13 +169,13 @@ class _QuranCatalogBodyState extends State<_QuranCatalogBody> {
         if (showSearch)
           QuranSurahsList(
             surahs: widget.state.filteredSurahs,
-            onSurahTap: _navigateToSurah,
+            onSurahTap: (surah) => _navigateToSurah(surah),
           )
         else
           switch (widget.state.selectedTab) {
             QuranTab.surahs => QuranSurahsList(
                 surahs: widget.state.filteredSurahs,
-                onSurahTap: _navigateToSurah,
+                onSurahTap: (surah) => _navigateToSurah(surah),
               ),
             QuranTab.juzs => QuranJuzsList(
                 juzs: widget.state.juzs,
@@ -171,7 +185,11 @@ class _QuranCatalogBodyState extends State<_QuranCatalogBody> {
                     (s) => s.nameArabic == juz.startSurahName,
                     orElse: () => widget.state.allSurahs.first,
                   );
-                  _navigateToSurah(targetSurah);
+                  _navigateToSurah(
+                    targetSurah,
+                    initialAyahNumber: juz.startVerseNumber,
+                    initialPageNumber: juz.startPageNumber,
+                  );
                 },
               ),
             QuranTab.page => QuranPagesList(
@@ -181,18 +199,45 @@ class _QuranCatalogBodyState extends State<_QuranCatalogBody> {
                     (s) => s.pageNumber <= pageNumber,
                     orElse: () => widget.state.allSurahs.first,
                   );
-                  _navigateToSurah(targetSurah);
+                  final matchingHizb = HizbEntity.allHizbs.firstWhere(
+                    (h) => h.startPageNumber == pageNumber,
+                    orElse: () => const HizbEntity(
+                      number: 0,
+                      juzNumber: 0,
+                      surahId: 0,
+                      surahName: '',
+                      startVerseNumber: 0,
+                      startPageNumber: 0,
+                      quarterTitle: '',
+                    ),
+                  );
+
+                  final initialAyah = matchingHizb.startVerseNumber > 0
+                      ? matchingHizb.startVerseNumber
+                      : (pageNumber == targetSurah.pageNumber ? 1 : null);
+
+                  _navigateToSurah(
+                    targetSurah,
+                    initialAyahNumber: initialAyah,
+                    initialPageNumber: pageNumber,
+                  );
                 },
               ),
             QuranTab.hizbs => QuranHizbsList(
                 allSurahs: widget.state.allSurahs,
-                onHizbTap: (hizbNumber) {
-                  final juzIndex = ((hizbNumber - 1) ~/ 2) + 1;
+                onHizbTap: (hizb) {
                   final targetSurah = widget.state.allSurahs.firstWhere(
-                    (s) => s.juzNumber >= juzIndex,
-                    orElse: () => widget.state.allSurahs.first,
+                    (s) => s.id == hizb.surahId,
+                    orElse: () => widget.state.allSurahs.firstWhere(
+                      (s) => s.nameArabic == hizb.surahName,
+                      orElse: () => widget.state.allSurahs.first,
+                    ),
                   );
-                  _navigateToSurah(targetSurah);
+                  _navigateToSurah(
+                    targetSurah,
+                    initialAyahNumber: hizb.startVerseNumber,
+                    initialPageNumber: hizb.startPageNumber,
+                  );
                 },
               ),
             QuranTab.bookmarks => SliverToBoxAdapter(
@@ -203,7 +248,11 @@ class _QuranCatalogBodyState extends State<_QuranCatalogBody> {
                       (s) => s.id == bookmark.surahId,
                       orElse: () => widget.state.allSurahs.first,
                     );
-                    _navigateToSurah(targetSurah);
+                    _navigateToSurah(
+                      targetSurah,
+                      initialAyahNumber: bookmark.ayahNumber,
+                      initialPageNumber: bookmark.pageNumber,
+                    );
                   },
                 ),
               ),

@@ -3,9 +3,11 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:sakina_app/features/quran_reading/domain/entities/ayah_entity.dart';
+import 'package:sakina_app/features/quran_reading/domain/entities/hizb_entity.dart';
 import 'package:sakina_app/features/quran_reading/domain/entities/quran_reader_preferences.dart';
 import 'package:sakina_app/features/quran_reading/domain/entities/surah_entity.dart';
 import 'package:sakina_app/features/quran_reading/presentation/widgets/components/quran_3d_page_turn.dart';
+import 'package:sakina_app/features/quran_reading/presentation/widgets/components/quran_hizbs_list.dart';
 import 'package:sakina_app/features/quran_reading/presentation/widgets/components/quran_mushaf_brand_header.dart';
 import 'package:sakina_app/features/quran_reading/presentation/cubit/quran_state.dart';
 import 'package:sakina_app/features/quran_reading/presentation/widgets/components/quran_ornate_manuscript_card.dart';
@@ -407,6 +409,107 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(playedAyah, 2);
+    });
+  });
+
+  group('HizbEntity Authentic Dataset Tests', () {
+    test('contains exactly 60 authentic Hizbs', () {
+      expect(HizbEntity.allHizbs.length, 60);
+    });
+
+    test('verifies accurate starting verse and page mappings', () {
+      final hizb1 = HizbEntity.allHizbs[0];
+      expect(hizb1.number, 1);
+      expect(hizb1.juzNumber, 1);
+      expect(hizb1.surahId, 1);
+      expect(hizb1.startVerseNumber, 1);
+      expect(hizb1.startPageNumber, 1);
+
+      final hizb3 = HizbEntity.allHizbs[2];
+      expect(hizb3.number, 3);
+      expect(hizb3.juzNumber, 2);
+      expect(hizb3.surahId, 2);
+      expect(hizb3.startVerseNumber, 142);
+      expect(hizb3.startPageNumber, 22);
+
+      final hizb5 = HizbEntity.allHizbs[4];
+      expect(hizb5.number, 5);
+      expect(hizb5.juzNumber, 3);
+      expect(hizb5.surahId, 2);
+      expect(hizb5.startVerseNumber, 253);
+      expect(hizb5.startPageNumber, 42);
+
+      final hizb60 = HizbEntity.allHizbs[59];
+      expect(hizb60.number, 60);
+      expect(hizb60.juzNumber, 30);
+      expect(hizb60.surahId, 87);
+      expect(hizb60.startVerseNumber, 1);
+      expect(hizb60.startPageNumber, 591);
+    });
+  });
+
+  group('QuranHizbsList Widget Tests', () {
+    testWidgets('renders list of Hizbs and triggers onHizbTap with HizbEntity', (tester) async {
+      HizbEntity? tappedHizb;
+
+      await tester.pumpWidget(
+        createTestWidget(
+          CustomScrollView(
+            slivers: [
+              QuranHizbsList(
+                allSurahs: const [testSurah],
+                onHizbTap: (hizb) => tappedHizb = hizb,
+              ),
+            ],
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('الحِزْبُ 1'), findsOneWidget);
+      expect(find.text('الحِزْبُ 2'), findsOneWidget);
+
+      await tester.tap(find.text('الحِزْبُ 1'));
+      await tester.pumpAndSettle();
+
+      expect(tappedHizb, isNotNull);
+      expect(tappedHizb!.number, 1);
+      expect(tappedHizb!.startVerseNumber, 1);
+    });
+  });
+
+  group('QuranReaderView Initial Ayah Navigation Tests', () {
+    testWidgets('jumps directly to target page and selects initialAyahNumber', (tester) async {
+      final longVersesList = List.generate(
+        60,
+        (i) => AyahEntity(
+          numberInSurah: i + 1,
+          text: 'آيَةُ رَقْمِ ${i + 1}',
+          page: 10 + (i ~/ 20),
+          juz: 2,
+        ),
+      );
+
+      await tester.pumpWidget(
+        createTestWidget(
+          QuranReaderView(
+            surah: testSurah,
+            verses: longVersesList,
+            initialAyahNumber: 25,
+            onClose: () {},
+            onBookmarkSaved: (_) {},
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Because verse 25 is on page index 1 (verses 21-40), verses 21 through 40 are rendered
+      expect(find.text('21'), findsWidgets);
+      expect(find.text('25'), findsWidgets);
+      expect(find.text('40'), findsWidgets);
+      // Floating bar indicates Ayah 25 is actively selected
+      expect(find.textContaining('الآية 25'), findsOneWidget);
+      expect(find.textContaining('آيَةُ رَقْمِ 25'), findsWidgets);
     });
   });
 }

@@ -12,14 +12,23 @@ import 'package:sakina_app/features/quran_reading/presentation/widgets/component
 /// a completely immersive 100% full-screen reading experience with 3D page curl physics.
 class SurahReaderScreen extends StatefulWidget {
   final SurahEntity surah;
+  final int? initialAyahNumber;
+  final int? initialPageNumber;
 
   const SurahReaderScreen({
     super.key,
     required this.surah,
+    this.initialAyahNumber,
+    this.initialPageNumber,
   });
 
   /// Opens the Surah reader as a full-screen route covering the bottom navigation bar.
-  static Future<void> open(BuildContext context, SurahEntity surah) {
+  static Future<void> open(
+    BuildContext context,
+    SurahEntity surah, {
+    int? initialAyahNumber,
+    int? initialPageNumber,
+  }) {
     final cubit = context.read<QuranCubit>();
     cubit.openSurahReader(surah);
 
@@ -27,7 +36,11 @@ class SurahReaderScreen extends StatefulWidget {
       MaterialPageRoute<void>(
         builder: (navContext) => BlocProvider.value(
           value: cubit,
-          child: SurahReaderScreen(surah: surah),
+          child: SurahReaderScreen(
+            surah: surah,
+            initialAyahNumber: initialAyahNumber,
+            initialPageNumber: initialPageNumber,
+          ),
         ),
       ),
     );
@@ -67,6 +80,8 @@ class _SurahReaderScreenState extends State<SurahReaderScreen> {
             surah: activeSurah,
             verses: verses,
             allSurahs: state.allSurahs,
+            initialAyahNumber: widget.initialAyahNumber,
+            initialPageNumber: widget.initialPageNumber,
             recitingAyahNumber: state.recitingAyahNumber,
             isAyahAudioPlaying: state.isAyahAudioPlaying,
             isAyahAudioBuffering: state.isAyahAudioBuffering,
