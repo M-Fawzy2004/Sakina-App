@@ -6,7 +6,7 @@ import 'package:sakina_app/core/utils/haptic_service.dart';
 import 'package:sakina_app/features/quran_reading/presentation/cubit/quran_state.dart';
 
 /// Refined stadium capsule segmented tab bar matching the user's design reference:
-/// Contains 3 tabs («السُّورَة», «الجُزْء», «الحِزْب») inside a floating rounded
+/// Contains 4 plural tabs («السور», «الأجزاء», «الأحزاب», «الصفحات») inside a floating rounded
 /// container with smooth animated pill selection, clean typography, and tactile feedback.
 class QuranTabBar extends StatelessWidget {
   final QuranTab selectedTab;
@@ -39,9 +39,8 @@ class QuranTabBar extends StatelessWidget {
           children: [
             Expanded(
               child: _TabPillItem(
-                title: 'السُّورَة',
-                isSelected: selectedTab == QuranTab.surahs ||
-                    selectedTab == QuranTab.page,
+                title: 'السور',
+                isSelected: selectedTab == QuranTab.surahs,
                 onTap: () {
                   HapticService.selectionClick();
                   onTabSelected(QuranTab.surahs);
@@ -50,7 +49,7 @@ class QuranTabBar extends StatelessWidget {
             ),
             Expanded(
               child: _TabPillItem(
-                title: 'الجُزْء',
+                title: 'الأجزاء',
                 isSelected: selectedTab == QuranTab.juzs,
                 onTap: () {
                   HapticService.selectionClick();
@@ -60,12 +59,21 @@ class QuranTabBar extends StatelessWidget {
             ),
             Expanded(
               child: _TabPillItem(
-                title: 'الحِزْب',
-                isSelected: selectedTab == QuranTab.hizbs ||
-                    selectedTab == QuranTab.bookmarks,
+                title: 'الأحزاب',
+                isSelected: selectedTab == QuranTab.hizbs,
                 onTap: () {
                   HapticService.selectionClick();
                   onTabSelected(QuranTab.hizbs);
+                },
+              ),
+            ),
+            Expanded(
+              child: _TabPillItem(
+                title: 'الصفحات',
+                isSelected: selectedTab == QuranTab.page,
+                onTap: () {
+                  HapticService.selectionClick();
+                  onTabSelected(QuranTab.page);
                 },
               ),
             ),
@@ -111,9 +119,11 @@ class _TabPillItem extends StatelessWidget {
               style: isSelected
                   ? AppTextStyles.tabActiveText.copyWith(
                       color: colors.background,
+                      fontSize: 12.sp,
                     )
                   : AppTextStyles.tabInactiveText.copyWith(
                       color: colors.textSecondary,
+                      fontSize: 12.sp,
                     ),
             ),
           ),

@@ -1,18 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_islamic_icons/flutter_islamic_icons.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:sakina_app/core/theme/app_colors_scheme.dart';
-import 'package:sakina_app/core/theme/app_text_styles.dart';
 import 'package:sakina_app/core/utils/haptic_service.dart';
 import 'package:sakina_app/core/utils/surah_metadata_utils.dart';
 import 'package:sakina_app/features/quran_reading/domain/entities/surah_entity.dart';
 
-/// Surah item card layout matching the user's design reference:
-/// - Left: Bold English Surah ID numeral (1, 2, 3...)
-/// - Beside ID: English Surah Name in Emerald Glow (Al-Fatihah, Al-Baqarah...)
-/// - Subtitle: English translation/meaning + Revelation icon (Kaaba for Makki / Mosque for Madani)
-/// - Right: Authentic Classical Arabic calligraphic title in Amiri font («سُورَةُ الفَاتِحَةِ»)
-/// - Styled in tactile luxury surface tokens with 1px hairline border.
+/// Surah item grid card matching the user's design reference:
+/// - Left: Details Column (Calligraphic Title, Revelation Type & Verse count, Page number)
+/// - Right: Clean rounded square capsule containing Surah ID numeral (1, 2, 3...)
+/// - Zero play icons as requested by user specifications.
+/// - Tactile luxury dark surface with subtle 1px hairline border.
 class QuranSurahMockupCard extends StatelessWidget {
   final SurahEntity surah;
   final VoidCallback onTap;
@@ -26,110 +24,137 @@ class QuranSurahMockupCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final englishTranslation =
-        SurahMetadataUtils.getEnglishTranslation(surah.id);
     final calligraphicTitle =
         SurahMetadataUtils.getCalligraphicSurahName(surah.id, surah.nameArabic);
-    final isMakki = surah.revelationType.contains('مك') ||
-        surah.revelationType.toLowerCase().contains('mak');
 
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 4.5.h),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () {
-            HapticService.selectionClick();
-            onTap();
-          },
-          borderRadius: BorderRadius.circular(16.r),
-          highlightColor: Colors.transparent,
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-            decoration: BoxDecoration(
-              color: colors.cardSurface,
-              borderRadius: BorderRadius.circular(16.r),
-              border: Border.all(
-                color: colors.borderHairline,
-                width: 1.r,
-              ),
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () {
+          HapticService.selectionClick();
+          onTap();
+        },
+        borderRadius: BorderRadius.circular(16.r),
+        highlightColor: Colors.transparent,
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
+          decoration: BoxDecoration(
+            color: colors.cardSurface,
+            borderRadius: BorderRadius.circular(16.r),
+            border: Border.all(
+              color: colors.borderHairline.withValues(alpha: 0.65),
+              width: 1.r,
             ),
-            child: Directionality(
-              textDirection: TextDirection.ltr,
-              child: Row(
-                children: [
-                  // 1. Surah Index Numeral (1, 2, 3...)
-                  SizedBox(
-                    width: 26.w,
-                    child: Text(
-                      '${surah.id}',
-                      textAlign: TextAlign.start,
-                      style: AppTextStyles.surahCardIndex.copyWith(
-                        color: colors.textPrimary,
-                      ),
-                    ),
-                  ),
-
-                  SizedBox(width: 10.w),
-
-                  // 2. English Surah Name & Translation Subtitle
-                  Expanded(
+          ),
+          child: Directionality(
+            textDirection: TextDirection.ltr,
+            child: Row(
+              children: [
+                // 1. Left: Surah Metadata Details
+                Expanded(
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.center,
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
+                        // Surah Calligraphic Title (Amiri)
                         Text(
-                          surah.englishName,
+                          calligraphicTitle,
+                          textAlign: TextAlign.center,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: AppTextStyles.surahCardEnglishTitle.copyWith(
-                            color: colors.accentEmerald,
+                          style: GoogleFonts.amiri(
+                            fontSize: 15.sp,
+                            fontWeight: FontWeight.w700,
+                            color: colors.textPrimary,
+                            height: 1.25,
+                          ),
+                        ),
+                        SizedBox(height: 3.h),
+
+                        // Revelation Type & Verses Count
+                        Text(
+                          '${surah.revelationType}, آياتها : ${surah.versesCount}',
+                          textAlign: TextAlign.center,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.cairo(
+                            fontSize: 11.sp,
+                            fontWeight: FontWeight.w500,
+                            color: colors.textSecondary,
+                            height: 1.2,
                           ),
                         ),
                         SizedBox(height: 2.h),
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Flexible(
-                              child: Text(
-                                englishTranslation,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: AppTextStyles.surahCardEnglishSubtitle.copyWith(
-                                  color: colors.textSecondary,
-                                ),
-                              ),
-                            ),
-                            SizedBox(width: 5.w),
-                            Icon(
-                              isMakki
-                                  ? FlutterIslamicIcons.solidKaaba
-                                  : FlutterIslamicIcons.locationMosque,
-                              size: 11.r,
-                              color: colors.textSecondary,
-                            ),
-                          ],
+
+                        // Page Number
+                        Text(
+                          'الصفحة ${surah.pageNumber}',
+                          textAlign: TextAlign.center,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.cairo(
+                            fontSize: 10.5.sp,
+                            fontWeight: FontWeight.w500,
+                            color: colors.textSecondary.withValues(alpha: 0.85),
+                            height: 1.2,
+                          ),
                         ),
                       ],
                     ),
                   ),
+                ),
 
-                  SizedBox(width: 12.w),
+                SizedBox(width: 8.w),
 
-                  // 3. Classical Arabic Calligraphic Title (Amiri)
-                  Directionality(
-                    textDirection: TextDirection.rtl,
-                    child: Text(
-                      calligraphicTitle,
-                      textAlign: TextAlign.end,
-                      style: AppTextStyles.surahCardArabicTitle.copyWith(
-                        color: colors.accentGold,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+                // 2. Right: Surah Number Capsule (No Play Icon)
+                _SurahNumberBox(
+                  surahId: surah.id,
+                  colors: colors,
+                ),
+              ],
             ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Clean, tactile number capsule for the Surah card.
+class _SurahNumberBox extends StatelessWidget {
+  final int surahId;
+  final AppColorsScheme colors;
+
+  const _SurahNumberBox({
+    required this.surahId,
+    required this.colors,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 32.r,
+      height: 32.r,
+      decoration: BoxDecoration(
+        color: colors.surfaceElevated,
+        borderRadius: BorderRadius.circular(8.r),
+        border: Border.all(
+          color: colors.borderHairline.withValues(alpha: 0.5),
+          width: 0.8.r,
+        ),
+      ),
+      child: Center(
+        child: Text(
+          '$surahId',
+          style: GoogleFonts.cairo(
+            color: colors.textPrimary,
+            fontWeight: FontWeight.w800,
+            fontSize: 12.5.sp,
+            height: 1.0,
           ),
         ),
       ),

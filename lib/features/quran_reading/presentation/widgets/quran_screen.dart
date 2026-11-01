@@ -194,6 +194,7 @@ class _QuranCatalogBodyState extends State<_QuranCatalogBody> {
               ),
             QuranTab.page => QuranPagesList(
                 allSurahs: widget.state.allSurahs,
+                initialPage: widget.state.lastReadBookmark?.pageNumber ?? 1,
                 onPageTap: (pageNumber) {
                   final targetSurah = widget.state.allSurahs.lastWhere(
                     (s) => s.pageNumber <= pageNumber,

@@ -5,7 +5,10 @@ import 'package:sakina_app/core/theme/app_text_styles.dart';
 import 'package:sakina_app/features/quran_reading/domain/entities/surah_entity.dart';
 import 'package:sakina_app/features/quran_reading/presentation/widgets/components/quran_surah_mockup_card.dart';
 
-/// Slivers of Surah cards with clean responsive layout.
+/// 2-Column Responsive Grid of Surah Cards matching user's design reference:
+/// - 2 columns per row with clean card proportions
+/// - Responsive gutter spacing with ScreenUtil tokens
+/// - Smooth sliver layout integrating seamlessly with CustomScrollView
 class QuranSurahsList extends StatelessWidget {
   final List<SurahEntity> surahs;
   final ValueChanged<SurahEntity> onSurahTap;
@@ -37,18 +40,26 @@ class QuranSurahsList extends StatelessWidget {
       );
     }
 
-    return SliverList(
-      delegate: SliverChildBuilderDelegate(
-        (context, index) {
-          final surah = surahs[index];
-          return QuranSurahMockupCard(
-            surah: surah,
-            onTap: () => onSurahTap(surah),
-          );
-        },
-        childCount: surahs.length,
+    return SliverPadding(
+      padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 6.h),
+      sliver: SliverGrid(
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          mainAxisSpacing: 10.h,
+          crossAxisSpacing: 10.w,
+          mainAxisExtent: 96.h,
+        ),
+        delegate: SliverChildBuilderDelegate(
+          (context, index) {
+            final surah = surahs[index];
+            return QuranSurahMockupCard(
+              surah: surah,
+              onTap: () => onSurahTap(surah),
+            );
+          },
+          childCount: surahs.length,
+        ),
       ),
     );
   }
 }
-

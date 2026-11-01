@@ -4,14 +4,17 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:sakina_app/features/quran_reading/domain/entities/ayah_entity.dart';
 import 'package:sakina_app/features/quran_reading/domain/entities/hizb_entity.dart';
+import 'package:sakina_app/features/quran_reading/domain/entities/juz_entity.dart';
 import 'package:sakina_app/features/quran_reading/domain/entities/quran_reader_preferences.dart';
 import 'package:sakina_app/features/quran_reading/domain/entities/surah_entity.dart';
 import 'package:sakina_app/features/quran_reading/presentation/widgets/components/quran_3d_page_turn.dart';
 import 'package:sakina_app/features/quran_reading/presentation/widgets/components/quran_hizbs_list.dart';
+import 'package:sakina_app/features/quran_reading/presentation/widgets/components/quran_juzs_list.dart';
 import 'package:sakina_app/features/quran_reading/presentation/widgets/components/quran_mushaf_brand_header.dart';
 import 'package:sakina_app/features/quran_reading/presentation/cubit/quran_state.dart';
 import 'package:sakina_app/features/quran_reading/presentation/widgets/components/quran_ornate_manuscript_card.dart';
 import 'package:sakina_app/features/quran_reading/presentation/widgets/components/quran_ornate_surah_header.dart';
+import 'package:sakina_app/features/quran_reading/presentation/widgets/components/quran_pages_list.dart';
 import 'package:sakina_app/features/quran_reading/presentation/widgets/components/quran_reader_floating_bar.dart';
 import 'package:sakina_app/features/quran_reading/presentation/widgets/components/quran_reader_view.dart';
 import 'package:sakina_app/features/quran_reading/presentation/widgets/components/quran_resume_reading_hero.dart';
@@ -94,7 +97,7 @@ void main() {
   });
 
   group('QuranSurahMockupCard Widget Tests', () {
-    testWidgets('renders surah card with English ID numeral (18), English title, meaning, and handles tap', (tester) async {
+    testWidgets('renders surah card with ID numeral (18), calligraphic title, verses count, page and handles tap', (tester) async {
       bool tapped = false;
 
       await tester.pumpWidget(
@@ -108,9 +111,9 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('18'), findsOneWidget);
-      expect(find.text('Al-Kahf'), findsOneWidget);
-      expect(find.text('The Cave'), findsOneWidget);
       expect(find.text('سُورَةُ الكَهْفِ'), findsOneWidget);
+      expect(find.text('مَكِّيَّة, آياتها : 110'), findsOneWidget);
+      expect(find.text('الصفحة 293'), findsOneWidget);
 
       await tester.tap(find.text('سُورَةُ الكَهْفِ'));
       await tester.pumpAndSettle();
@@ -120,7 +123,7 @@ void main() {
   });
 
   group('QuranTabBar Widget Tests', () {
-    testWidgets('renders 3 tabs («السُّورَة», «الجُزْء», «الحِزْب») and handles tab selection without page tab', (tester) async {
+    testWidgets('renders 4 tabs («السور», «الأجزاء», «الأحزاب», «الصفحات») and handles tab selection', (tester) async {
       QuranTab selected = QuranTab.surahs;
 
       await tester.pumpWidget(
@@ -133,20 +136,25 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('الصَّفْحَة'), findsNothing);
-      expect(find.text('السُّورَة'), findsOneWidget);
-      expect(find.text('الجُزْء'), findsOneWidget);
-      expect(find.text('الحِزْب'), findsOneWidget);
+      expect(find.text('السور'), findsOneWidget);
+      expect(find.text('الأجزاء'), findsOneWidget);
+      expect(find.text('الأحزاب'), findsOneWidget);
+      expect(find.text('الصفحات'), findsOneWidget);
 
-      await tester.tap(find.text('الجُزْء'));
+      await tester.tap(find.text('الأجزاء'));
       await tester.pumpAndSettle();
 
       expect(selected, equals(QuranTab.juzs));
 
-      await tester.tap(find.text('الحِزْب'));
+      await tester.tap(find.text('الأحزاب'));
       await tester.pumpAndSettle();
 
       expect(selected, equals(QuranTab.hizbs));
+
+      await tester.tap(find.text('الصفحات'));
+      await tester.pumpAndSettle();
+
+      expect(selected, equals(QuranTab.page));
     });
   });
 
@@ -475,6 +483,77 @@ void main() {
       expect(tappedHizb, isNotNull);
       expect(tappedHizb!.number, 1);
       expect(tappedHizb!.startVerseNumber, 1);
+    });
+  });
+
+  group('QuranJuzsList Widget Tests', () {
+    testWidgets('renders 2-column grid of Juzs and triggers onJuzTap with JuzEntity', (tester) async {
+      JuzEntity? tappedJuz;
+      const testJuz = JuzEntity(
+        id: 1,
+        nameArabic: 'الجُزْءُ 1',
+        startSurahName: 'الفَاتِحَة',
+        startVerseNumber: 1,
+        startPageNumber: 1,
+        endPageNumber: 21,
+      );
+
+      await tester.pumpWidget(
+        createTestWidget(
+          CustomScrollView(
+            slivers: [
+              QuranJuzsList(
+                juzs: const [testJuz],
+                allSurahs: const [testSurah],
+                onJuzTap: (juz) => tappedJuz = juz,
+              ),
+            ],
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('الجُزْءُ 1'), findsOneWidget);
+      expect(find.text('1'), findsWidgets);
+
+      await tester.tap(find.text('الجُزْءُ 1'));
+      await tester.pumpAndSettle();
+
+      expect(tappedJuz, isNotNull);
+      expect(tappedJuz!.id, 1);
+      expect(tappedJuz!.startSurahName, 'الفَاتِحَة');
+    });
+  });
+
+  group('QuranPagesList Widget Tests', () {
+    testWidgets('renders wheel picker, action buttons, and triggers onPageTap', (tester) async {
+      int? tappedPage;
+
+      await tester.pumpWidget(
+        createTestWidget(
+          CustomScrollView(
+            slivers: [
+              QuranPagesList(
+                allSurahs: const [testSurah],
+                initialPage: 1,
+                onPageTap: (page) => tappedPage = page,
+              ),
+            ],
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('الصفحة 1'), findsWidgets);
+      expect(find.text('اكتب رقم الصفحة'), findsOneWidget);
+      expect(find.text('اذهب إلى الصفحة 1'), findsOneWidget);
+      expect(find.text('احفظ رقم الصفحة'), findsOneWidget);
+      expect(find.textContaining('يمكنك حفظ رقم الصفحة'), findsOneWidget);
+
+      await tester.tap(find.text('اذهب إلى الصفحة 1'));
+      await tester.pumpAndSettle();
+
+      expect(tappedPage, equals(1));
     });
   });
 
