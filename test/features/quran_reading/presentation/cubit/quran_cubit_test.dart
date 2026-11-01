@@ -1,11 +1,16 @@
+import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:sakina_app/core/services/audio/audio_player_handler.dart';
 import 'package:sakina_app/core/usecases/usecase.dart';
+import 'package:sakina_app/features/quran_reading/domain/entities/ayah_entity.dart';
 import 'package:sakina_app/features/quran_reading/domain/entities/juz_entity.dart';
 import 'package:sakina_app/features/quran_reading/domain/entities/quran_bookmark_entity.dart';
 import 'package:sakina_app/features/quran_reading/domain/entities/surah_entity.dart';
 import 'package:sakina_app/features/quran_reading/domain/failures/quran_failure.dart';
+import 'package:sakina_app/features/quran_reading/domain/services/everyayah_audio_url_builder.dart';
 import 'package:sakina_app/features/quran_reading/domain/usecases/get_juzs_usecase.dart';
 import 'package:sakina_app/features/quran_reading/domain/usecases/get_last_read_bookmark_usecase.dart';
 import 'package:sakina_app/features/quran_reading/domain/usecases/get_surah_verses_usecase.dart';
@@ -19,6 +24,7 @@ class MockGetJuzsUseCase extends Mock implements GetJuzsUseCase {}
 class MockGetSurahVersesUseCase extends Mock implements GetSurahVersesUseCase {}
 class MockGetLastReadBookmarkUseCase extends Mock implements GetLastReadBookmarkUseCase {}
 class MockSaveLastReadBookmarkUseCase extends Mock implements SaveLastReadBookmarkUseCase {}
+class MockAudioPlayerHandler extends Mock implements AudioPlayerHandler {}
 
 void main() {
   late QuranCubit cubit;
@@ -27,6 +33,8 @@ void main() {
   late MockGetSurahVersesUseCase mockGetSurahVerses;
   late MockGetLastReadBookmarkUseCase mockGetLastReadBookmark;
   late MockSaveLastReadBookmarkUseCase mockSaveLastReadBookmark;
+  late MockAudioPlayerHandler mockAudioPlayerHandler;
+  late StreamController<PlayerState> playerStateController;
 
   setUp(() {
     mockGetSurahs = MockGetSurahsUseCase();
@@ -34,6 +42,15 @@ void main() {
     mockGetSurahVerses = MockGetSurahVersesUseCase();
     mockGetLastReadBookmark = MockGetLastReadBookmarkUseCase();
     mockSaveLastReadBookmark = MockSaveLastReadBookmarkUseCase();
+    mockAudioPlayerHandler = MockAudioPlayerHandler();
+
+    playerStateController = StreamController<PlayerState>.broadcast();
+    when(() => mockAudioPlayerHandler.playerStateStream)
+        .thenAnswer((_) => playerStateController.stream);
+    when(() => mockAudioPlayerHandler.stop()).thenAnswer((_) async {});
+    when(() => mockAudioPlayerHandler.setAudioUrl(any())).thenAnswer((_) async {});
+    when(() => mockAudioPlayerHandler.play()).thenAnswer((_) async {});
+    when(() => mockAudioPlayerHandler.pause()).thenAnswer((_) async {});
 
     cubit = QuranCubit(
       getSurahsUseCase: mockGetSurahs,
@@ -41,10 +58,12 @@ void main() {
       getSurahVersesUseCase: mockGetSurahVerses,
       getLastReadBookmarkUseCase: mockGetLastReadBookmark,
       saveLastReadBookmarkUseCase: mockSaveLastReadBookmark,
+      audioPlayerHandler: mockAudioPlayerHandler,
     );
   });
 
   tearDown(() {
+    playerStateController.close();
     cubit.close();
   });
 
@@ -141,5 +160,77 @@ void main() {
     expect(state.filteredSurahs.length, 1);
     expect(state.filteredSurahs.first.nameArabic, 'البَقَرَة');
   });
-}
 
+  group('Per-Ayah EveryAyah Audio Streaming Tests', () {
+    test('EveryAyahAudioUrlBuilder formats deterministic 3-digit URLs correctly', () {
+      final url1 = EveryAyahAudioUrlBuilder.buildUrl(
+        surahNumber: 1,
+        ayahNumber: 1,
+      );
+      expect(url1, 'https://everyayah.com/data/Alafasy_128kbps/001001.mp3');
+
+      final url2 = EveryAyahAudioUrlBuilder.buildUrl(
+        surahNumber: 2,
+        ayahNumber: 255,
+      );
+      expect(url2, 'https://everyayah.com/data/Alafasy_128kbps/002255.mp3');
+
+      final url3 = EveryAyahAudioUrlBuilder.buildUrl(
+        surahNumber: 114,
+        ayahNumber: 6,
+        reciterId: 'Husary_128kbps',
+      );
+      expect(url3, 'https://everyayah.com/data/Husary_128kbps/114006.mp3');
+    });
+
+    test('playAyahAudio starts playback and sets recitingAyahNumber', () async {
+      when(() => mockGetSurahs(const NoParams())).thenAnswer((_) async => const Right(tSurahs));
+      when(() => mockGetJuzs(const NoParams())).thenAnswer((_) async => const Right(tJuzs));
+      when(() => mockGetLastReadBookmark(const NoParams())).thenAnswer((_) async => const Right(null));
+
+      await cubit.loadQuranData();
+
+      await cubit.playAyahAudio(surahNumber: 1, ayahNumber: 1);
+
+      final state = cubit.state as QuranLoaded;
+      expect(state.recitingAyahNumber, 1);
+      expect(state.isAyahAudioPlaying, true);
+
+      verify(() => mockAudioPlayerHandler.setAudioUrl(
+        'https://everyayah.com/data/Alafasy_128kbps/001001.mp3',
+      )).called(1);
+      verify(() => mockAudioPlayerHandler.play()).called(1);
+    });
+
+    test('pauseAyahAudio and stopAyahAudio update playback state', () async {
+      when(() => mockGetSurahs(const NoParams())).thenAnswer((_) async => const Right(tSurahs));
+      when(() => mockGetJuzs(const NoParams())).thenAnswer((_) async => const Right(tJuzs));
+      when(() => mockGetLastReadBookmark(const NoParams())).thenAnswer((_) async => const Right(null));
+
+      await cubit.loadQuranData();
+
+      await cubit.playAyahAudio(surahNumber: 1, ayahNumber: 2);
+      expect((cubit.state as QuranLoaded).isAyahAudioPlaying, true);
+
+      await cubit.pauseAyahAudio();
+      expect((cubit.state as QuranLoaded).isAyahAudioPlaying, false);
+      expect((cubit.state as QuranLoaded).recitingAyahNumber, 2);
+
+      await cubit.stopAyahAudio();
+      expect((cubit.state as QuranLoaded).recitingAyahNumber, null);
+      expect((cubit.state as QuranLoaded).isAyahAudioPlaying, false);
+    });
+
+    test('AyahEntity getAudioUrl helper generates valid EveryAyah URL', () {
+      const ayah = AyahEntity(
+        numberInSurah: 7,
+        text: 'صِرَاطَ الَّذِينَ أَنْعَمْتَ عَلَيْهِمْ',
+        page: 1,
+        juz: 1,
+      );
+
+      final url = ayah.getAudioUrl(1);
+      expect(url, 'https://everyayah.com/data/Alafasy_128kbps/001007.mp3');
+    });
+  });
+}

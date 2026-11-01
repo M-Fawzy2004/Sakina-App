@@ -21,6 +21,8 @@ class QuranReaderFloatingBar extends StatelessWidget {
   final String? pageLabel;
   final Color? accentColor;
   final Color? cardColor;
+  final bool isAudioPlaying;
+  final bool isAudioBuffering;
 
   const QuranReaderFloatingBar({
     super.key,
@@ -36,6 +38,8 @@ class QuranReaderFloatingBar extends StatelessWidget {
     this.pageLabel,
     this.accentColor,
     this.cardColor,
+    this.isAudioPlaying = false,
+    this.isAudioBuffering = false,
   });
 
   @override
@@ -109,13 +113,33 @@ class QuranReaderFloatingBar extends StatelessWidget {
               color: AppColors.goldBorderStroke.withValues(alpha: 0.5),
             ),
 
-            _IconBtn(
-              icon: Iconsax.play,
-              tooltip: 'تِلَاوَة',
-              color: activeAccent,
-              size: 20,
-              onTap: onPlay,
-            ),
+            // Audio Player Action Button (Play / Pause / Buffering)
+            if (isAudioBuffering)
+              SizedBox(
+                width: 34.r,
+                height: 34.r,
+                child: Center(
+                  child: SizedBox(
+                    width: 16.r,
+                    height: 16.r,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2.r,
+                      valueColor: const AlwaysStoppedAnimation<Color>(
+                        AppColors.emeraldGlow,
+                      ),
+                    ),
+                  ),
+                ),
+              )
+            else
+              _IconBtn(
+                icon: isAudioPlaying ? Iconsax.pause : Iconsax.play,
+                tooltip: isAudioPlaying ? 'إِيقَافٌ مُؤَقَّت' : 'تِلَاوَة',
+                color: isAudioPlaying ? AppColors.emeraldGlow : activeAccent,
+                size: 20,
+                onTap: onPlay,
+              ),
+
             _IconBtn(
               icon: Iconsax.book_1,
               tooltip: 'تَفْسِير',

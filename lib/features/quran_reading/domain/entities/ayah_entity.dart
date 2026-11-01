@@ -50,6 +50,13 @@ class AyahEntity extends Equatable {
     }
   }
 
+  /// Generates the direct deterministic EveryAyah MP3 streaming URL for this Ayah.
+  String getAudioUrl(int surahNumber, [String reciterId = 'Alafasy_128kbps']) {
+    final surahPadded = surahNumber.toString().padLeft(3, '0');
+    final ayahPadded = numberInSurah.toString().padLeft(3, '0');
+    return 'https://everyayah.com/data/$reciterId/$surahPadded$ayahPadded.mp3';
+  }
+
   @override
   List<Object?> get props => [
         numberInSurah,

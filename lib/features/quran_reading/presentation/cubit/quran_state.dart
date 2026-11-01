@@ -3,6 +3,7 @@ import 'package:sakina_app/features/quran_reading/domain/entities/ayah_entity.da
 import 'package:sakina_app/features/quran_reading/domain/entities/juz_entity.dart';
 import 'package:sakina_app/features/quran_reading/domain/entities/quran_bookmark_entity.dart';
 import 'package:sakina_app/features/quran_reading/domain/entities/surah_entity.dart';
+import 'package:sakina_app/features/quran_reading/domain/services/everyayah_audio_url_builder.dart';
 
 enum QuranTab { page, surahs, juzs, hizbs, bookmarks }
 
@@ -32,6 +33,12 @@ final class QuranLoaded extends QuranState {
   final SurahEntity? activeReadingSurah;
   final List<AyahEntity> activeVerses;
 
+  // Per-Ayah Audio Playback State via EveryAyah CDN
+  final int? recitingAyahNumber;
+  final bool isAyahAudioPlaying;
+  final bool isAyahAudioBuffering;
+  final String activeReciterId;
+
   const QuranLoaded({
     required this.allSurahs,
     required this.filteredSurahs,
@@ -41,6 +48,10 @@ final class QuranLoaded extends QuranState {
     this.searchQuery = '',
     this.activeReadingSurah,
     this.activeVerses = const [],
+    this.recitingAyahNumber,
+    this.isAyahAudioPlaying = false,
+    this.isAyahAudioBuffering = false,
+    this.activeReciterId = EveryAyahAudioUrlBuilder.defaultReciterId,
   });
 
   QuranLoaded copyWith({
@@ -53,6 +64,11 @@ final class QuranLoaded extends QuranState {
     SurahEntity? activeReadingSurah,
     List<AyahEntity>? activeVerses,
     bool clearActiveSurah = false,
+    int? recitingAyahNumber,
+    bool clearRecitingAyah = false,
+    bool? isAyahAudioPlaying,
+    bool? isAyahAudioBuffering,
+    String? activeReciterId,
   }) {
     return QuranLoaded(
       allSurahs: allSurahs ?? this.allSurahs,
@@ -61,22 +77,36 @@ final class QuranLoaded extends QuranState {
       lastReadBookmark: lastReadBookmark ?? this.lastReadBookmark,
       selectedTab: selectedTab ?? this.selectedTab,
       searchQuery: searchQuery ?? this.searchQuery,
-      activeReadingSurah: clearActiveSurah ? null : (activeReadingSurah ?? this.activeReadingSurah),
-      activeVerses: clearActiveSurah ? const [] : (activeVerses ?? this.activeVerses),
+      activeReadingSurah: clearActiveSurah
+          ? null
+          : (activeReadingSurah ?? this.activeReadingSurah),
+      activeVerses: clearActiveSurah
+          ? const []
+          : (activeVerses ?? this.activeVerses),
+      recitingAyahNumber: clearRecitingAyah
+          ? null
+          : (recitingAyahNumber ?? this.recitingAyahNumber),
+      isAyahAudioPlaying: isAyahAudioPlaying ?? this.isAyahAudioPlaying,
+      isAyahAudioBuffering: isAyahAudioBuffering ?? this.isAyahAudioBuffering,
+      activeReciterId: activeReciterId ?? this.activeReciterId,
     );
   }
 
   @override
   List<Object?> get props => [
-        allSurahs,
-        filteredSurahs,
-        juzs,
-        lastReadBookmark,
-        selectedTab,
-        searchQuery,
-        activeReadingSurah,
-        activeVerses,
-      ];
+    allSurahs,
+    filteredSurahs,
+    juzs,
+    lastReadBookmark,
+    selectedTab,
+    searchQuery,
+    activeReadingSurah,
+    activeVerses,
+    recitingAyahNumber,
+    isAyahAudioPlaying,
+    isAyahAudioBuffering,
+    activeReciterId,
+  ];
 }
 
 final class QuranError extends QuranState {
@@ -87,4 +117,3 @@ final class QuranError extends QuranState {
   @override
   List<Object?> get props => [message];
 }
-

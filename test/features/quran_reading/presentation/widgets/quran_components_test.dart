@@ -3,10 +3,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:sakina_app/features/quran_reading/domain/entities/ayah_entity.dart';
+import 'package:sakina_app/features/quran_reading/domain/entities/quran_reader_preferences.dart';
 import 'package:sakina_app/features/quran_reading/domain/entities/surah_entity.dart';
 import 'package:sakina_app/features/quran_reading/presentation/widgets/components/quran_3d_page_turn.dart';
 import 'package:sakina_app/features/quran_reading/presentation/widgets/components/quran_mushaf_brand_header.dart';
 import 'package:sakina_app/features/quran_reading/presentation/cubit/quran_state.dart';
+import 'package:sakina_app/features/quran_reading/presentation/widgets/components/quran_ornate_manuscript_card.dart';
 import 'package:sakina_app/features/quran_reading/presentation/widgets/components/quran_ornate_surah_header.dart';
 import 'package:sakina_app/features/quran_reading/presentation/widgets/components/quran_reader_floating_bar.dart';
 import 'package:sakina_app/features/quran_reading/presentation/widgets/components/quran_reader_view.dart';
@@ -233,6 +235,35 @@ void main() {
       await tester.pumpAndSettle();
       expect(nextTapped, isTrue);
     });
+
+    testWidgets('displays pause button when audio is actively playing', (tester) async {
+      bool pauseTapped = false;
+
+      await tester.pumpWidget(
+        createTestWidget(
+          QuranReaderFloatingBar(
+            pageNumber: 1,
+            juzNumber: 1,
+            selectedAyahNumber: 2,
+            isAudioPlaying: true,
+            onPreviousPage: () {},
+            onNextPage: () {},
+            onPlay: () => pauseTapped = true,
+            onTafsir: () {},
+            onCopy: () {},
+            onBookmark: () {},
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byTooltip('إِيقَافٌ مُؤَقَّت'), findsOneWidget);
+      expect(find.byIcon(Iconsax.pause), findsOneWidget);
+
+      await tester.tap(find.byTooltip('إِيقَافٌ مُؤَقَّت'));
+      await tester.pumpAndSettle();
+      expect(pauseTapped, isTrue);
+    });
   });
 
   group('QuranReaderView Widget Tests', () {
@@ -327,6 +358,55 @@ void main() {
       expect(find.textContaining('آيَةُ رَقْمِ 41'), findsWidgets);
       expect(find.textContaining('آيَةُ رَقْمِ 45'), findsWidgets);
       expect(find.textContaining('صَفْحَةُ 3 مِنْ 3'), findsOneWidget);
+    });
+  });
+
+  group('QuranOrnateManuscriptCard Audio Tests', () {
+    testWidgets('renders per-ayah play button and triggers onPlayAyah callback', (tester) async {
+      int? playedAyah;
+      const testVerses = [
+        AyahEntity(
+          numberInSurah: 1,
+          text: 'الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ',
+          page: 1,
+          juz: 1,
+        ),
+        AyahEntity(
+          numberInSurah: 2,
+          text: 'الرَّحْمَٰنِ الرَّحِيمِ',
+          page: 1,
+          juz: 1,
+        ),
+      ];
+
+      await tester.pumpWidget(
+        createTestWidget(
+          QuranOrnateManuscriptCard(
+            surah: testSurah,
+            verses: testVerses,
+            preferences: const QuranReaderPreferences(
+              style: QuranReadingStyle.verseByVerse,
+            ),
+            selectedAyahNumber: null,
+            recitingAyahNumber: 1,
+            isAyahAudioPlaying: true,
+            onAyahTap: (_) {},
+            onPlayAyah: (ayah) => playedAyah = ayah,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Ayah 1 is reciting & playing: should display pause icon
+      expect(find.byIcon(Iconsax.pause), findsOneWidget);
+      // Ayah 2 is not reciting: should display play icon
+      expect(find.byIcon(Iconsax.play), findsOneWidget);
+
+      // Tap on Ayah 2 play button
+      await tester.tap(find.byIcon(Iconsax.play));
+      await tester.pumpAndSettle();
+
+      expect(playedAyah, 2);
     });
   });
 }

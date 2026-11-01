@@ -35,6 +35,11 @@ class QuranReaderView extends StatefulWidget {
   final ValueChanged<SurahEntity>? onSurahChanged;
   final VoidCallback onClose;
   final ValueChanged<QuranBookmarkEntity> onBookmarkSaved;
+  final int? recitingAyahNumber;
+  final bool isAyahAudioPlaying;
+  final bool isAyahAudioBuffering;
+  final ValueChanged<int>? onPlayAyah;
+  final VoidCallback? onStopAyah;
 
   const QuranReaderView({
     super.key,
@@ -44,6 +49,11 @@ class QuranReaderView extends StatefulWidget {
     this.onSurahChanged,
     required this.onClose,
     required this.onBookmarkSaved,
+    this.recitingAyahNumber,
+    this.isAyahAudioPlaying = false,
+    this.isAyahAudioBuffering = false,
+    this.onPlayAyah,
+    this.onStopAyah,
   });
 
   @override
@@ -133,6 +143,25 @@ class _QuranReaderViewState extends State<QuranReaderView> {
       _pageScrollControllers.clear();
       if (_pageController.hasClients) {
         _pageController.jumpToPage(0);
+      }
+    } else if (widget.recitingAyahNumber != null &&
+        widget.recitingAyahNumber != oldWidget.recitingAyahNumber) {
+      _autoPagingForRecitation(widget.recitingAyahNumber!);
+    }
+  }
+
+  void _autoPagingForRecitation(int ayahNumber) {
+    final targetPageIndex = (ayahNumber - 1) ~/ _versesPerPage;
+    if (targetPageIndex != _currentPageIndex &&
+        targetPageIndex >= 0 &&
+        targetPageIndex < _totalPages) {
+      _currentPageIndex = targetPageIndex;
+      if (_pageController.hasClients) {
+        _pageController.animateToPage(
+          targetPageIndex,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOutCubic,
+        );
       }
     }
   }
@@ -503,6 +532,10 @@ class _QuranReaderViewState extends State<QuranReaderView> {
                               : null,
                           nextSurahName: nextSurah?.nameArabic,
                           onNextPage: _handleNextPage,
+                          recitingAyahNumber: widget.recitingAyahNumber,
+                          isAyahAudioPlaying: widget.isAyahAudioPlaying,
+                          isAyahAudioBuffering: widget.isAyahAudioBuffering,
+                          onPlayAyah: widget.onPlayAyah,
                         );
                       },
                     ),
@@ -567,7 +600,16 @@ class _QuranReaderViewState extends State<QuranReaderView> {
                           selectedAyahNumber: _selectedAyahNumber,
                           onPreviousPage: _handlePreviousPage,
                           onNextPage: _handleNextPage,
-                          onPlay: () => _openTafsir(activeAyahEntity),
+                          onPlay: () {
+                            widget.onPlayAyah
+                                ?.call(activeAyahEntity.numberInSurah);
+                          },
+                          isAudioPlaying: widget.recitingAyahNumber ==
+                                  activeAyahEntity.numberInSurah &&
+                              widget.isAyahAudioPlaying,
+                          isAudioBuffering: widget.recitingAyahNumber ==
+                                  activeAyahEntity.numberInSurah &&
+                              widget.isAyahAudioBuffering,
                           onTafsir: () => _openTafsir(activeAyahEntity),
                           onCopy: () => _copyContent(activeAyahEntity),
                           onBookmark: _toggleBookmark,

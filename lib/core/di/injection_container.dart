@@ -169,6 +169,7 @@ void _initFeatureModules() {
       getSurahVersesUseCase: sl(),
       getLastReadBookmarkUseCase: sl(),
       saveLastReadBookmarkUseCase: sl(),
+      audioPlayerHandler: sl(),
     ),
   );
 

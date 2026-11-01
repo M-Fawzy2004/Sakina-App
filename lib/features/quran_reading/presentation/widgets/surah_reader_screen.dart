@@ -67,6 +67,16 @@ class _SurahReaderScreenState extends State<SurahReaderScreen> {
             surah: activeSurah,
             verses: verses,
             allSurahs: state.allSurahs,
+            recitingAyahNumber: state.recitingAyahNumber,
+            isAyahAudioPlaying: state.isAyahAudioPlaying,
+            isAyahAudioBuffering: state.isAyahAudioBuffering,
+            onPlayAyah: (ayahNumber) {
+              cubit.toggleAyahAudio(
+                surahNumber: activeSurah.id,
+                ayahNumber: ayahNumber,
+              );
+            },
+            onStopAyah: () => cubit.stopAyahAudio(),
             onSurahChanged: (newSurah) => cubit.openSurahReader(newSurah),
             onClose: () {
               cubit.closeSurahReader();
