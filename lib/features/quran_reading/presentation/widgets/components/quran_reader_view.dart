@@ -191,8 +191,14 @@ class _QuranReaderViewState extends State<QuranReaderView> {
     super.didChangeDependencies();
     if (!_hasThemeInitialized) {
       _hasThemeInitialized = true;
-      if (!context.isDark && _preferences.theme == QuranReaderTheme.obsidian) {
+      if (!context.isDark) {
         _preferences = _preferences.copyWith(theme: QuranReaderTheme.parchment);
+      } else if (context.colors.background == AppColors.emeraldSanctuaryCore) {
+        _preferences = _preferences.copyWith(theme: QuranReaderTheme.emerald);
+      } else if (context.colors.background == AppColors.obsidianCore) {
+        _preferences = _preferences.copyWith(theme: QuranReaderTheme.obsidian);
+      } else {
+        _preferences = _preferences.copyWith(theme: QuranReaderTheme.charcoal);
       }
     }
   }

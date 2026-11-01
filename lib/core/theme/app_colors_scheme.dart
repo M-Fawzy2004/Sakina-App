@@ -30,6 +30,20 @@ class AppColorsScheme extends ThemeExtension<AppColorsScheme> {
     required this.isDark,
   });
 
+  /// Calibrated Modern Charcoal Slate Palette (Primary Default Theme from User Specifications)
+  static const AppColorsScheme charcoal = AppColorsScheme(
+    background: AppColors.charcoalCore,
+    cardSurface: AppColors.charcoalCard,
+    surfaceElevated: AppColors.charcoalElevated,
+    frostedSurface: AppColors.charcoalGlass,
+    borderHairline: AppColors.charcoalBorder,
+    textPrimary: AppColors.pureChalk,
+    textSecondary: AppColors.charcoalMuted,
+    accentGold: AppColors.champagneGold,
+    accentEmerald: AppColors.emeraldGlow,
+    isDark: true,
+  );
+
   /// Calibrated OLED Luxury Dark Palette
   static const AppColorsScheme dark = AppColorsScheme(
     background: AppColors.obsidianCore,
@@ -56,6 +70,20 @@ class AppColorsScheme extends ThemeExtension<AppColorsScheme> {
     accentGold: AppColors.warmGold,
     accentEmerald: AppColors.forestEmerald,
     isDark: false,
+  );
+
+  /// Calibrated Royal Emerald Sanctuary Palette (Chic 4th Regal Serenity Theme)
+  static const AppColorsScheme emerald = AppColorsScheme(
+    background: AppColors.emeraldSanctuaryCore,
+    cardSurface: AppColors.emeraldSanctuaryCard,
+    surfaceElevated: AppColors.emeraldSanctuaryElevated,
+    frostedSurface: AppColors.emeraldSanctuaryGlass,
+    borderHairline: AppColors.emeraldSanctuaryBorder,
+    textPrimary: AppColors.pureChalk,
+    textSecondary: AppColors.emeraldSanctuaryMuted,
+    accentGold: AppColors.champagneGold,
+    accentEmerald: AppColors.emeraldGlow,
+    isDark: true,
   );
 
   @override

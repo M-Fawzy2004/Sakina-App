@@ -29,27 +29,43 @@ void main() {
     );
   }
 
-  testWidgets('ThemeModeSelectorCard renders all 3 theme options and triggers tap', (tester) async {
+  testWidgets('ThemeModeSelectorCard renders all 5 theme options and triggers tap', (tester) async {
     AppThemeMode? selectedMode;
 
     await tester.pumpWidget(
       buildTestableWidget(
-        currentMode: AppThemeMode.dark,
+        currentMode: AppThemeMode.charcoal,
         onModeChanged: (mode) => selectedMode = mode,
       ),
     );
     await tester.pumpAndSettle();
 
     expect(find.text('مَظْهَرُ التَّطْبِيقِ'), findsOneWidget);
+    expect(find.text('الفَحْمِيُّ'), findsOneWidget);
     expect(find.text('الداكن'), findsOneWidget);
     expect(find.text('رَقُّ السَّكِينَةِ'), findsOneWidget);
+    expect(find.text('زُمُرُّدُ الفِرْدَوْسِ'), findsOneWidget);
     expect(find.text('تلقائي'), findsOneWidget);
 
     // Tap on Light Theme
+    await tester.ensureVisible(find.text('رَقُّ السَّكِينَةِ'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('رَقُّ السَّكِينَةِ'));
     await tester.pumpAndSettle();
-
     expect(selectedMode, AppThemeMode.light);
+
+    // Tap on Royal Emerald Theme
+    await tester.ensureVisible(find.text('زُمُرُّدُ الفِرْدَوْسِ'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('زُمُرُّدُ الفِرْدَوْسِ'));
+    await tester.pumpAndSettle();
+    expect(selectedMode, AppThemeMode.emerald);
+
+    // Tap on Charcoal Theme
+    await tester.ensureVisible(find.text('الفَحْمِيُّ'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('الفَحْمِيُّ'));
+    await tester.pumpAndSettle();
+    expect(selectedMode, AppThemeMode.charcoal);
   });
 }
-

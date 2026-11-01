@@ -100,6 +100,14 @@ enum QuranFontSize {
 
 /// Sacred Atmospheric Ambience Themes for the Reader:
 enum QuranReaderTheme {
+  charcoal(
+    title: 'الفَحْمِيُّ الحَدِيثُ',
+    description: 'رَمَادِيٌّ دَاكِنٌ نَقِيٌّ بِمَظْهَرٍ عَصْرِيٍّ رَاقٍ (الأسَاسِيُّ)',
+    backgroundColor: AppColors.charcoalCore,
+    cardColor: AppColors.charcoalCard,
+    accentColor: AppColors.charcoalAccent,
+    textColor: AppColors.pureChalk,
+  ),
   obsidian(
     title: 'الَّليْلُ المَلَكِيُّ',
     description: 'سَوَادٌ مُطْلَقٌ OLED مَعَ ذَهَبٍ خَالِصٍ',
@@ -109,19 +117,11 @@ enum QuranReaderTheme {
     textColor: AppColors.paleRadiance,
   ),
   emerald(
-    title: 'سُكُونُ المِحْرَابِ',
+    title: 'زُمُرُّدُ الفِرْدَوْسِ',
     description: 'رَوْحَانِيَّةُ الزُّمُرُّدِ لِلتَّدَبُّرِ وَالتَّرْتِيلِ',
-    backgroundColor: AppColors.deepSanctuary,
-    cardColor: AppColors.surfaceElevated,
+    backgroundColor: AppColors.emeraldSanctuaryCore,
+    cardColor: AppColors.emeraldSanctuaryCard,
     accentColor: AppColors.emeraldGlow,
-    textColor: AppColors.pureChalk,
-  ),
-  amber(
-    title: 'نُورُ السَّحَرِ',
-    description: 'عَنْبَرٌ دَافِئٌ مُرِيحٌ لِلْعَيْنَيْنِ فِي اللَّيْلِ',
-    backgroundColor: AppColors.carbonSlate,
-    cardColor: AppColors.surfaceElevated,
-    accentColor: AppColors.softAmber,
     textColor: AppColors.pureChalk,
   ),
   parchment(
@@ -131,6 +131,14 @@ enum QuranReaderTheme {
     cardColor: AppColors.parchmentCard,
     accentColor: AppColors.warmGold,
     textColor: AppColors.inkDeep,
+  ),
+  amber(
+    title: 'نُورُ السَّحَرِ',
+    description: 'عَنْبَرٌ دَافِئٌ مُرِيحٌ لِلْعَيْنَيْنِ فِي اللَّيْلِ',
+    backgroundColor: AppColors.carbonSlate,
+    cardColor: AppColors.surfaceElevated,
+    accentColor: AppColors.softAmber,
+    textColor: AppColors.pureChalk,
   ),
   sapphire(
     title: 'سَمَاءُ اللَّيْلِ',
@@ -166,12 +174,24 @@ enum QuranReaderTheme {
   });
 
   bool get isLight => this == QuranReaderTheme.parchment;
-  Color get secondaryTextColor =>
-      isLight ? AppColors.inkMuted : AppColors.mutedSilver;
-  Color get itemBackgroundColor =>
-      isLight ? AppColors.parchmentElevated : AppColors.frostedGlass;
-  Color get borderColor =>
-      isLight ? AppColors.parchmentBorder : AppColors.goldBorderStroke;
+  Color get secondaryTextColor => switch (this) {
+        QuranReaderTheme.parchment => AppColors.inkMuted,
+        QuranReaderTheme.charcoal => AppColors.charcoalMuted,
+        QuranReaderTheme.emerald => AppColors.emeraldSanctuaryMuted,
+        _ => AppColors.mutedSilver,
+      };
+  Color get itemBackgroundColor => switch (this) {
+        QuranReaderTheme.parchment => AppColors.parchmentElevated,
+        QuranReaderTheme.charcoal => AppColors.charcoalElevated,
+        QuranReaderTheme.emerald => AppColors.emeraldSanctuaryElevated,
+        _ => AppColors.frostedGlass,
+      };
+  Color get borderColor => switch (this) {
+        QuranReaderTheme.parchment => AppColors.parchmentBorder,
+        QuranReaderTheme.charcoal => AppColors.charcoalBorder,
+        QuranReaderTheme.emerald => AppColors.emeraldSanctuaryBorder,
+        _ => AppColors.goldBorderStroke,
+      };
 }
 
 /// Line spacing choices to ensure Tashkeel (diacritics) readability:
@@ -205,7 +225,7 @@ class QuranReaderPreferences extends Equatable {
     this.style = QuranReadingStyle.continuous,
     this.scriptStyle = QuranScriptStyle.uthmani,
     this.fontSize = QuranFontSize.medium,
-    this.theme = QuranReaderTheme.obsidian,
+    this.theme = QuranReaderTheme.charcoal,
     this.lineSpacing = QuranLineSpacing.relaxed,
     this.showDividers = true,
     this.isAutoScrollEnabled = false,

@@ -26,8 +26,8 @@ class SakinaApp extends StatelessWidget {
               return MaterialApp.router(
                 title: 'سكينة',
                 debugShowCheckedModeBanner: false,
-                theme: AppTheme.lightLuxury,
-                darkTheme: AppTheme.darkLuxury,
+                theme: AppTheme.themeFor(settingsState.appThemeMode, isSystemDark: false),
+                darkTheme: AppTheme.themeFor(settingsState.appThemeMode, isSystemDark: true),
                 themeMode: settingsState.themeMode,
                 routerConfig: appRouter,
                 scrollBehavior: const ScrollBehavior().copyWith(

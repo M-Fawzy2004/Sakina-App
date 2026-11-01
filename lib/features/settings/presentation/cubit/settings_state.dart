@@ -8,7 +8,7 @@ class SettingsState extends Equatable {
   final String? errorMessage;
 
   const SettingsState({
-    this.appThemeMode = AppThemeMode.dark,
+    this.appThemeMode = AppThemeMode.charcoal,
     this.isLoading = false,
     this.errorMessage,
   });

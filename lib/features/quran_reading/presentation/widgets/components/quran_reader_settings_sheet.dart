@@ -755,7 +755,7 @@ class _ThemesSection extends StatelessWidget {
       children: [
         _SectionTitle(
           icon: Iconsax.colorfilter,
-          title: 'بِيئَةُ وَمَظْهَرُ القِرَاءَةِ (٦ أَلْوَانٍ)',
+          title: 'بِيئَةُ وَمَظْهَرُ القِرَاءَةِ (${QuranReaderTheme.values.length} ثِيمَاتٍ)',
           accentColor: selectedTheme.accentColor,
         ),
         AppSpacing.verticalXs,

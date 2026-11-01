@@ -2,15 +2,25 @@ import 'package:flutter/material.dart';
 
 /// Supported application theme modes for Sakina Sanctuary.
 enum AppThemeMode {
+  charcoal(
+    title: 'الفَحْمِيُّ الحَدِيثُ',
+    subtitle: 'رَمَادِيٌّ دَاكِنٌ نَقِيٌّ (الأسَاسِيُّ)',
+    key: 'charcoal',
+  ),
   dark(
-    title: 'الوَضْعُ الدَّاكِنُ',
-    subtitle: 'سَوَادٌ مَلَكِيٌّ OLED مُرِيحٌ فِي اللَّيْلِ',
+    title: 'الَّليْلُ المَلَكِيُّ',
+    subtitle: 'سَوَادٌ مُطْلَقٌ OLED مَعَ ذَهَبٍ خَالِصٍ',
     key: 'dark',
   ),
   light(
-    title: 'رَقُّ السَّكِينَةِ (الفَاتِحُ)',
-    subtitle: 'لَوْنٌ كَرِيمِيٌّ دَافِئٌ مُرِيحٌ لِلْعَيْنِ نَهَارًا',
+    title: 'رَقُّ السَّكِينَةِ',
+    subtitle: 'كَرِيمِيٌّ دَافِئٌ مُرِيحٌ لِلْعَيْنِ نَهَارًا',
     key: 'light',
+  ),
+  emerald(
+    title: 'زُمُرُّدُ الفِرْدَوْسِ',
+    subtitle: 'رَوْحَانِيَّةُ الزُّمُرُّدِ لِلسَّكِينَةِ وَالتَّدَبُّرِ',
+    key: 'emerald',
   ),
   system(
     title: 'تِلْقَائِيُّ النِّظَامِ',
@@ -29,17 +39,19 @@ enum AppThemeMode {
   });
 
   ThemeMode get flutterThemeMode => switch (this) {
-        AppThemeMode.dark => ThemeMode.dark,
         AppThemeMode.light => ThemeMode.light,
         AppThemeMode.system => ThemeMode.system,
+        _ => ThemeMode.dark,
       };
 
   static AppThemeMode fromKey(String? key) {
     return switch (key) {
+      'charcoal' => AppThemeMode.charcoal,
+      'dark' => AppThemeMode.dark,
       'light' => AppThemeMode.light,
+      'emerald' => AppThemeMode.emerald,
       'system' => AppThemeMode.system,
-      _ => AppThemeMode.dark, // Default to Dark OLED
+      _ => AppThemeMode.charcoal, // Default to Modern Charcoal Slate
     };
   }
 }
-

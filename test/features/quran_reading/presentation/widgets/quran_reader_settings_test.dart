@@ -54,7 +54,7 @@ void main() {
 
       expect(prefs.style, equals(QuranReadingStyle.continuous));
       expect(prefs.fontSize, equals(QuranFontSize.medium));
-      expect(prefs.theme, equals(QuranReaderTheme.obsidian));
+      expect(prefs.theme, equals(QuranReaderTheme.charcoal));
       expect(prefs.lineSpacing, equals(QuranLineSpacing.relaxed));
       expect(prefs.showDividers, isTrue);
       expect(prefs.isAutoScrollEnabled, isFalse);
