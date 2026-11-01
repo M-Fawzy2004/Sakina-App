@@ -755,25 +755,30 @@ class _ThemesSection extends StatelessWidget {
       children: [
         _SectionTitle(
           icon: Iconsax.colorfilter,
-          title: 'بِيئَةُ وَمَظْهَرُ القِرَاءَةِ',
+          title: 'بِيئَةُ وَمَظْهَرُ القِرَاءَةِ (٦ أَلْوَانٍ)',
           accentColor: selectedTheme.accentColor,
         ),
         AppSpacing.verticalXs,
-        Row(
-          children: QuranReaderTheme.values.map((theme) {
-            final isSelected = theme == selectedTheme;
-            return Expanded(
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 4.w),
-                child: _ThemePill(
-                  theme: theme,
-                  activeTheme: selectedTheme,
-                  isSelected: isSelected,
-                  onTap: () => onThemeChanged(theme),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          physics: const BouncingScrollPhysics(),
+          child: Row(
+            children: QuranReaderTheme.values.map((theme) {
+              final isSelected = theme == selectedTheme;
+              return Padding(
+                padding: EdgeInsetsDirectional.only(end: 8.w),
+                child: SizedBox(
+                  width: 86.w,
+                  child: _ThemePill(
+                    theme: theme,
+                    activeTheme: selectedTheme,
+                    isSelected: isSelected,
+                    onTap: () => onThemeChanged(theme),
+                  ),
                 ),
-              ),
-            );
-          }).toList(),
+              );
+            }).toList(),
+          ),
         ),
       ],
     );

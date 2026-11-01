@@ -6,6 +6,7 @@ import 'package:iconsax/iconsax.dart';
 import 'package:sakina_app/core/theme/app_colors_scheme.dart';
 import 'package:sakina_app/core/theme/app_spacing.dart';
 import 'package:sakina_app/core/theme/app_text_styles.dart';
+import 'package:sakina_app/core/utils/app_top_snack_bar.dart';
 import 'package:sakina_app/core/utils/haptic_service.dart';
 import 'package:sakina_app/features/quran_reading/domain/entities/ayah_entity.dart';
 import 'package:sakina_app/features/quran_reading/domain/entities/surah_entity.dart';
@@ -89,53 +90,14 @@ class _QuranTafsirReflectionSheetState extends State<QuranTafsirReflectionSheet>
 
     Clipboard.setData(ClipboardData(text: copyText));
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        backgroundColor: colors.cardSurface,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12.r),
-          side: BorderSide(color: colors.accentEmerald, width: 1.r),
-        ),
-        content: Text(
-          'تم نسخ نص التفسير بنجاح ✓',
-          style: AppTextStyles.caption.copyWith(
-            color: colors.accentEmerald,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _shareTafsir(BuildContext context) {
-    final colors = context.colors;
-    HapticService.selectionClick();
-
-    final shareText =
-        '﴿${widget.ayah.text}﴾\n'
-        '[سورة ${widget.surah.nameArabic}: ${widget.ayah.numberInSurah}]\n\n'
-        '$_currentTafsirType:\n$_currentTafsirText\n\n'
-        'تطبيق سكينة للمصحف والتدبر';
-
-    Clipboard.setData(ClipboardData(text: shareText));
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        backgroundColor: colors.cardSurface,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12.r),
-          side: BorderSide(color: colors.accentGold, width: 1.r),
-        ),
-        content: Text(
-          'تم نسخ الآية مع التفسير للمشاركة بنجاح ✓',
-          style: AppTextStyles.caption.copyWith(
-            color: colors.accentGold,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-      ),
+    AppTopSnackBar.show(
+      context: context,
+      message: 'تم نسخ نص التفسير بنجاح ✓',
+      icon: Iconsax.copy,
+      iconColor: colors.accentEmerald,
+      backgroundColor: colors.cardSurface,
+      borderColor: colors.accentEmerald,
+      textColor: colors.textPrimary,
     );
   }
 
@@ -222,11 +184,10 @@ class _QuranTafsirReflectionSheetState extends State<QuranTafsirReflectionSheet>
                 ),
               ),
 
-              // 5. Bottom Action Bar (Copy, Share, Reference)
+              // 5. Bottom Action Bar (Copy, Reference)
               _TafsirBottomBar(
                 ayah: widget.ayah,
                 onCopy: () => _copyTafsir(context),
-                onShare: () => _shareTafsir(context),
               ),
             ],
           ),
@@ -529,16 +490,14 @@ class _SpiritualReflectionCard extends StatelessWidget {
   }
 }
 
-/// Action bar at the bottom containing Copy, Share, and Juz/Page label.
+/// Action bar at the bottom containing Copy and Juz/Page label.
 class _TafsirBottomBar extends StatelessWidget {
   final AyahEntity ayah;
   final VoidCallback onCopy;
-  final VoidCallback onShare;
 
   const _TafsirBottomBar({
     required this.ayah,
     required this.onCopy,
-    required this.onShare,
   });
 
   @override
@@ -555,43 +514,21 @@ class _TafsirBottomBar extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextButton.icon(
-                onPressed: onCopy,
-                icon: Icon(
-                  Iconsax.copy,
-                  color: colors.accentEmerald,
-                  size: 16.r,
-                ),
-                label: Text(
-                  'نَسْخ',
-                  style: AppTextStyles.caption.copyWith(
-                    color: colors.accentEmerald,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 12.sp,
-                  ),
-                ),
+          TextButton.icon(
+            onPressed: onCopy,
+            icon: Icon(
+              Iconsax.copy,
+              color: colors.accentEmerald,
+              size: 16.r,
+            ),
+            label: Text(
+              'نَسْخ',
+              style: AppTextStyles.caption.copyWith(
+                color: colors.accentEmerald,
+                fontWeight: FontWeight.w700,
+                fontSize: 12.sp,
               ),
-              SizedBox(width: 6.w),
-              TextButton.icon(
-                onPressed: onShare,
-                icon: Icon(
-                  Iconsax.share,
-                  color: colors.accentGold,
-                  size: 16.r,
-                ),
-                label: Text(
-                  'مُشَارَكَة',
-                  style: AppTextStyles.caption.copyWith(
-                    color: colors.accentGold,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 12.sp,
-                  ),
-                ),
-              ),
-            ],
+            ),
           ),
           Text(
             'جُزْءُ ${ayah.juz} • ص ${ayah.page}',

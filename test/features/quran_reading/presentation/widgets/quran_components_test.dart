@@ -267,8 +267,8 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('سُورَةُ الكَهْفِ'), findsOneWidget);
-      expect(find.text('الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ'), findsOneWidget);
-      expect(find.text('الرَّحْمَٰنِ الرَّحِيمِ'), findsOneWidget);
+      expect(find.textContaining('الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ'), findsOneWidget);
+      expect(find.textContaining('الرَّحْمَٰنِ الرَّحِيمِ'), findsNWidgets(2));
 
       final backButton = find.byIcon(Iconsax.arrow_right_3).first;
       expect(backButton, findsOneWidget);
@@ -278,10 +278,10 @@ void main() {
       expect(closed, isTrue);
     });
 
-    testWidgets('paginates verses into 10 per page and supports horizontal navigation', (tester) async {
-      // 25 verses: page 1 (1-10), page 2 (11-20), page 3 (21-25)
+    testWidgets('paginates verses into chapters and supports horizontal navigation', (tester) async {
+      // 45 verses: page 1 (1-20), page 2 (21-40), page 3 (41-45)
       final testVerses = List.generate(
-        25,
+        45,
         (i) => AyahEntity(
           numberInSurah: i + 1,
           text: 'آيَةُ رَقْمِ ${i + 1}',
@@ -302,34 +302,31 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      // Check first page shows verses 1-10
-      expect(find.text('آيَةُ رَقْمِ 1'), findsOneWidget);
-      expect(find.text('آيَةُ رَقْمِ 10'), findsOneWidget);
-      // Verse 15 is on page 2, so not on page 1
-      expect(find.text('آيَةُ رَقْمِ 15'), findsNothing);
+      // Check first page shows verses 1-20
+      expect(find.textContaining('آيَةُ رَقْمِ 1'), findsWidgets);
+      expect(find.textContaining('آيَةُ رَقْمِ 20'), findsWidgets);
+      // Verse 25 is on page 2, so not on page 1
+      expect(find.textContaining('آيَةُ رَقْمِ 25'), findsNothing);
 
-      // Verify page label on bottom bar: الآيَاتُ 1 - 10 • ص 1/3
-      expect(find.textContaining('ص 1/3'), findsOneWidget);
+      // Verify page label on manuscript card: صَفْحَةُ 1 مِنْ 3
+      expect(find.textContaining('صَفْحَةُ 1 مِنْ 3'), findsOneWidget);
 
-      // Swipe horizontally to page 2 (drag left for LTR or right for RTL depending on locale)
-      // Or tap the next page button on the floating bar
-      final nextPageBtn = find.byTooltip('الصفحة التالية');
-      expect(nextPageBtn, findsOneWidget);
-      await tester.tap(nextPageBtn);
+      // Fling horizontally in RTL (positive Offset x) to page 2 via PageView
+      await tester.fling(find.byType(PageView), const Offset(400, 0), 1000.0);
       await tester.pumpAndSettle();
 
-      // Now on page 2: verses 11-20
-      expect(find.text('آيَةُ رَقْمِ 11'), findsOneWidget);
-      expect(find.text('آيَةُ رَقْمِ 20'), findsOneWidget);
-      expect(find.textContaining('ص 2/3'), findsOneWidget);
+      // Now on page 2: verses 21-40
+      expect(find.textContaining('آيَةُ رَقْمِ 21'), findsWidgets);
+      expect(find.textContaining('آيَةُ رَقْمِ 40'), findsWidgets);
+      expect(find.textContaining('صَفْحَةُ 2 مِنْ 3'), findsOneWidget);
 
-      // Tap next page again to go to page 3 (verses 21-25)
-      await tester.tap(nextPageBtn);
+      // Fling again to go to page 3 (verses 41-45)
+      await tester.fling(find.byType(PageView), const Offset(400, 0), 1000.0);
       await tester.pumpAndSettle();
 
-      expect(find.text('آيَةُ رَقْمِ 21'), findsOneWidget);
-      expect(find.text('آيَةُ رَقْمِ 25'), findsOneWidget);
-      expect(find.textContaining('ص 3/3'), findsOneWidget);
+      expect(find.textContaining('آيَةُ رَقْمِ 41'), findsWidgets);
+      expect(find.textContaining('آيَةُ رَقْمِ 45'), findsWidgets);
+      expect(find.textContaining('صَفْحَةُ 3 مِنْ 3'), findsOneWidget);
     });
   });
 }

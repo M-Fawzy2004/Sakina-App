@@ -31,33 +31,38 @@ class SakinaNavItem extends StatelessWidget {
       splashColor: colors.accentGold.withValues(alpha: 0.1),
       highlightColor: Colors.transparent,
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 6.h),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // Icon presentation without blurry shadows
-            AnimatedScale(
-              scale: isSelected ? 1.08 : 1.0,
-              duration: const Duration(milliseconds: 200),
-              curve: Curves.easeOutCubic,
-              child: iconWidget,
-            ),
-
-            SizedBox(height: 5.h),
-
-            // Typography with full Tashkeel
-            Text(
-              label,
-              textAlign: TextAlign.center,
-              style: GoogleFonts.cairo(
-                fontSize: isSelected ? 11.5.sp : 11.sp,
-                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                color: isSelected ? colors.accentGold : colors.textSecondary,
-                height: 1.2,
+        padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 2.h),
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          alignment: Alignment.center,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Icon presentation without blurry shadows
+              AnimatedScale(
+                scale: isSelected ? 1.06 : 1.0,
+                duration: const Duration(milliseconds: 200),
+                curve: Curves.easeOutCubic,
+                child: iconWidget,
               ),
-            ),
-          ],
+
+              SizedBox(height: 2.h),
+
+              // Typography with full Tashkeel, auto scaling down cleanly
+              Text(
+                label,
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                style: GoogleFonts.cairo(
+                  fontSize: isSelected ? 10.5.sp : 10.sp,
+                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                  color: isSelected ? colors.accentGold : colors.textSecondary,
+                  height: 1.15,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

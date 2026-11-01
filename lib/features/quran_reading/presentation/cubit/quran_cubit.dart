@@ -92,6 +92,11 @@ class QuranCubit extends Cubit<QuranState> {
     final currentState = state;
     if (currentState is! QuranLoaded) return;
 
+    if (currentState.activeReadingSurah?.id == surah.id &&
+        currentState.activeVerses.isNotEmpty) {
+      return;
+    }
+
     final versesResult = await getSurahVersesUseCase(
       GetSurahVersesParams(surahId: surah.id),
     );

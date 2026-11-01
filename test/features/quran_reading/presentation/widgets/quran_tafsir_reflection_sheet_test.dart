@@ -97,9 +97,9 @@ void main() {
       // 7. Verify spiritual reflection is displayed
       expect(find.text('تدبر هذه الآية يورث اليقين بحكمة ضرب الأمثال.'), findsOneWidget);
 
-      // 8. Verify action buttons
+      // 8. Verify action button: copy exists, share removed per UX directive
       expect(find.text('نَسْخ'), findsOneWidget);
-      expect(find.text('مُشَارَكَة'), findsOneWidget);
+      expect(find.text('مُشَارَكَة'), findsNothing);
     });
   });
 }

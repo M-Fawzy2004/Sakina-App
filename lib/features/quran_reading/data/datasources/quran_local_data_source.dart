@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/services.dart';
@@ -33,6 +34,9 @@ class QuranLocalDataSourceImpl implements QuranLocalDataSource {
 
   @override
   Future<List<SurahModel>> getSurahs() async {
+    _preCacheSurah(1);
+    _preCacheSurah(2);
+    _preCacheSurah(18);
     return _surahs;
   }
 
@@ -43,9 +47,11 @@ class QuranLocalDataSourceImpl implements QuranLocalDataSource {
 
   @override
   Future<List<AyahModel>> getSurahVerses(int surahId) async {
-    // 1. Check in-memory memory cache
+    // 1. Check in-memory memory cache (instantaneous 0ms access)
     final cached = _versesCache[surahId];
     if (cached != null && cached.isNotEmpty) {
+      _preCacheSurah(surahId - 1);
+      _preCacheSurah(surahId + 1);
       return cached;
     }
 
@@ -72,6 +78,8 @@ class QuranLocalDataSourceImpl implements QuranLocalDataSource {
 
         if (verses.isNotEmpty) {
           _versesCache[surahId] = verses;
+          _preCacheSurah(surahId - 1);
+          _preCacheSurah(surahId + 1);
           return verses;
         }
       }
@@ -84,6 +92,13 @@ class QuranLocalDataSourceImpl implements QuranLocalDataSource {
         _versesBySurah[surahId] ?? _generateFallbackVerses(surahId);
     _versesCache[surahId] = fallbackVerses;
     return fallbackVerses;
+  }
+
+  /// Fire-and-forget background pre-caching for adjacent Surahs to achieve 0ms transitions.
+  void _preCacheSurah(int id) {
+    if (id >= 1 && id <= 114 && !_versesCache.containsKey(id)) {
+      unawaited(getSurahVerses(id));
+    }
   }
 
   /// Resolves the exact asset file path for a given Surah ID with dynamic discovery.
@@ -115,17 +130,21 @@ class QuranLocalDataSourceImpl implements QuranLocalDataSource {
     final raw = preferencesService.getString(_keyLastReadBookmark);
     if (raw == null || raw.isEmpty) {
       // Default initial bookmark: Surah Ar-Rahman, Ayah 1, Page 531
-      return QuranBookmarkModel(
+      final bookmark = QuranBookmarkModel(
         surahId: 55,
         surahName: 'سُورَةُ الرَّحْمَٰن',
         ayahNumber: 1,
         pageNumber: 531,
         timestamp: DateTime(2026, 10, 30),
       );
+      _preCacheSurah(bookmark.surahId);
+      return bookmark;
     }
     try {
       final json = jsonDecode(raw) as Map<String, dynamic>;
-      return QuranBookmarkModel.fromJson(json);
+      final bookmark = QuranBookmarkModel.fromJson(json);
+      _preCacheSurah(bookmark.surahId);
+      return bookmark;
     } catch (_) {
       return null;
     }
@@ -147,6 +166,7 @@ class QuranLocalDataSourceImpl implements QuranLocalDataSource {
     4: '004_an-nisa.json',
     5: '005_al-maidah.json',
     6: '006_al-anam.json',
+    7: '007_al-araf.json',
     8: '008_al-anfal.json',
     9: '009_at-tawbah.json',
     10: '010_yunus.json',
@@ -162,8 +182,10 @@ class QuranLocalDataSourceImpl implements QuranLocalDataSource {
     20: '020_ta-ha.json',
     21: '021_al-anbiya.json',
     22: '022_al-hajj.json',
+    23: '023_al-muminun.json',
     24: '024_an-nur.json',
     25: '025_al-furqan.json',
+    26: '026_ash-shuara.json',
     27: '027_an-naml.json',
     28: '028_al-qasas.json',
     29: '029_al-ankabut.json',
@@ -193,11 +215,13 @@ class QuranLocalDataSourceImpl implements QuranLocalDataSource {
     53: '053_an-najm.json',
     54: '054_al-qamar.json',
     55: '055_ar-rahman.json',
+    56: '056_al-waqiah.json',
     57: '057_al-hadid.json',
     58: '058_al-mujadila.json',
     59: '059_al-hashr.json',
     60: '060_al-mumtahina.json',
     61: '061_as-saff.json',
+    62: '062_al-jumuah.json',
     63: '063_al-munafiqoon.json',
     64: '064_at-taghabun.json',
     65: '065_at-talaq.json',
@@ -205,6 +229,7 @@ class QuranLocalDataSourceImpl implements QuranLocalDataSource {
     67: '067_al-mulk.json',
     68: '068_al-qalam.json',
     69: '069_al-haqqah.json',
+    70: '070_al-maarij.json',
     71: '071_nooh.json',
     72: '072_al-jinn.json',
     73: '073_al-muzzammil.json',
@@ -213,6 +238,7 @@ class QuranLocalDataSourceImpl implements QuranLocalDataSource {
     76: '076_al-insan.json',
     77: '077_al-mursalat.json',
     78: '078_an-naba.json',
+    79: '079_an-naziat.json',
     80: '080_abasa.json',
     81: '081_at-takwir.json',
     82: '082_al-infitar.json',
@@ -220,6 +246,7 @@ class QuranLocalDataSourceImpl implements QuranLocalDataSource {
     84: '084_al-inshiqaq.json',
     85: '085_al-buruj.json',
     86: '086_at-tariq.json',
+    87: '087_al-ala.json',
     88: '088_al-ghashiyah.json',
     89: '089_al-fajr.json',
     90: '090_al-balad.json',
@@ -228,15 +255,18 @@ class QuranLocalDataSourceImpl implements QuranLocalDataSource {
     93: '093_ad-duha.json',
     94: '094_ash-sharh.json',
     95: '095_at-tin.json',
+    96: '096_al-alaq.json',
     97: '097_al-qadr.json',
     98: '098_al-bayyina.json',
     99: '099_az-zalzalah.json',
     100: '100_al-adiyat.json',
+    101: '101_al-qariah.json',
     102: '102_at-takathur.json',
     103: '103_al-asr.json',
     104: '104_al-humazah.json',
     105: '105_al-fil.json',
     106: '106_quraish.json',
+    107: '107_al-maun.json',
     108: '108_al-kawthar.json',
     109: '109_al-kafirun.json',
     110: '110_an-nasr.json',

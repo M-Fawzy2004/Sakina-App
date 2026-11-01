@@ -24,6 +24,8 @@ class QuranOrnateManuscriptCard extends StatelessWidget {
   final int totalPages;
   final bool showBasmalahOnThisPage;
   final String? verseRangeLabel;
+  final String? nextSurahName;
+  final VoidCallback? onNextPage;
 
   const QuranOrnateManuscriptCard({
     super.key,
@@ -37,6 +39,8 @@ class QuranOrnateManuscriptCard extends StatelessWidget {
     this.totalPages = 1,
     this.showBasmalahOnThisPage = true,
     this.verseRangeLabel,
+    this.nextSurahName,
+    this.onNextPage,
   });
 
   @override
@@ -45,83 +49,160 @@ class QuranOrnateManuscriptCard extends StatelessWidget {
     final theme = preferences.theme;
 
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 5.h),
-      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
+      margin: EdgeInsets.symmetric(horizontal: 6.w, vertical: 4.h),
+      padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 6.h),
       decoration: BoxDecoration(
-        color: theme.cardColor.withValues(alpha: 0.92),
-        borderRadius: BorderRadius.circular(25.r),
+        color: theme.cardColor.withValues(alpha: 0.94),
+        borderRadius: BorderRadius.circular(20.r),
         border: Border.all(
-          color: theme.accentColor.withValues(alpha: 0.75),
-          width: 1.2.r,
+          color: theme.accentColor.withValues(alpha: 0.45),
+          width: 1.r,
         ),
       ),
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20.r),
-          border: Border.all(
-            color: AppColors.goldBorderStroke.withValues(alpha: 0.35),
-            width: 0.8.r,
-          ),
-        ),
-        child: ListView(
-          controller: scrollController,
-          physics: const BouncingScrollPhysics(),
-          padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 14.h),
-          children: [
-            // Page Indicator Pill (when totalPages > 1)
-            if (totalPages > 1 && verseRangeLabel != null)
-              Padding(
-                padding: EdgeInsets.only(bottom: 8.h),
-                child: Center(
-                  child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 4.h),
-                    decoration: BoxDecoration(
-                      color: theme.accentColor.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(16.r),
-                      border: Border.all(
-                        color: theme.accentColor.withValues(alpha: 0.35),
-                        width: 0.8.r,
-                      ),
+      child: ListView(
+        controller: scrollController,
+        physics: const BouncingScrollPhysics(),
+        padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 8.h),
+        children: [
+          // Page Indicator Pill (when totalPages > 1)
+          if (totalPages > 1 && verseRangeLabel != null)
+            Padding(
+              padding: EdgeInsets.only(bottom: 8.h),
+              child: Center(
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 4.h),
+                  decoration: BoxDecoration(
+                    color: theme.accentColor.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(16.r),
+                    border: Border.all(
+                      color: theme.accentColor.withValues(alpha: 0.35),
+                      width: 0.8.r,
                     ),
-                    child: Text(
-                      '$verseRangeLabel  •  صَفْحَةُ ${pageIndex + 1} مِنْ $totalPages',
-                      style: AppTextStyles.caption.copyWith(
-                        color: theme.accentColor,
-                        fontSize: 10.5.sp,
-                        fontWeight: FontWeight.w700,
-                      ),
+                  ),
+                  child: Text(
+                    '$verseRangeLabel  •  صَفْحَةُ ${pageIndex + 1} مِنْ $totalPages',
+                    style: AppTextStyles.caption.copyWith(
+                      color: theme.accentColor,
+                      fontSize: 10.5.sp,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
                 ),
               ),
+            ),
 
-            // Classical Basmalah Banner with Star Divider
-            if (showBasmalah) ...[
-              _BasmalahHeader(
-                fontSizeDelta: preferences.fontSize.scaleDelta,
-                accentColor: theme.accentColor,
-              ),
-              AppSpacing.verticalMd,
-            ],
-
-            // Content switch based on selected reading style
-            if (preferences.style == QuranReadingStyle.verseByVerse)
-              _VerseByVerseList(
-                verses: verses,
-                preferences: preferences,
-                selectedAyahNumber: selectedAyahNumber,
-                onAyahTap: onAyahTap,
-              )
-            else
-              _ContinuousManuscriptFlow(
-                verses: verses,
-                preferences: preferences,
-                selectedAyahNumber: selectedAyahNumber,
-                onAyahTap: onAyahTap,
-              ),
-
-            SizedBox(height: 12.h),
+          // Classical Basmalah Banner with Star Divider
+          if (showBasmalah) ...[
+            _BasmalahHeader(
+              fontSizeDelta: preferences.fontSize.scaleDelta,
+              accentColor: theme.accentColor,
+            ),
+            AppSpacing.verticalMd,
           ],
+
+          // Content switch based on selected reading style
+          if (preferences.style == QuranReadingStyle.verseByVerse)
+            _VerseByVerseList(
+              verses: verses,
+              preferences: preferences,
+              selectedAyahNumber: selectedAyahNumber,
+              onAyahTap: onAyahTap,
+            )
+          else
+            _ContinuousManuscriptFlow(
+              verses: verses,
+              preferences: preferences,
+              selectedAyahNumber: selectedAyahNumber,
+              onAyahTap: onAyahTap,
+            ),
+
+          // Next Section / Next Surah footer navigation banner
+          if (onNextPage != null) ...[
+            SizedBox(height: 18.h),
+            _NextSectionFooter(
+              isLastPageOfSurah: pageIndex >= totalPages - 1,
+              nextSurahName: nextSurahName,
+              nextPageNumber: pageIndex + 2,
+              totalPages: totalPages,
+              accentColor: theme.accentColor,
+              cardColor: theme.cardColor,
+              textColor: theme.textColor,
+              onTap: onNextPage!,
+            ),
+          ],
+
+          SizedBox(height: 16.h),
+        ],
+      ),
+    );
+  }
+}
+
+/// Seamless illuminated footer guiding reader to the next page or next Surah.
+class _NextSectionFooter extends StatelessWidget {
+  final bool isLastPageOfSurah;
+  final String? nextSurahName;
+  final int nextPageNumber;
+  final int totalPages;
+  final Color accentColor;
+  final Color cardColor;
+  final Color textColor;
+  final VoidCallback onTap;
+
+  const _NextSectionFooter({
+    required this.isLastPageOfSurah,
+    this.nextSurahName,
+    required this.nextPageNumber,
+    required this.totalPages,
+    required this.accentColor,
+    required this.cardColor,
+    required this.textColor,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final title = (isLastPageOfSurah && nextSurahName != null)
+        ? 'السُّورَةُ التَّالِيَة: سُورَةُ $nextSurahName'
+        : 'الصَّفْحَةُ التَّالِيَة ($nextPageNumber مِنْ $totalPages)';
+
+    return Center(
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(16.r),
+          splashColor: accentColor.withValues(alpha: 0.15),
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 9.h),
+            decoration: BoxDecoration(
+              color: accentColor.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(16.r),
+              border: Border.all(
+                color: accentColor.withValues(alpha: 0.45),
+                width: 1.r,
+              ),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  title,
+                  style: AppTextStyles.caption.copyWith(
+                    color: accentColor,
+                    fontSize: 12.sp,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                SizedBox(width: 8.w),
+                Icon(
+                  Iconsax.arrow_left_2,
+                  size: 16.r,
+                  color: accentColor,
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -240,6 +321,9 @@ class _AyahRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = preferences.theme;
 
+    final badgeSize =
+        (38.r + preferences.fontSize.scaleDelta * 1.0).clamp(32.r, 52.r);
+
     return Material(
       color: isSelected
           ? theme.accentColor.withValues(alpha: 0.16)
@@ -262,7 +346,7 @@ class _AyahRow extends StatelessWidget {
                   isHighlighted: isSelected,
                   color: isSelected ? theme.accentColor : theme.accentColor.withValues(alpha: 0.9),
                   backgroundColor: theme.cardColor,
-                  size: 38.r,
+                  size: badgeSize,
                 ),
 
                 // Illuminated Calligraphic Arabic Scripture
@@ -356,6 +440,8 @@ class _ContinuousManuscriptFlowState extends State<_ContinuousManuscriptFlow> {
     final theme = widget.preferences.theme;
     final fontSize = 22.sp + widget.preferences.fontSize.scaleDelta;
     final lineSpacing = widget.preferences.lineSpacing.height;
+    final badgeSize =
+        (28.r + widget.preferences.fontSize.scaleDelta * 0.9).clamp(24.r, 44.r);
 
     final spans = <InlineSpan>[];
 
@@ -393,7 +479,7 @@ class _ContinuousManuscriptFlowState extends State<_ContinuousManuscriptFlow> {
                 isHighlighted: isSelected,
                 color: isSelected ? theme.accentColor : theme.accentColor.withValues(alpha: 0.9),
                 backgroundColor: theme.cardColor,
-                size: 26.r,
+                size: badgeSize,
               ),
             ),
           ),

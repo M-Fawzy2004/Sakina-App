@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:sakina_app/core/theme/app_colors.dart';
 import 'package:sakina_app/core/theme/app_colors_scheme.dart';
-import 'package:sakina_app/core/theme/app_text_styles.dart';
 
 /// Eight-pointed Islamic star badge (Rub El Hizb / Rosette - ۞)
 /// containing the golden Ayah number:
 /// Formed by combining a rotated 45° rounded square and an inner concentric circle.
+/// Proportionately scales with font size adjustments so the ayah numeral remains crisp and prominent.
 class QuranIslamicRosetteBadge extends StatelessWidget {
   final int number;
   final bool isHighlighted;
@@ -30,9 +31,12 @@ class QuranIslamicRosetteBadge extends StatelessWidget {
     final innerBg = backgroundColor ??
         (context.isDark ? AppColors.obsidianCore : context.colors.cardSurface);
 
-    final effectiveSize = size ?? 38.r;
-    final innerDimension = effectiveSize * 0.62;
-    final fontSize = (effectiveSize * 0.28).sp;
+    final effectiveSize = size ?? 32.r;
+    final innerDimension = effectiveSize * 0.76;
+    final digitCount = number.toString().length;
+    final fontSize = digitCount >= 3
+        ? (effectiveSize * 0.34).sp
+        : (effectiveSize * 0.42).sp;
 
     return SizedBox(
       width: effectiveSize,
@@ -40,38 +44,42 @@ class QuranIslamicRosetteBadge extends StatelessWidget {
       child: Stack(
         alignment: Alignment.center,
         children: [
-          // Outer rotated square to form 8-pointed star
+          // Outer rotated square to form the 8-pointed Islamic rosette star
           Transform.rotate(
             angle: 0.785398, // 45 degrees
             child: Container(
               width: innerDimension,
               height: innerDimension,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(3.r),
+                borderRadius: BorderRadius.circular(4.r),
                 border: Border.all(
                   color: activeColor.withValues(alpha: 0.65),
-                  width: 1.r,
+                  width: 1.1.r,
                 ),
               ),
             ),
           ),
 
-          // Inner circle
+          // Inner concentric circle with subtle background
           Container(
             width: innerDimension,
             height: innerDimension,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: innerBg,
-              border: Border.all(color: activeColor, width: 1.1.r),
+              border: Border.all(
+                color: activeColor,
+                width: 1.2.r,
+              ),
             ),
             child: Center(
               child: Text(
                 '$number',
-                style: AppTextStyles.caption.copyWith(
+                style: GoogleFonts.cairo(
                   color: activeColor,
                   fontWeight: FontWeight.w800,
                   fontSize: fontSize,
+                  height: 1.1,
                 ),
               ),
             ),

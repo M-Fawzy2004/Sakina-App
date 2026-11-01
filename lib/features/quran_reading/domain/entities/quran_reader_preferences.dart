@@ -131,6 +131,22 @@ enum QuranReaderTheme {
     cardColor: AppColors.parchmentCard,
     accentColor: AppColors.warmGold,
     textColor: AppColors.inkDeep,
+  ),
+  sapphire(
+    title: 'سَمَاءُ اللَّيْلِ',
+    description: 'أَزْرَقُ نِيلِيٌّ عَمِيقٌ مَعَ إِضَاءَةٍ قَمَرِيَّةٍ نَاصِعَةٍ',
+    backgroundColor: Color(0xFF070F1E),
+    cardColor: Color(0xFF0F1B2E),
+    accentColor: Color(0xFF38BDF8),
+    textColor: AppColors.pureChalk,
+  ),
+  sepia(
+    title: 'مُصْحَفُ الأَجْدَادِ',
+    description: 'سِيبْيَا دَافِئَةٌ عَتِيقَةٌ تُحَاكِي صَفَحَاتِ المَخْطُوطَاتِ',
+    backgroundColor: Color(0xFF191410),
+    cardColor: Color(0xFF261F1A),
+    accentColor: Color(0xFFE28743),
+    textColor: Color(0xFFF6EEDB),
   );
 
   final String title;
@@ -186,7 +202,7 @@ class QuranReaderPreferences extends Equatable {
   final bool isKeepScreenAwake;
 
   const QuranReaderPreferences({
-    this.style = QuranReadingStyle.verseByVerse,
+    this.style = QuranReadingStyle.continuous,
     this.scriptStyle = QuranScriptStyle.uthmani,
     this.fontSize = QuranFontSize.medium,
     this.theme = QuranReaderTheme.obsidian,

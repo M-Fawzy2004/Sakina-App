@@ -52,7 +52,7 @@ void main() {
     test('default preferences should be initialized correctly', () {
       const prefs = QuranReaderPreferences();
 
-      expect(prefs.style, equals(QuranReadingStyle.verseByVerse));
+      expect(prefs.style, equals(QuranReadingStyle.continuous));
       expect(prefs.fontSize, equals(QuranFontSize.medium));
       expect(prefs.theme, equals(QuranReaderTheme.obsidian));
       expect(prefs.lineSpacing, equals(QuranLineSpacing.relaxed));

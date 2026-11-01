@@ -7,6 +7,7 @@ import 'package:sakina_app/core/constants/app_assets.dart';
 import 'package:sakina_app/core/theme/app_colors.dart';
 import 'package:sakina_app/core/theme/app_colors_scheme.dart';
 import 'package:sakina_app/core/theme/app_text_styles.dart';
+import 'package:sakina_app/core/utils/app_top_snack_bar.dart';
 import 'package:sakina_app/core/utils/haptic_service.dart';
 import 'package:sakina_app/features/quran_reading/domain/entities/ayah_entity.dart';
 import 'package:sakina_app/features/quran_reading/domain/entities/quran_bookmark_entity.dart';
@@ -50,8 +51,6 @@ class QuranReaderView extends StatefulWidget {
 }
 
 class _QuranReaderViewState extends State<QuranReaderView> {
-  static const int kVersesPerPage = 10;
-
   late final PageController _pageController;
   final Map<int, ScrollController> _pageScrollControllers = {};
   QuranReaderPreferences _preferences = const QuranReaderPreferences();
@@ -60,16 +59,42 @@ class _QuranReaderViewState extends State<QuranReaderView> {
   Timer? _autoScrollTimer;
   bool _isAutoScrollPaused = false;
   bool _hasThemeInitialized = false;
+  bool _isTransitioningSurah = false;
+
+  /// Number of verses per page.
+  /// For short/moderate Surahs (<= 25 verses), all verses fit comfortably on 1 flowing card.
+  /// For longer Surahs, 20 verses per page provides generous vertical scrolling without breaking context.
+  int get _versesPerPage {
+    if (widget.verses.length <= 25) {
+      return widget.verses.isNotEmpty ? widget.verses.length : 1;
+    }
+    return 20;
+  }
 
   int get _totalPages => widget.verses.isEmpty
       ? 1
-      : ((widget.verses.length - 1) ~/ kVersesPerPage) + 1;
+      : ((widget.verses.length - 1) ~/ _versesPerPage) + 1;
 
   List<AyahEntity> _getVersesForPage(int pageIndex) {
-    final start = pageIndex * kVersesPerPage;
+    final start = pageIndex * _versesPerPage;
     if (start >= widget.verses.length) return const [];
-    final end = (start + kVersesPerPage).clamp(0, widget.verses.length);
+    final end = (start + _versesPerPage).clamp(0, widget.verses.length);
     return widget.verses.sublist(start, end);
+  }
+
+  void _triggerSurahTransition(bool next) {
+    if (_isTransitioningSurah) return;
+    _isTransitioningSurah = true;
+    if (next) {
+      _handleNextPage();
+    } else {
+      _handlePreviousPage();
+    }
+    Future.delayed(const Duration(milliseconds: 500), () {
+      if (mounted) {
+        _isTransitioningSurah = false;
+      }
+    });
   }
 
   ScrollController _getScrollControllerForPage(int pageIndex) {
@@ -208,37 +233,15 @@ class _QuranReaderViewState extends State<QuranReaderView> {
       ),
     );
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        backgroundColor: activeTheme.cardColor,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12.r),
-          side: BorderSide(
-            color: activeTheme.accentColor,
-            width: 1.r,
-          ),
-        ),
-        content: Row(
-          children: [
-            Icon(
-              Iconsax.bookmark,
-              color: activeTheme.accentColor,
-              size: 18.r,
-            ),
-            SizedBox(width: 8.w),
-            Expanded(
-              child: Text(
-                'تم تثبيت علامة الحفظ عند الآية $activeAyah من سورة ${widget.surah.nameArabic} ✓',
-                style: AppTextStyles.caption.copyWith(
-                  color: activeTheme.textColor,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
+    AppTopSnackBar.show(
+      context: context,
+      message:
+          'تم تثبيت علامة الحفظ عند الآية $activeAyah من سورة ${widget.surah.nameArabic} ✓',
+      icon: Iconsax.bookmark,
+      iconColor: activeTheme.accentColor,
+      backgroundColor: activeTheme.cardColor,
+      borderColor: activeTheme.accentColor,
+      textColor: activeTheme.textColor,
     );
   }
 
@@ -253,35 +256,14 @@ class _QuranReaderViewState extends State<QuranReaderView> {
               '«${activeAyahEntity.text}» [سورة ${widget.surah.nameArabic}: ${activeAyahEntity.numberInSurah}]',
         ),
       );
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: activeTheme.cardColor,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12.r),
-            side: BorderSide(
-              color: activeTheme.accentColor,
-              width: 1.r,
-            ),
-          ),
-          content: Row(
-            children: [
-              Icon(
-                Iconsax.tick_circle,
-                color: activeTheme.accentColor,
-                size: 18.r,
-              ),
-              SizedBox(width: 8.w),
-              Text(
-                'تم نسخ الآية الكريمة بنجاح ✓',
-                style: AppTextStyles.caption.copyWith(
-                  color: activeTheme.textColor,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ],
-          ),
-        ),
+      AppTopSnackBar.show(
+        context: context,
+        message: 'تم نسخ الآية الكريمة بنجاح ✓',
+        icon: Iconsax.tick_circle,
+        iconColor: activeTheme.accentColor,
+        backgroundColor: activeTheme.cardColor,
+        borderColor: activeTheme.accentColor,
+        textColor: activeTheme.textColor,
       );
     } else {
       final currentVerses = _getVersesForPage(_currentPageIndex);
@@ -296,35 +278,14 @@ class _QuranReaderViewState extends State<QuranReaderView> {
               '«$pageVersesText» [سورة ${widget.surah.nameArabic} - ص ${_currentPageIndex + 1}/$_totalPages]',
         ),
       );
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: activeTheme.cardColor,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12.r),
-            side: BorderSide(
-              color: activeTheme.accentColor,
-              width: 1.r,
-            ),
-          ),
-          content: Row(
-            children: [
-              Icon(
-                Iconsax.tick_circle,
-                color: activeTheme.accentColor,
-                size: 18.r,
-              ),
-              SizedBox(width: 8.w),
-              Text(
-                'تم نسخ آيات الصفحة بنجاح ✓',
-                style: AppTextStyles.caption.copyWith(
-                  color: activeTheme.textColor,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ],
-          ),
-        ),
+      AppTopSnackBar.show(
+        context: context,
+        message: 'تم نسخ آيات الصفحة بنجاح ✓',
+        icon: Iconsax.tick_circle,
+        iconColor: activeTheme.accentColor,
+        backgroundColor: activeTheme.cardColor,
+        borderColor: activeTheme.accentColor,
+        textColor: activeTheme.textColor,
       );
     }
   }
@@ -426,14 +387,14 @@ class _QuranReaderViewState extends State<QuranReaderView> {
                 )),
     );
 
-    final startVerse = _currentPageIndex * kVersesPerPage + 1;
+    final startVerse = _currentPageIndex * _versesPerPage + 1;
     final endVerse = (startVerse + currentPageVerses.length - 1).clamp(
       startVerse,
       widget.verses.length,
     );
     final pageLabel = _totalPages > 1
         ? 'الآيَاتُ $startVerse - $endVerse • ص ${_currentPageIndex + 1}/$_totalPages'
-        : 'ص ${widget.surah.pageNumber} • جزء ${widget.surah.juzNumber}';
+        : 'سُورَةُ ${widget.surah.nameArabic} • ص ${widget.surah.pageNumber} • جزء ${widget.surah.juzNumber}';
 
     return Scaffold(
       backgroundColor: activeTheme.backgroundColor,
@@ -480,44 +441,71 @@ class _QuranReaderViewState extends State<QuranReaderView> {
                   cardColor: activeTheme.cardColor,
                 ),
 
-                // Center Ornate Illuminated Manuscript Card with Horizontal 10-Verse Paging
+                // Center Ornate Illuminated Manuscript Card with Horizontal Paging
                 Expanded(
-                  child: PageView.builder(
-                    controller: _pageController,
-                    physics: const BouncingScrollPhysics(),
-                    itemCount: _totalPages,
-                    onPageChanged: (newIndex) {
-                      HapticService.selectionClick();
-                      setState(() {
-                        _currentPageIndex = newIndex;
-                        _selectedAyahNumber = null;
-                      });
+                  child: NotificationListener<ScrollNotification>(
+                    onNotification: (notification) {
+                      if (notification is OverscrollNotification) {
+                        if (notification.overscroll.abs() > 30) {
+                          if (_currentPageIndex == _totalPages - 1) {
+                            _triggerSurahTransition(true);
+                            return true;
+                          } else if (_currentPageIndex == 0) {
+                            _triggerSurahTransition(false);
+                            return true;
+                          }
+                        }
+                      }
+                      return false;
                     },
-                    itemBuilder: (context, pageIndex) {
-                      final pageVerses = _getVersesForPage(pageIndex);
-                      final isFirstPage = pageIndex == 0;
-                      final startVerseNum = pageIndex * kVersesPerPage + 1;
-                      final endVerseNum =
-                          (startVerseNum + pageVerses.length - 1).clamp(
-                        startVerseNum,
-                        widget.verses.length,
-                      );
+                    child: PageView.builder(
+                      controller: _pageController,
+                      physics: const BouncingScrollPhysics(),
+                      itemCount: _totalPages,
+                      onPageChanged: (newIndex) {
+                        HapticService.selectionClick();
+                        setState(() {
+                          _currentPageIndex = newIndex;
+                          _selectedAyahNumber = null;
+                        });
+                      },
+                      itemBuilder: (context, pageIndex) {
+                        final pageVerses = _getVersesForPage(pageIndex);
+                        final isFirstPage = pageIndex == 0;
+                        final startVerseNum = pageIndex * _versesPerPage + 1;
+                        final endVerseNum =
+                            (startVerseNum + pageVerses.length - 1).clamp(
+                          startVerseNum,
+                          widget.verses.length,
+                        );
 
-                      return QuranOrnateManuscriptCard(
-                        surah: widget.surah,
-                        verses: pageVerses,
-                        preferences: _preferences,
-                        selectedAyahNumber: _selectedAyahNumber,
-                        onAyahTap: _onAyahTap,
-                        scrollController:
-                            _getScrollControllerForPage(pageIndex),
-                        pageIndex: pageIndex,
-                        totalPages: _totalPages,
-                        showBasmalahOnThisPage: isFirstPage,
-                        verseRangeLabel:
-                            'الآيَاتُ $startVerseNum - $endVerseNum',
-                      );
-                    },
+                        final currentSurahIdx = widget.allSurahs.indexWhere(
+                          (s) => s.id == widget.surah.id,
+                        );
+                        final nextSurah = (currentSurahIdx >= 0 &&
+                                currentSurahIdx < widget.allSurahs.length - 1)
+                            ? widget.allSurahs[currentSurahIdx + 1]
+                            : null;
+
+                        return QuranOrnateManuscriptCard(
+                          surah: widget.surah,
+                          verses: pageVerses,
+                          preferences: _preferences,
+                          selectedAyahNumber: _selectedAyahNumber,
+                          onAyahTap: _onAyahTap,
+                          scrollController:
+                              _getScrollControllerForPage(pageIndex),
+                          pageIndex: pageIndex,
+                          totalPages: _totalPages,
+                          showBasmalahOnThisPage: isFirstPage,
+                          verseRangeLabel: _totalPages > 1
+                              ? 'الآيَاتُ $startVerseNum - $endVerseNum'
+                              : null,
+                          nextSurahName: nextSurah?.nameArabic,
+                          onNextPage: _handleNextPage,
+                        );
+                      },
+                    ),
                   ),
                 ),
 
@@ -550,20 +538,45 @@ class _QuranReaderViewState extends State<QuranReaderView> {
                     },
                   ),
 
-                // Floating Interactive Stadium Menu Bar
-                QuranReaderFloatingBar(
-                  pageNumber: widget.surah.pageNumber,
-                  juzNumber: widget.surah.juzNumber,
-                  pageLabel: pageLabel,
-                  selectedAyahNumber: _selectedAyahNumber,
-                  onPreviousPage: _handlePreviousPage,
-                  onNextPage: _handleNextPage,
-                  onPlay: () => _openTafsir(activeAyahEntity),
-                  onTafsir: () => _openTafsir(activeAyahEntity),
-                  onCopy: () => _copyContent(activeAyahEntity),
-                  onBookmark: _toggleBookmark,
-                  accentColor: activeTheme.accentColor,
-                  cardColor: activeTheme.cardColor,
+                // Floating Interactive Stadium Menu Bar (Only visible when an ayah is selected)
+                AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 250),
+                  transitionBuilder: (child, animation) {
+                    return SlideTransition(
+                      position: Tween<Offset>(
+                        begin: const Offset(0, 0.4),
+                        end: Offset.zero,
+                      ).animate(
+                        CurvedAnimation(
+                          parent: animation,
+                          curve: Curves.easeOutCubic,
+                        ),
+                      ),
+                      child: FadeTransition(
+                        opacity: animation,
+                        child: child,
+                      ),
+                    );
+                  },
+                  child: _selectedAyahNumber != null
+                      ? QuranReaderFloatingBar(
+                          key: const ValueKey('floating_bar_visible'),
+                          pageNumber: widget.surah.pageNumber,
+                          juzNumber: widget.surah.juzNumber,
+                          pageLabel: pageLabel,
+                          selectedAyahNumber: _selectedAyahNumber,
+                          onPreviousPage: _handlePreviousPage,
+                          onNextPage: _handleNextPage,
+                          onPlay: () => _openTafsir(activeAyahEntity),
+                          onTafsir: () => _openTafsir(activeAyahEntity),
+                          onCopy: () => _copyContent(activeAyahEntity),
+                          onBookmark: _toggleBookmark,
+                          accentColor: activeTheme.accentColor,
+                          cardColor: activeTheme.cardColor,
+                        )
+                      : const SizedBox.shrink(
+                          key: ValueKey('floating_bar_hidden'),
+                        ),
                 ),
               ],
             ),
