@@ -103,12 +103,12 @@ class MaladhPortalsSection extends StatelessWidget {
 
                   SizedBox(width: 10.w),
 
-                  // Portal 4: أذكار النوم والمسبحة (RTL End)
+                  // Portal 4: الأذكار والمسابح (RTL End)
                   Expanded(
                     child: MaladhPortalCard(
-                      title: 'أَذْكَارُ النَّوْمِ وَالمِسْبَحَةُ',
-                      subtitle: 'تسبيح لمسي تفاعلي',
-                      badgeText: '33',
+                      title: 'الأَذْكَارُ وَالمَسَابِحُ',
+                      subtitle: 'أوراد يومية وتسبيح تفاعلي',
+                      badgeText: '8 أقسام',
                       isEmerald: true,
                       iconWidget: Icon(
                         Iconsax.finger_cricle,

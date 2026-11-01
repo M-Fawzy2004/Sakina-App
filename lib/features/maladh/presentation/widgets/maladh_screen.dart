@@ -10,19 +10,17 @@ import 'package:sakina_app/core/theme/app_spacing.dart';
 import 'package:sakina_app/core/theme/app_text_styles.dart';
 import 'package:sakina_app/features/maladh/presentation/cubit/maladh_cubit.dart';
 import 'package:sakina_app/features/maladh/presentation/cubit/maladh_state.dart';
+import 'package:sakina_app/features/maladh/presentation/widgets/components/maladh_celestial_sliver_header.dart';
 import 'package:sakina_app/features/maladh/presentation/widgets/components/maladh_continue_quran_card.dart';
-import 'package:sakina_app/features/maladh/presentation/widgets/components/maladh_daily_goal_card.dart';
 import 'package:sakina_app/features/maladh/presentation/widgets/components/maladh_featured_recitation_card.dart';
-import 'package:sakina_app/features/maladh/presentation/widgets/components/maladh_header.dart';
 import 'package:sakina_app/features/maladh/presentation/widgets/components/maladh_header_shimmer.dart';
 import 'package:sakina_app/features/maladh/presentation/widgets/components/maladh_portals_section.dart';
-import 'package:sakina_app/features/maladh/presentation/widgets/components/maladh_prayer_tracker_card.dart';
+import 'package:sakina_app/features/maladh/presentation/widgets/components/maladh_prayer_schedule_card.dart';
 import 'package:sakina_app/features/maladh/presentation/widgets/components/maladh_reflection_card.dart';
 
 /// Al-Maladh (The Sanctuary) screen serving as the primary spiritual dashboard of Sakina.
-/// Built with pure, crisp OLED dark canvas without blurry drop shadows,
-/// live prayer countdown ticker, daily prayer schedule & tracker,
-/// "إِنْجَازُ الوِرْدِ اليَوْمِي" progress tracker, "واصل وردك القرآني" card,
+/// Built with an atmospheric celestial Sliver header that gracefully collapses on scroll,
+/// prominent inspiring Quranic verse, "واصل وردك القرآني" card,
 /// "بَوَّابَاتُ السَّكِينَةِ" 2x2 portals grid, "تلاوة اللحظة المختارة" animated audio player,
 /// and "آيَةُ السَّكِينَةِ وَالتَّدَبُّرِ" daily reflection card.
 class MaladhScreen extends StatelessWidget {
@@ -42,111 +40,134 @@ class _MaladhView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
+    final topPadding = MediaQuery.of(context).padding.top;
+
     return Scaffold(
-      backgroundColor: context.colors.background,
-      body: SafeArea(
-        bottom: false,
-        child: Align(
-          alignment: Alignment.topCenter,
-          child: ConstrainedBox(
-            constraints: BoxConstraints(maxWidth: 680.w),
-            child: RefreshIndicator(
-              color: AppColors.champagneGold,
-              backgroundColor: AppColors.carbonSlate,
-              onRefresh: () => context.read<MaladhCubit>().refreshSanctuaryData(),
-              child: SingleChildScrollView(
-                physics: const AlwaysScrollableScrollPhysics(
-                  parent: BouncingScrollPhysics(),
-                ),
-                padding: EdgeInsets.only(top: 6.h, bottom: 120.h),
-                child: BlocBuilder<MaladhCubit, MaladhState>(
-                  builder: (context, state) {
-                    return switch (state) {
-                      MaladhInitial() || MaladhLoading() => const MaladhHeaderShimmer(),
-                      MaladhLoaded(:final headerData) => Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            // 1. Master Sanctuary Header (Brand + Greeting + Live Countdown)
-                            MaladhHeader(
-                              data: headerData,
-                              onNotificationTap: () {
-                                // Notification center
-                              },
-                            ),
-
-                            AppSpacing.verticalSm,
-
-                            // 2. All-Prayers Daily Schedule & Tracking Card (English times & checkmarks)
-                            MaladhPrayerTrackerCard(
-                              onPrayerToggled: (prayerId) {
-                                // Toggle prayer completion state
-                              },
-                            ),
-
-                            AppSpacing.verticalSm,
-
-                            // 3. "إِنْجَازُ الوِرْدِ اليَوْمِي" - Daily Quranic Goal Progress Card
-                            const MaladhDailyGoalCard(),
-
-                            AppSpacing.verticalSm,
-
-                            // 4. "واصل وردك القرآني" - Continue Quranic Portion Card
-                            MaladhContinueQuranCard(
-                              onResumeTap: () {
-                                context.go(AppRoutes.quran);
-                              },
-                            ),
-
-                            AppSpacing.verticalMd,
-
-                            // 5. "بَوَّابَاتُ السَّكِينَةِ" - 2x2 Quick Access Spiritual Portals
-                            MaladhPortalsSection(
-                              onDirectAccessTap: () {
-                                context.go(AppRoutes.quran);
-                              },
-                              onMushafTap: () {
-                                context.go(AppRoutes.quran);
-                              },
-                              onMaqraTap: () {
-                                // Navigate to reciter library
-                              },
-                              onCardMakerTap: () {
-                                // Open verse card generator
-                              },
-                              onAthkarTap: () {
-                                // Open Athkar & digital tasbih
-                              },
-                            ),
-
-                            AppSpacing.verticalSm,
-
-                            // 6. "تلاوة اللحظة المختارة" - Animated Featured Recitation Player Card
-                            MaladhFeaturedRecitationCard(
-                              onPlayPauseTap: () {
-                                // Play/pause audio playback toggle
-                              },
-                            ),
-
-                            AppSpacing.verticalSm,
-
-                            // 7. "آيَةُ السَّكِينَةِ وَالتَّدَبُّرِ" - Daily Reflection Card
-                            MaladhReflectionCard(
-                              verseText: headerData.dailyVerseText,
-                              surahSource: headerData.dailyVerseSurah,
-                              onBookmarkTap: () {
-                                // Bookmark saved verse
-                              },
-                            ),
-                          ],
+      backgroundColor: colors.background,
+      body: Align(
+        alignment: Alignment.topCenter,
+        child: ConstrainedBox(
+          constraints: BoxConstraints(maxWidth: 680.w),
+          child: RefreshIndicator(
+            color: AppColors.champagneGold,
+            backgroundColor: AppColors.carbonSlate,
+            onRefresh: () => context.read<MaladhCubit>().refreshSanctuaryData(),
+            child: BlocBuilder<MaladhCubit, MaladhState>(
+              builder: (context, state) {
+                return switch (state) {
+                  MaladhInitial() || MaladhLoading() => CustomScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(
+                        parent: BouncingScrollPhysics(),
+                      ),
+                      slivers: [
+                        SliverToBoxAdapter(
+                          child: Padding(
+                            padding: EdgeInsets.only(top: topPadding + 8.h),
+                            child: const MaladhHeaderShimmer(),
+                          ),
                         ),
-                      MaladhError(:final message) => _MaladhErrorView(
-                          message: message,
-                          onRetry: () => context.read<MaladhCubit>().loadSanctuaryData(),
+                      ],
+                    ),
+                  MaladhLoaded(:final headerData) => CustomScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(
+                        parent: BouncingScrollPhysics(),
+                      ),
+                      slivers: [
+                        // 1. Large Collapsible Celestial Sliver Header with Inspiring Ayah
+                        MaladhCelestialSliverHeader(
+                          data: headerData,
+                          onPlayVerseTap: () {
+                            // Audio recitation action
+                          },
                         ),
-                    };
-                  },
-                ),
-              ),
+
+                        // 2. Sanctuary Dashboard Content
+                        SliverToBoxAdapter(
+                          child: Padding(
+                            padding: EdgeInsets.only(
+                              top: 8.h,
+                              bottom: 120.h,
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                // A. Prayer Times Schedule & Live Countdown Card
+                                MaladhPrayerScheduleCard(
+                                  hijriDate: headerData.hijriDate,
+                                  nextPrayerName: headerData.nextPrayerName,
+                                ),
+
+                                AppSpacing.verticalSm,
+
+                                // B. "واصل وردك القرآني" - Continue Quranic Portion Card
+                                const MaladhContinueQuranCard(),
+
+                                AppSpacing.verticalMd,
+
+                                // B. "بَوَّابَاتُ السَّكِينَةِ" - 2x2 Quick Access Spiritual Portals
+                                MaladhPortalsSection(
+                                  onDirectAccessTap: () {
+                                    context.go(AppRoutes.quran);
+                                  },
+                                  onMushafTap: () {
+                                    context.go(AppRoutes.quran);
+                                  },
+                                  onMaqraTap: () {
+                                    context.go(AppRoutes.audio);
+                                  },
+                                  onCardMakerTap: () {
+                                    // Verse card maker preserved for later
+                                  },
+                                  onAthkarTap: () {
+                                    context.push(AppRoutes.athkar);
+                                  },
+                                ),
+
+                                AppSpacing.verticalSm,
+
+                                // C. "تلاوة اللحظة المختارة" - Animated Featured Recitation Player Card
+                                MaladhFeaturedRecitationCard(
+                                  onPlayPauseTap: () {
+                                    // Play/pause audio playback toggle
+                                  },
+                                ),
+
+                                AppSpacing.verticalSm,
+
+                                // D. "آيَةُ السَّكِينَةِ وَالتَّدَبُّرِ" - Daily Reflection Card
+                                MaladhReflectionCard(
+                                  verseText: headerData.dailyVerseText,
+                                  surahSource: headerData.dailyVerseSurah,
+                                  onBookmarkTap: () {
+                                    // Bookmark saved verse
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  MaladhError(:final message) => CustomScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(
+                        parent: BouncingScrollPhysics(),
+                      ),
+                      slivers: [
+                        SliverToBoxAdapter(
+                          child: Padding(
+                            padding: EdgeInsets.only(top: topPadding + 40.h),
+                            child: _MaladhErrorView(
+                              message: message,
+                              onRetry: () =>
+                                  context.read<MaladhCubit>().loadSanctuaryData(),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                };
+              },
             ),
           ),
         ),

@@ -153,6 +153,9 @@ class QuranCubit extends Cubit<QuranState> {
 
   /// Opens the reader view for a chosen Surah, loading its verses.
   Future<void> openSurahReader(SurahEntity surah) async {
+    if (state is! QuranLoaded) {
+      await loadQuranData();
+    }
     final currentState = state;
     if (currentState is! QuranLoaded) return;
 

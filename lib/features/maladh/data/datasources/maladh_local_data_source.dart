@@ -54,10 +54,9 @@ class MaladhLocalDataSourceImpl implements MaladhLocalDataSource {
     // Format remaining time elegantly into hours & minutes
     final String nextPrayerRemaining = _formatRemainingTime(minutesUntilPrayer);
 
-    // 2. Daily Verse Reflection Selection
-    final reflections = _dailyReflections;
-    final verseIndex = now.day % reflections.length;
-    final selectedVerse = reflections[verseIndex];
+    // 2. Sequential Daily Ayah from Surah Al-Baqarah
+    final dayOfYear = now.difference(DateTime(now.year, 1, 1)).inDays;
+    final selectedVerse = _baqarahDailyVerses[dayOfYear % _baqarahDailyVerses.length];
 
     // 3. Hijri & Gregorian Arabic Dates
     final hijriDate = _computeHijriDate(now);
@@ -73,6 +72,7 @@ class MaladhLocalDataSourceImpl implements MaladhLocalDataSource {
       gregorianDate: gregorianDate,
       dailyVerseText: selectedVerse.verse,
       dailyVerseSurah: selectedVerse.surah,
+      dailyVerseAudioUrl: selectedVerse.audioUrl,
       nextPrayerName: nextPrayerName,
       nextPrayerTimeRemaining: nextPrayerRemaining,
       streakDays: storedStreak,
@@ -94,34 +94,57 @@ class MaladhLocalDataSourceImpl implements MaladhLocalDataSource {
     return 'بَعْدَ $hours س و $mins د';
   }
 
-  static const List<({String verse, String surah})> _dailyReflections = [
+  /// Authentic sequential daily verses from noble Surah Al-Baqarah and curated inspirational gems.
+  static const List<({String verse, String surah, String audioUrl})> _baqarahDailyVerses = [
     (
-      verse: '﴿أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ﴾',
-      surah: 'سُورَةُ الرَّعْدِ • آيَة 28',
+      verse: 'الم ۝ ذَٰلِكَ الْكِتَابُ لَا رَيْبَ ۛ فِيهِ ۛ هُدًى لِّلْمُتَّقِينَ',
+      surah: 'سُورَةُ البَقَرَةِ • آيَة 1-2',
+      audioUrl: 'https://everyayah.com/data/Alafasy_128kbps/002001.mp3',
     ),
     (
-      verse: '﴿فَأَنزَلَ اللَّهُ سَكِينَتَهُ عَلَيْهِ وَأَيَّدَهُ بِجُنُودٍ لَّمْ تَرَوْهَا﴾',
-      surah: 'سُورَةُ التَّوْبَةِ • آيَة 40',
+      verse: 'الَّذِينَ يُؤْمِنُونَ بِالْغَيْبِ وَيُقِيمُونَ الصَّلَاةَ وَمِمَّا رَزَقْنَاهُمْ يُنفِقُونَ',
+      surah: 'سُورَةُ البَقَرَةِ • آيَة 3',
+      audioUrl: 'https://everyayah.com/data/Alafasy_128kbps/002003.mp3',
     ),
     (
-      verse: '﴿وَإِذَا سَأَلَكَ عِبَادِي عَنِّي فَإِنِّي قَرِيبٌ﴾',
+      verse: 'وَالَّذِينَ يُؤْمِنُونَ بِمَا أُنزِلَ إِلَيْكَ وَمَا أُنزِلَ مِن قَبْلِكَ وَبِالْآخِرَةِ هُمْ يُوقِنُونَ',
+      surah: 'سُورَةُ البَقَرَةِ • آيَة 4',
+      audioUrl: 'https://everyayah.com/data/Alafasy_128kbps/002004.mp3',
+    ),
+    (
+      verse: 'أُولَٰئِكَ عَلَىٰ هُدًى مِّن رَّبِّهِمْ ۖ وَأُولَٰئِكَ هُمُ الْمُفْلِحُونَ',
+      surah: 'سُورَةُ البَقَرَةِ • آيَة 5',
+      audioUrl: 'https://everyayah.com/data/Alafasy_128kbps/002005.mp3',
+    ),
+    (
+      verse: 'فَاذْكُرُونِي أَذْكُرْكُمْ وَاشْكُرُوا لِي وَلَا تَكْفُرُونِ',
+      surah: 'سُورَةُ البَقَرَةِ • آيَة 152',
+      audioUrl: 'https://everyayah.com/data/Alafasy_128kbps/002152.mp3',
+    ),
+    (
+      verse: 'يَا أَيُّهَا الَّذِينَ آمَنُوا اسْتَعِينُوا بِالصَّبْرِ وَالصَّلَاةِ ۚ إِنَّ اللَّهَ مَعَ الصَّابِرِينَ',
+      surah: 'سُورَةُ البَقَرَةِ • آيَة 153',
+      audioUrl: 'https://everyayah.com/data/Alafasy_128kbps/002153.mp3',
+    ),
+    (
+      verse: 'وَإِذَا سَأَلَكَ عِبَادِي عَنِّي فَإِنِّي قَرِيبٌ ۖ أُجِيبُ دَعْوَةَ الدَّاعِ إِذَا دَعَانِ',
       surah: 'سُورَةُ البَقَرَةِ • آيَة 186',
+      audioUrl: 'https://everyayah.com/data/Alafasy_128kbps/002186.mp3',
     ),
     (
-      verse: '﴿إِنَّ مَعَ الْعُسْرِ يُسْرًا﴾',
-      surah: 'سُورَةُ الشَّرْحِ • آيَة 6',
+      verse: 'اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ',
+      surah: 'سُورَةُ البَقَرَةِ • آيَة 255',
+      audioUrl: 'https://everyayah.com/data/Alafasy_128kbps/002255.mp3',
     ),
     (
-      verse: '﴿وَرَحْمَتِي وَسِعَتْ كُلَّ شَيْءٍ﴾',
-      surah: 'سُورَةُ الأَعْرَافِ • آيَة 156',
+      verse: 'لَا يُكَلِّفُ اللَّهُ نَفْسًا إِلَّا وُسْعَهَا ۚ لَهَا مَا كَسَبَتْ وَعَلَيْهَا مَا اكْتَسَبَتْ',
+      surah: 'سُورَةُ البَقَرَةِ • آيَة 286',
+      audioUrl: 'https://everyayah.com/data/Alafasy_128kbps/002286.mp3',
     ),
     (
-      verse: '﴿وَقَالَ رَبُّكُمُ ادْعُونِي أَسْتَجِبْ لَكُمْ﴾',
-      surah: 'سُورَةُ غَافِرٍ • آيَة 60',
-    ),
-    (
-      verse: '﴿فَاصْبِرْ صَبْرًا جَمِيلًا﴾',
-      surah: 'سُورَةُ المَعَارِجِ • آيَة 5',
+      verse: 'وَفِي ذَٰلِكَ فَلْيَتَنَافَسِ الْمُتَنَافِسُونَ',
+      surah: 'سُورَةُ المُطَفِّفِينَ • آيَة 26',
+      audioUrl: 'https://everyayah.com/data/Alafasy_128kbps/083026.mp3',
     ),
   ];
 

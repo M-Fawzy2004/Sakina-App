@@ -21,6 +21,11 @@ abstract final class HapticService {
     await HapticFeedback.heavyImpact();
   }
 
+  /// Completing a thikr repetition target or completing a sacred task.
+  static Future<void> success() async {
+    await HapticFeedback.mediumImpact();
+  }
+
   /// Rhythmic sensory feedback sequence for the Inaba Recovery emergency pulse.
   static Future<void> emergencyPulsation() async {
     await HapticFeedback.heavyImpact();

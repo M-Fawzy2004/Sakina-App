@@ -15,6 +15,12 @@ import 'package:sakina_app/features/audio_reciters/domain/usecases/get_featured_
 import 'package:sakina_app/features/audio_reciters/domain/usecases/get_reciter_tracks_usecase.dart';
 import 'package:sakina_app/features/audio_reciters/domain/usecases/get_reciters_usecase.dart';
 import 'package:sakina_app/features/audio_reciters/presentation/cubit/audio_reciters_cubit.dart';
+import 'package:sakina_app/features/athkar/data/datasources/athkar_local_data_source.dart';
+import 'package:sakina_app/features/athkar/data/repositories/athkar_repository_impl.dart';
+import 'package:sakina_app/features/athkar/domain/repositories/athkar_repository.dart';
+import 'package:sakina_app/features/athkar/domain/usecases/get_athkar_by_category_usecase.dart';
+import 'package:sakina_app/features/athkar/domain/usecases/get_athkar_categories_usecase.dart';
+import 'package:sakina_app/features/athkar/presentation/cubit/athkar_cubit.dart';
 import 'package:sakina_app/features/inaba_recovery/data/datasources/inaba_local_data_source.dart';
 import 'package:sakina_app/features/inaba_recovery/data/repositories/inaba_repository_impl.dart';
 import 'package:sakina_app/features/inaba_recovery/domain/repositories/inaba_repository.dart';
@@ -284,6 +290,26 @@ void _initFeatureModules() {
       toggleRepentanceStepUseCase: sl(),
       renewCovenantUseCase: sl(),
       logSpiritualVictoryUseCase: sl(),
+    ),
+  );
+
+  // Al-Athkar (Prophetic Supplications & Digital Tasbih) Feature
+  sl.registerLazySingleton<AthkarLocalDataSource>(
+    () => AthkarLocalDataSourceImpl(),
+  );
+  sl.registerLazySingleton<AthkarRepository>(
+    () => AthkarRepositoryImpl(localDataSource: sl()),
+  );
+  sl.registerLazySingleton<GetAthkarCategoriesUseCase>(
+    () => GetAthkarCategoriesUseCase(repository: sl()),
+  );
+  sl.registerLazySingleton<GetAthkarByCategoryUseCase>(
+    () => GetAthkarByCategoryUseCase(repository: sl()),
+  );
+  sl.registerFactory<AthkarCubit>(
+    () => AthkarCubit(
+      getCategoriesUseCase: sl(),
+      getAthkarByCategoryUseCase: sl(),
     ),
   );
 }

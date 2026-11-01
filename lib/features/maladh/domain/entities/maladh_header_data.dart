@@ -8,6 +8,7 @@ class MaladhHeaderData extends Equatable {
   final String gregorianDate;
   final String dailyVerseText;
   final String dailyVerseSurah;
+  final String dailyVerseAudioUrl;
   final String nextPrayerName;
   final String nextPrayerTimeRemaining;
   final int streakDays;
@@ -19,6 +20,7 @@ class MaladhHeaderData extends Equatable {
     required this.gregorianDate,
     required this.dailyVerseText,
     required this.dailyVerseSurah,
+    this.dailyVerseAudioUrl = 'https://everyayah.com/data/Alafasy_128kbps/002001.mp3',
     required this.nextPrayerName,
     required this.nextPrayerTimeRemaining,
     required this.streakDays,
@@ -32,6 +34,7 @@ class MaladhHeaderData extends Equatable {
         gregorianDate,
         dailyVerseText,
         dailyVerseSurah,
+        dailyVerseAudioUrl,
         nextPrayerName,
         nextPrayerTimeRemaining,
         streakDays,

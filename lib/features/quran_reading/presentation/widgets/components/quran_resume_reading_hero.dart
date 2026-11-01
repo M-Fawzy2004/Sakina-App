@@ -58,7 +58,7 @@ class QuranResumeReadingHero extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
       child: Directionality(
-        textDirection: TextDirection.ltr,
+        textDirection: TextDirection.rtl,
         child: Stack(
           clipBehavior: Clip.none,
           children: [
@@ -73,7 +73,7 @@ class QuranResumeReadingHero extends StatelessWidget {
                 borderRadius: BorderRadius.circular(22.r),
                 child: Container(
                   width: double.infinity,
-                  padding: EdgeInsets.fromLTRB(20.w, 18.h, 24.w, 18.h),
+                  padding: EdgeInsets.fromLTRB(20.w, 18.h, 20.w, 18.h),
                   decoration: BoxDecoration(
                     color: colors.cardSurface,
                     borderRadius: BorderRadius.circular(22.r),
@@ -86,7 +86,7 @@ class QuranResumeReadingHero extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      // Left Column: Resume Reading, مواصلة القراءة, Surah name, Ayah metadata
+                      // Right Column (RTL): Resume Reading, مواصلة القراءة, Surah name, Ayah metadata
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -158,9 +158,9 @@ class QuranResumeReadingHero extends StatelessWidget {
                         ),
                       ),
 
-                      // Right Column: Metallic Gold Progress Ring (directly below the ribbon)
+                      // Left Column (RTL): Metallic Gold Progress Ring (directly below the ribbon)
                       Padding(
-                        padding: EdgeInsets.only(bottom: 2.h, right: 4.w),
+                        padding: EdgeInsets.only(bottom: 2.h, left: 4.w),
                         child: _MetallicProgressRing(
                           progress: progress,
                           percentText: '$percent%',
@@ -172,10 +172,10 @@ class QuranResumeReadingHero extends StatelessWidget {
               ),
             ),
 
-            // Hanging Silk Bookmark Ribbon with Swallowtail Notch (top-right corner)
+            // Hanging Silk Bookmark Ribbon with Swallowtail Notch (top-left corner in RTL)
             Positioned(
               top: -8.h,
-              right: 28.w,
+              left: 28.w,
               child: _SwallowtailRibbon(
                 onTap: () {
                   HapticService.selectionClick();

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sakina_app/core/di/injection_container.dart';
 import 'package:sakina_app/core/theme/app_colors.dart';
 import 'package:sakina_app/features/quran_reading/domain/entities/surah_entity.dart';
 import 'package:sakina_app/features/quran_reading/presentation/cubit/quran_cubit.dart';
@@ -28,14 +29,20 @@ class SurahReaderScreen extends StatefulWidget {
     SurahEntity surah, {
     int? initialAyahNumber,
     int? initialPageNumber,
+    QuranCubit? cubit,
   }) {
-    final cubit = context.read<QuranCubit>();
-    cubit.openSurahReader(surah);
+    QuranCubit effectiveCubit;
+    try {
+      effectiveCubit = cubit ?? context.read<QuranCubit>();
+    } catch (_) {
+      effectiveCubit = sl<QuranCubit>();
+    }
+    effectiveCubit.openSurahReader(surah);
 
     return Navigator.of(context, rootNavigator: true).push<void>(
       MaterialPageRoute<void>(
-        builder: (navContext) => BlocProvider.value(
-          value: cubit,
+        builder: (navContext) => BlocProvider<QuranCubit>.value(
+          value: effectiveCubit,
           child: SurahReaderScreen(
             surah: surah,
             initialAyahNumber: initialAyahNumber,

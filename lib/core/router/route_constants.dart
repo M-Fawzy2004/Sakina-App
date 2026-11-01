@@ -9,5 +9,6 @@ abstract final class AppRoutes {
   static const String audio = '/audio';
   static const String inaba = '/inaba';
   static const String bookmarks = '/bookmarks';
+  static const String athkar = '/athkar';
   static const String settings = '/settings';
 }
