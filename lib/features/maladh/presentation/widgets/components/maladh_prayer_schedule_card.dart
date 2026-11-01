@@ -55,8 +55,8 @@ class _MaladhPrayerScheduleCardState extends State<MaladhPrayerScheduleCard> {
 
   void _computeRemainingDuration() {
     final now = DateTime.now();
-    // Accurate calculation for next prayer (Fajr 04:42 AM default target)
-    final targetToday = DateTime(now.year, now.month, now.day, 4, 42, 0);
+    // Accurate calculation for next prayer (Fajr 04:41 AM default target for Cairo)
+    final targetToday = DateTime(now.year, now.month, now.day, 4, 41, 0);
     final targetTime = now.isBefore(targetToday)
         ? targetToday
         : targetToday.add(const Duration(days: 1));
@@ -295,19 +295,19 @@ class _MainPrayersRow extends StatelessWidget {
       _prayers = [
     (
       name: 'الفجر',
-      time: '4:42',
+      time: '4:41',
       icon: Icons.wb_twilight_rounded,
       isNext: true,
     ),
     (
       name: 'الظهر',
-      time: '11:45',
+      time: '11:40',
       icon: Icons.wb_sunny_rounded,
       isNext: false,
     ),
     (
       name: 'العصر',
-      time: '2:55',
+      time: '2:43',
       icon: Iconsax.cloud_sunny,
       isNext: false,
     ),
@@ -409,9 +409,9 @@ class _SupplementaryTimesRow extends StatelessWidget {
   const _SupplementaryTimesRow();
 
   static const List<({String name, String time})> _times = [
-    (name: 'الشروق', time: '6:08'),
+    (name: 'الشروق', time: '6:10'),
     (name: 'منتصف الليل', time: '10:55'),
-    (name: 'الثلث الأخير', time: '1:15'),
+    (name: 'الثلث الأخير', time: '12:50'),
   ];
 
   @override

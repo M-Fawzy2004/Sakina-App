@@ -78,14 +78,13 @@ void main() {
     expect(cubit.state, const AthkarInitial());
   });
 
-  test('loadAthkar emits [AthkarLoading, AthkarLoaded] on success', () async {
+  test('loadAthkar emits AthkarLoaded directly on success without loading screen', () async {
     when(() => mockGetCategoriesUseCase(any()))
         .thenAnswer((_) async => const Right(testCategories));
     when(() => mockGetByCategoryUseCase(any()))
         .thenAnswer((_) async => const Right(testMorningItems));
 
     final expected = [
-      const AthkarLoading(),
       const AthkarLoaded(
         categories: testCategories,
         selectedCategory: 'أذكار الصباح',
@@ -104,7 +103,6 @@ void main() {
         (_) async => const Left(AthkarFailure(message: 'خطأ في التحميل')));
 
     final expected = [
-      const AthkarLoading(),
       const AthkarError(message: 'خطأ في التحميل'),
     ];
 

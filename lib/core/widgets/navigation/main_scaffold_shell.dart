@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:iconsax/iconsax.dart';
@@ -11,24 +10,19 @@ import 'package:sakina_app/core/widgets/navigation/sakina_bottom_nav_bar.dart';
 ///
 /// Features:
 /// 1. iPhone Home Indicator Clearance: Elevated above the iOS home swipe bar.
-/// 2. Auto-Hiding Bottom Nav Bar: Smoothly slides down off-screen on downward scroll,
-///    re-appears on upward scroll or when reaching the top.
-/// 3. Luxury Floating "Scroll-to-Top" Button (الرجوع إلى الأعلى): Appears when scrolled
-///    past threshold, smoothly animates back to 0 with haptic feedback.
+/// 2. Persistent Bottom Nav Bar: Anchored and visible across primary sanctuary tabs.
+/// 3. Luxury Floating "Scroll-to-Top" Button (الرجوع إلى الأعلى): Appears on lengthy
+///    reading views (such as Mushaf reader) when scrolled past threshold.
 class MainScaffoldShell extends StatefulWidget {
   final StatefulNavigationShell navigationShell;
 
-  const MainScaffoldShell({
-    super.key,
-    required this.navigationShell,
-  });
+  const MainScaffoldShell({super.key, required this.navigationShell});
 
   @override
   State<MainScaffoldShell> createState() => _MainScaffoldShellState();
 }
 
 class _MainScaffoldShellState extends State<MainScaffoldShell> {
-  bool _isNavBarVisible = true;
   bool _showScrollToTop = false;
   BuildContext? _activeScrollContext;
 
@@ -37,38 +31,16 @@ class _MainScaffoldShellState extends State<MainScaffoldShell> {
     if (notification.metrics.axis == Axis.vertical) {
       _activeScrollContext = notification.context;
 
-      // Toggle Scroll-to-Top button visibility
-      final shouldShowScrollToTop = notification.metrics.pixels > 280;
+      // Scroll-to-Top return icon ONLY activates on lengthy Quran reading views (tab index 1),
+      // never on standard sanctuary screens like Maladh, Audio, or Settings.
+      final isLongQuranReadingView = widget.navigationShell.currentIndex == 1;
+      final shouldShowScrollToTop =
+          isLongQuranReadingView && notification.metrics.pixels > 600;
+
       if (shouldShowScrollToTop != _showScrollToTop) {
         setState(() {
           _showScrollToTop = shouldShowScrollToTop;
         });
-      }
-
-      // Handle auto-hide and auto-show of Bottom Navigation Bar
-      if (notification is UserScrollNotification) {
-        if (notification.direction == ScrollDirection.reverse) {
-          // Scrolling down -> hide navbar
-          if (_isNavBarVisible) {
-            setState(() {
-              _isNavBarVisible = false;
-            });
-          }
-        } else if (notification.direction == ScrollDirection.forward) {
-          // Scrolling up -> show navbar
-          if (!_isNavBarVisible) {
-            setState(() {
-              _isNavBarVisible = true;
-            });
-          }
-        }
-      } else if (notification is ScrollUpdateNotification) {
-        // Re-show navbar if user reached near top of screen
-        if (notification.metrics.pixels <= 20 && !_isNavBarVisible) {
-          setState(() {
-            _isNavBarVisible = true;
-          });
-        }
       }
     }
     return false;
@@ -101,11 +73,6 @@ class _MainScaffoldShellState extends State<MainScaffoldShell> {
       }
     }
 
-    if (!_isNavBarVisible) {
-      setState(() {
-        _isNavBarVisible = true;
-      });
-    }
   }
 
   @override
@@ -114,10 +81,10 @@ class _MainScaffoldShellState extends State<MainScaffoldShell> {
     final bottomPadding = MediaQuery.paddingOf(context).bottom;
     final isKeyboardOpen = MediaQuery.viewInsetsOf(context).bottom > 0;
 
-    // iPhone Home Indicator clearance: When bottomPadding > 0 (e.g. 34pt on iPhone),
-    // elevate by bottomPadding + 10.h so the bar is comfortably above the swipe indicator line.
-    final double bottomOffset =
-        bottomPadding > 0 ? (bottomPadding + 10.h) : 14.h;
+    // Refined bottom clearance: Lower the bar so it sits comfortably closer to the bottom edge
+    final double bottomOffset = bottomPadding > 0
+        ? (bottomPadding * 0.35 + 4.h)
+        : 6.h;
 
     return Scaffold(
       backgroundColor: colors.background,
@@ -133,51 +100,40 @@ class _MainScaffoldShellState extends State<MainScaffoldShell> {
             ),
           ),
 
-          // 2. Floating Luxury Scroll-to-Top Action Button (الرجوع إلى الأعلى)
+          // 2. Floating Luxury Scroll-to-Top Action Button (Mushaf long reader view only)
           if (!isKeyboardOpen)
             AnimatedPositioned(
               duration: const Duration(milliseconds: 300),
               curve: Curves.easeInOutCubic,
               right: 20.w,
-              bottom: bottomOffset + (_isNavBarVisible ? 76.h : 12.h),
+              bottom: bottomOffset + 76.h,
               child: _ScrollToTopButton(
                 isVisible: _showScrollToTop,
                 onTap: _scrollToTop,
               ),
             ),
 
-          // 3. Floating Luxury Stadium Bottom Navigation Bar (Auto-hiding on scroll, hidden on keyboard)
+          // 3. Persistent Floating Luxury Stadium Bottom Navigation Bar
           if (!isKeyboardOpen)
-            AnimatedPositioned(
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeInOutCubic,
+            Positioned(
               left: 0,
               right: 0,
-              bottom: _isNavBarVisible ? bottomOffset : (-85.h),
-              child: AnimatedOpacity(
-                duration: const Duration(milliseconds: 220),
-                opacity: _isNavBarVisible ? 1.0 : 0.0,
-                child: SakinaBottomNavBar(
-                  currentIndex: widget.navigationShell.currentIndex,
-                  onItemSelected: (index) {
-                    if (!_isNavBarVisible) {
-                      setState(() {
-                        _isNavBarVisible = true;
-                      });
-                    }
-                    if (_showScrollToTop) {
-                      setState(() {
-                        _showScrollToTop = false;
-                      });
-                    }
-                    _activeScrollContext = null;
-                    widget.navigationShell.goBranch(
-                      index,
-                      initialLocation:
-                          index == widget.navigationShell.currentIndex,
-                    );
-                  },
-                ),
+              bottom: bottomOffset,
+              child: SakinaBottomNavBar(
+                currentIndex: widget.navigationShell.currentIndex,
+                onItemSelected: (index) {
+                  if (_showScrollToTop) {
+                    setState(() {
+                      _showScrollToTop = false;
+                    });
+                  }
+                  _activeScrollContext = null;
+                  widget.navigationShell.goBranch(
+                    index,
+                    initialLocation:
+                        index == widget.navigationShell.currentIndex,
+                  );
+                },
               ),
             ),
         ],
@@ -192,10 +148,7 @@ class _ScrollToTopButton extends StatelessWidget {
   final bool isVisible;
   final VoidCallback onTap;
 
-  const _ScrollToTopButton({
-    required this.isVisible,
-    required this.onTap,
-  });
+  const _ScrollToTopButton({required this.isVisible, required this.onTap});
 
   @override
   Widget build(BuildContext context) {

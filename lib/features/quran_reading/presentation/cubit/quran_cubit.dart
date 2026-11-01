@@ -92,6 +92,17 @@ class QuranCubit extends Cubit<QuranState> {
 
   /// Loads the initial Quran dataset (all 114 Surahs, 30 Juzs, and last bookmark).
   Future<void> loadQuranData() async {
+    if (state is QuranLoaded) {
+      // Seamless non-destructive bookmark refresh without resetting state or flashing
+      final bookmarkResult = await getLastReadBookmarkUseCase(const NoParams());
+      final bookmark = bookmarkResult.getOrElse((_) => null);
+      final currentState = state;
+      if (currentState is QuranLoaded) {
+        emit(currentState.copyWith(lastReadBookmark: bookmark));
+      }
+      return;
+    }
+
     emit(const QuranLoading());
 
     final surahsResult = await getSurahsUseCase(const NoParams());

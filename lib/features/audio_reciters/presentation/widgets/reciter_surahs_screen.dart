@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:sakina_app/core/theme/app_colors_scheme.dart';
 import 'package:sakina_app/core/theme/app_spacing.dart';
 import 'package:sakina_app/core/utils/haptic_service.dart';
@@ -186,20 +187,8 @@ class _ReciterSurahsScreenState extends State<ReciterSurahsScreen> {
 
                     // Loading Shimmer or 2-Column Grid of Surahs
                     if (state.isLoadingTracks)
-                      SliverToBoxAdapter(
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(vertical: 48.h),
-                          child: Center(
-                            child: SizedBox(
-                              width: 32.r,
-                              height: 32.r,
-                              child: CircularProgressIndicator(
-                                valueColor: AlwaysStoppedAnimation<Color>(colors.accentGold),
-                                strokeWidth: 2.5,
-                              ),
-                            ),
-                          ),
-                        ),
+                      const SliverToBoxAdapter(
+                        child: _SurahsLoadingShimmer(),
                       )
                     else if (filteredTracks.isEmpty)
                       SliverToBoxAdapter(
@@ -828,6 +817,85 @@ class _ReciterSurahGridCard extends StatelessWidget {
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _SurahsLoadingShimmer extends StatelessWidget {
+  const _SurahsLoadingShimmer();
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 14.w),
+      child: Shimmer.fromColors(
+        baseColor: colors.surfaceElevated,
+        highlightColor: colors.cardSurface,
+        child: GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: 8,
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            mainAxisSpacing: 10.h,
+            crossAxisSpacing: 10.w,
+            mainAxisExtent: 80.h,
+          ),
+          itemBuilder: (context, index) {
+            return Container(
+              decoration: BoxDecoration(
+                color: colors.cardSurface,
+                borderRadius: BorderRadius.circular(16.r),
+                border: Border.all(
+                  color: colors.borderHairline,
+                  width: 1.r,
+                ),
+              ),
+              padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
+              child: Row(
+                children: [
+                  Container(
+                    width: 36.r,
+                    height: 36.r,
+                    decoration: BoxDecoration(
+                      color: colors.surfaceElevated,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                  SizedBox(width: 8.w),
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          width: 60.w,
+                          height: 12.h,
+                          decoration: BoxDecoration(
+                            color: colors.surfaceElevated,
+                            borderRadius: BorderRadius.circular(6.r),
+                          ),
+                        ),
+                        SizedBox(height: 6.h),
+                        Container(
+                          width: 40.w,
+                          height: 8.h,
+                          decoration: BoxDecoration(
+                            color: colors.surfaceElevated,
+                            borderRadius: BorderRadius.circular(4.r),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
         ),
       ),
     );

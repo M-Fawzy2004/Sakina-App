@@ -12,11 +12,9 @@ import 'package:sakina_app/features/maladh/presentation/cubit/maladh_cubit.dart'
 import 'package:sakina_app/features/maladh/presentation/cubit/maladh_state.dart';
 import 'package:sakina_app/features/maladh/presentation/widgets/components/maladh_celestial_sliver_header.dart';
 import 'package:sakina_app/features/maladh/presentation/widgets/components/maladh_continue_quran_card.dart';
-import 'package:sakina_app/features/maladh/presentation/widgets/components/maladh_featured_recitation_card.dart';
 import 'package:sakina_app/features/maladh/presentation/widgets/components/maladh_header_shimmer.dart';
 import 'package:sakina_app/features/maladh/presentation/widgets/components/maladh_portals_section.dart';
 import 'package:sakina_app/features/maladh/presentation/widgets/components/maladh_prayer_schedule_card.dart';
-import 'package:sakina_app/features/maladh/presentation/widgets/components/maladh_reflection_card.dart';
 
 /// Al-Maladh (The Sanctuary) screen serving as the primary spiritual dashboard of Sakina.
 /// Built with an atmospheric celestial Sliver header that gracefully collapses on scroll,
@@ -87,7 +85,7 @@ class _MaladhView extends StatelessWidget {
                           child: Padding(
                             padding: EdgeInsets.only(
                               top: 8.h,
-                              bottom: 120.h,
+                              bottom: 80.h,
                             ),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -105,7 +103,7 @@ class _MaladhView extends StatelessWidget {
 
                                 AppSpacing.verticalMd,
 
-                                // B. "بَوَّابَاتُ السَّكِينَةِ" - 2x2 Quick Access Spiritual Portals
+                                // C. "بَوَّابَاتُ السَّكِينَةِ" - 2x2 Quick Access Spiritual Portals
                                 MaladhPortalsSection(
                                   onDirectAccessTap: () {
                                     context.go(AppRoutes.quran);
@@ -121,26 +119,6 @@ class _MaladhView extends StatelessWidget {
                                   },
                                   onAthkarTap: () {
                                     context.push(AppRoutes.athkar);
-                                  },
-                                ),
-
-                                AppSpacing.verticalSm,
-
-                                // C. "تلاوة اللحظة المختارة" - Animated Featured Recitation Player Card
-                                MaladhFeaturedRecitationCard(
-                                  onPlayPauseTap: () {
-                                    // Play/pause audio playback toggle
-                                  },
-                                ),
-
-                                AppSpacing.verticalSm,
-
-                                // D. "آيَةُ السَّكِينَةِ وَالتَّدَبُّرِ" - Daily Reflection Card
-                                MaladhReflectionCard(
-                                  verseText: headerData.dailyVerseText,
-                                  surahSource: headerData.dailyVerseSurah,
-                                  onBookmarkTap: () {
-                                    // Bookmark saved verse
                                   },
                                 ),
                               ],

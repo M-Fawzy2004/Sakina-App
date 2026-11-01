@@ -41,8 +41,8 @@ class AthkarScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<AthkarCubit>(
-      create: (_) => sl<AthkarCubit>()..loadAthkar(initialCategory: initialCategory),
+    return BlocProvider<AthkarCubit>.value(
+      value: sl<AthkarCubit>()..ensureLoaded(initialCategory: initialCategory),
       child: const _AthkarScreenContent(),
     );
   }
@@ -61,10 +61,6 @@ class _AthkarScreenContent extends StatelessWidget {
       body: SafeArea(
         child: BlocBuilder<AthkarCubit, AthkarState>(
           builder: (context, state) {
-            if (state is AthkarLoading || state is AthkarInitial) {
-              return const _AthkarLoadingView();
-            }
-
             if (state is AthkarError) {
               return _AthkarErrorView(
                 message: state.message,
@@ -148,34 +144,6 @@ class _AthkarScreenContent extends StatelessWidget {
             return const SizedBox.shrink();
           },
         ),
-      ),
-    );
-  }
-}
-
-class _AthkarLoadingView extends StatelessWidget {
-  const _AthkarLoadingView();
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.colors;
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation<Color>(colors.accentGold),
-          ),
-          SizedBox(height: 12.h),
-          Text(
-            'جَارٍ تَحْمِيلُ الأَوْرَادِ المُبَارَكَةِ...',
-            style: GoogleFonts.cairo(
-              color: colors.textSecondary,
-              fontSize: 12.sp,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
       ),
     );
   }

@@ -15,9 +15,29 @@ class AthkarCubit extends Cubit<AthkarState> {
     required this.getAthkarByCategoryUseCase,
   }) : super(const AthkarInitial());
 
-  /// Loads categories and the initial active category items.
+  /// Ensures categories and active items are loaded. If already cached in memory, switches category if requested without reload.
+  Future<void> ensureLoaded({String? initialCategory}) async {
+    final currentState = state;
+    if (currentState is AthkarLoaded) {
+      if (initialCategory != null &&
+          currentState.selectedCategory != initialCategory) {
+        await selectCategory(initialCategory);
+      }
+      return;
+    }
+    await loadAthkar(initialCategory: initialCategory);
+  }
+
+  /// Loads categories and the initial active category items instantly from local data.
   Future<void> loadAthkar({String? initialCategory}) async {
-    emit(const AthkarLoading());
+    final currentState = state;
+    if (currentState is AthkarLoaded) {
+      if (initialCategory != null &&
+          currentState.selectedCategory != initialCategory) {
+        await selectCategory(initialCategory);
+      }
+      return;
+    }
 
     final categoriesResult = await getCategoriesUseCase(const NoParams());
 

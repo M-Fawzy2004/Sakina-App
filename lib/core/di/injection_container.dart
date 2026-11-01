@@ -168,7 +168,7 @@ void _initFeatureModules() {
   sl.registerLazySingleton<SaveLastReadBookmarkUseCase>(
     () => SaveLastReadBookmarkUseCase(repository: sl()),
   );
-  sl.registerFactory<QuranCubit>(
+  sl.registerLazySingleton<QuranCubit>(
     () => QuranCubit(
       getSurahsUseCase: sl(),
       getJuzsUseCase: sl(),
@@ -306,7 +306,7 @@ void _initFeatureModules() {
   sl.registerLazySingleton<GetAthkarByCategoryUseCase>(
     () => GetAthkarByCategoryUseCase(repository: sl()),
   );
-  sl.registerFactory<AthkarCubit>(
+  sl.registerLazySingleton<AthkarCubit>(
     () => AthkarCubit(
       getCategoriesUseCase: sl(),
       getAthkarByCategoryUseCase: sl(),

@@ -109,13 +109,13 @@ void main() {
       expect(find.byType(SakinaBottomNavBar), findsOneWidget);
     });
 
-    testWidgets('shows scroll-to-top button when scrolled down past threshold',
+    testWidgets('shows scroll-to-top button on Quran reading tab (index 1) when scrolled past threshold',
         (tester) async {
       tester.view.physicalSize = const Size(1170, 2532);
       tester.view.devicePixelRatio = 3.0;
       addTearDown(() => tester.view.resetPhysicalSize());
 
-      const fakeShell = _FakeStatefulNavigationShell(currentIndex: 0);
+      const fakeShell = _FakeStatefulNavigationShell(currentIndex: 1);
 
       await tester.pumpWidget(buildTestShell(shell: fakeShell));
       await tester.pumpAndSettle();
@@ -123,8 +123,8 @@ void main() {
       final arrowFinder = find.byIcon(Iconsax.arrow_up_3);
       expect(arrowFinder, findsOneWidget);
 
-      // Scroll down substantially (over 500 px)
-      await tester.drag(find.byType(ListView), const Offset(0, -600));
+      // Scroll down substantially (over 650 px)
+      await tester.drag(find.byType(ListView), const Offset(0, -700));
       await tester.pumpAndSettle();
 
       // Tap scroll-to-top

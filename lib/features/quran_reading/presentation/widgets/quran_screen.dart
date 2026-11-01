@@ -17,7 +17,6 @@ import 'package:sakina_app/features/quran_reading/presentation/widgets/component
 import 'package:sakina_app/features/quran_reading/presentation/widgets/components/quran_pages_list.dart';
 import 'package:sakina_app/features/quran_reading/presentation/widgets/components/quran_resume_reading_hero.dart';
 import 'package:sakina_app/features/quran_reading/presentation/widgets/components/quran_search_bar.dart';
-import 'package:sakina_app/features/quran_reading/presentation/widgets/components/quran_shimmer.dart';
 import 'package:sakina_app/features/quran_reading/presentation/widgets/components/quran_surahs_list.dart';
 import 'package:sakina_app/features/quran_reading/presentation/widgets/components/quran_tab_bar.dart';
 import 'package:sakina_app/features/quran_reading/presentation/widgets/surah_reader_screen.dart';
@@ -34,8 +33,8 @@ class QuranScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<QuranCubit>(
-      create: (_) => sl<QuranCubit>()..loadQuranData(),
+    return BlocProvider<QuranCubit>.value(
+      value: sl<QuranCubit>()..loadQuranData(),
       child: const _QuranScreenContent(),
     );
   }
@@ -53,7 +52,7 @@ class _QuranScreenContent extends StatelessWidget {
         child: BlocBuilder<QuranCubit, QuranState>(
           builder: (context, state) {
             return switch (state) {
-              QuranInitial() || QuranLoading() => const QuranShimmer(),
+              QuranInitial() || QuranLoading() => const SizedBox.shrink(),
               QuranError(:final message) => _QuranErrorView(
                   message: message,
                   onRetry: () => context.read<QuranCubit>().loadQuranData(),

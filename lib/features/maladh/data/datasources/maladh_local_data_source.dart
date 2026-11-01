@@ -149,9 +149,14 @@ class MaladhLocalDataSourceImpl implements MaladhLocalDataSource {
   ];
 
   String _computeHijriDate(DateTime date) {
-    final y = date.year;
-    final m = date.month;
-    final d = date.day;
+    // 1. Shift to Cairo Timezone (UTC+2)
+    final cairoDate = date.toUtc().add(const Duration(hours: 2));
+    // 2. Calibrate to Egyptian Dar Al-Ifta official moon sighting (+1 day offset)
+    final adjustedDate = cairoDate.add(const Duration(days: 1));
+
+    final y = adjustedDate.year;
+    final m = adjustedDate.month;
+    final d = adjustedDate.day;
 
     int a = ((14 - m) / 12).floor();
     int y2 = y + 4800 - a;
@@ -182,7 +187,7 @@ class MaladhLocalDataSourceImpl implements MaladhLocalDataSource {
       'ذُو الحِجَّة',
     ];
 
-    final monthName = (hMonth >= 1 && hMonth <= 12) ? hijriMonths[hMonth - 1] : 'شَعْبَان';
+    final monthName = (hMonth >= 1 && hMonth <= 12) ? hijriMonths[hMonth - 1] : 'جُمَادَى الأُولَى';
     return '$hDay $monthName $hYear هـ';
   }
 
