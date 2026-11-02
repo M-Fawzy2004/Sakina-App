@@ -27,6 +27,14 @@ import 'package:sakina_app/features/hisn_muslim/domain/repositories/hisn_reposit
 import 'package:sakina_app/features/hisn_muslim/domain/usecases/get_hisn_chapter_detail_usecase.dart';
 import 'package:sakina_app/features/hisn_muslim/domain/usecases/get_hisn_chapters_usecase.dart';
 import 'package:sakina_app/features/hisn_muslim/presentation/cubit/hisn_cubit.dart';
+import 'package:sakina_app/features/sunnah_books/data/datasources/sunnah_local_data_source.dart';
+import 'package:sakina_app/features/sunnah_books/data/repositories/sunnah_repository_impl.dart';
+import 'package:sakina_app/features/sunnah_books/domain/repositories/sunnah_repository.dart';
+import 'package:sakina_app/features/sunnah_books/domain/usecases/get_book_hadiths_usecase.dart';
+import 'package:sakina_app/features/sunnah_books/domain/usecases/get_sunnah_books_usecase.dart';
+import 'package:sakina_app/features/sunnah_books/domain/usecases/search_hadiths_usecase.dart';
+import 'package:sakina_app/features/sunnah_books/presentation/cubit/book_reader_cubit.dart';
+import 'package:sakina_app/features/sunnah_books/presentation/cubit/sunnah_books_cubit.dart';
 import 'package:sakina_app/features/inaba_recovery/data/datasources/inaba_local_data_source.dart';
 import 'package:sakina_app/features/inaba_recovery/data/repositories/inaba_repository_impl.dart';
 import 'package:sakina_app/features/inaba_recovery/domain/repositories/inaba_repository.dart';
@@ -336,6 +344,32 @@ void _initFeatureModules() {
     () => HisnCubit(
       getChaptersUseCase: sl(),
       repository: sl(),
+    ),
+  );
+
+  // Sunnah Books (Kutub al-Tis'ah) Feature
+  sl.registerLazySingleton<SunnahLocalDataSource>(
+    () => SunnahLocalDataSourceImpl(),
+  );
+  sl.registerLazySingleton<SunnahRepository>(
+    () => SunnahRepositoryImpl(localDataSource: sl()),
+  );
+  sl.registerLazySingleton<GetSunnahBooksUseCase>(
+    () => GetSunnahBooksUseCase(repository: sl()),
+  );
+  sl.registerLazySingleton<GetBookHadithsUseCase>(
+    () => GetBookHadithsUseCase(repository: sl()),
+  );
+  sl.registerLazySingleton<SearchHadithsUseCase>(
+    () => SearchHadithsUseCase(repository: sl()),
+  );
+  sl.registerLazySingleton<SunnahBooksCubit>(
+    () => SunnahBooksCubit(getBooksUseCase: sl()),
+  );
+  sl.registerFactory<BookReaderCubit>(
+    () => BookReaderCubit(
+      getHadithsUseCase: sl(),
+      searchHadithsUseCase: sl(),
     ),
   );
 }

@@ -7,8 +7,9 @@ import 'package:sakina_app/core/theme/app_spacing.dart';
 import 'package:sakina_app/features/maladh/presentation/widgets/components/maladh_hisn_muslim_card.dart';
 import 'package:sakina_app/features/maladh/presentation/widgets/components/maladh_portal_card.dart';
 import 'package:sakina_app/features/maladh/presentation/widgets/components/maladh_portals_header.dart';
+import 'package:sakina_app/features/maladh/presentation/widgets/components/maladh_sunnah_card.dart';
 
-/// "بَوَّابَاتُ السَّكِينَةِ" - 2x2 grid section of quick-access spiritual portals with Hisn al-Muslim flagship card.
+/// "بَوَّابَاتُ السَّكِينَةِ" - 2x2 grid section of quick-access spiritual portals with Sunnah & Hisn flagship cards.
 class MaladhPortalsSection extends StatelessWidget {
   final VoidCallback? onDirectAccessTap;
   final VoidCallback? onMushafTap;
@@ -16,6 +17,7 @@ class MaladhPortalsSection extends StatelessWidget {
   final VoidCallback? onCardMakerTap;
   final VoidCallback? onAthkarTap;
   final VoidCallback? onHisnMuslimTap;
+  final VoidCallback? onSunnahBooksTap;
 
   const MaladhPortalsSection({
     super.key,
@@ -25,6 +27,7 @@ class MaladhPortalsSection extends StatelessWidget {
     this.onCardMakerTap,
     this.onAthkarTap,
     this.onHisnMuslimTap,
+    this.onSunnahBooksTap,
   });
 
   @override
@@ -35,9 +38,7 @@ class MaladhPortalsSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         // 1. Section Header: "بَوَّابَاتُ السَّكِينَةِ"
-        MaladhPortalsHeader(
-          onDirectAccessTap: onDirectAccessTap,
-        ),
+        MaladhPortalsHeader(onDirectAccessTap: onDirectAccessTap),
 
         AppSpacing.verticalXs,
 
@@ -127,9 +128,12 @@ class MaladhPortalsSection extends StatelessWidget {
               SizedBox(height: 10.h),
 
               // Row 3: حصن المسلم - Hisn al-Muslim Flagship Card
-              MaladhHisnMuslimCard(
-                onTap: onHisnMuslimTap,
-              ),
+              MaladhHisnMuslimCard(onTap: onHisnMuslimTap),
+
+              SizedBox(height: 10.h),
+
+              // Row 4: كتب السنة النبوية - Sunnah Books Flagship Card
+              MaladhSunnahCard(onTap: onSunnahBooksTap), SizedBox(height: 15.h),
             ],
           ),
         ),
@@ -137,4 +141,3 @@ class MaladhPortalsSection extends StatelessWidget {
     );
   }
 }
-
