@@ -24,7 +24,7 @@ class SakinaApp extends StatelessWidget {
           return BlocBuilder<SettingsCubit, SettingsState>(
             builder: (context, settingsState) {
               return MaterialApp.router(
-                title: 'سكينة',
+                title: 'سَكِينَة',
                 debugShowCheckedModeBanner: false,
                 theme: AppTheme.themeFor(
                   settingsState.appThemeMode,
