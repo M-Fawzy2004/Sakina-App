@@ -12,6 +12,7 @@ import 'package:sakina_app/features/maladh/presentation/cubit/maladh_cubit.dart'
 import 'package:sakina_app/features/maladh/presentation/cubit/maladh_state.dart';
 import 'package:sakina_app/features/maladh/presentation/widgets/components/maladh_celestial_sliver_header.dart';
 import 'package:sakina_app/features/maladh/presentation/widgets/components/maladh_continue_quran_card.dart';
+import 'package:sakina_app/features/maladh/presentation/widgets/components/maladh_daily_hadith_card.dart';
 import 'package:sakina_app/features/maladh/presentation/widgets/components/maladh_header_shimmer.dart';
 import 'package:sakina_app/features/maladh/presentation/widgets/components/maladh_portals_section.dart';
 import 'package:sakina_app/features/maladh/presentation/widgets/components/maladh_prayer_schedule_card.dart';
@@ -96,9 +97,14 @@ class _MaladhView extends StatelessWidget {
                                   nextPrayerName: headerData.nextPrayerName,
                                 ),
 
+                                AppSpacing.verticalXs,
+
+                                // B. "حَدِيثُ اليَوْم" - Daily Prophetic Hadith Card
+                                const MaladhDailyHadithCard(),
+
                                 AppSpacing.verticalSm,
 
-                                // B. "واصل وردك القرآني" - Continue Quranic Portion Card
+                                // C. "واصل وردك القرآني" - Continue Quranic Portion Card
                                 const MaladhContinueQuranCard(),
 
                                 AppSpacing.verticalMd,

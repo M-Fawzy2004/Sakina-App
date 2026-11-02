@@ -349,7 +349,7 @@ class _ContinueActionRow extends StatelessWidget {
                 style: GoogleFonts.cairo(
                   color: colors.isDark
                       ? AppColors.obsidianCore
-                      : AppColors.white,
+                      : AppColors.inkDeep,
                   fontSize: 11.5.sp,
                   fontWeight: FontWeight.w800,
                 ),
@@ -360,7 +360,7 @@ class _ContinueActionRow extends StatelessWidget {
                 size: 13.r,
                 color: colors.isDark
                     ? AppColors.obsidianCore
-                    : AppColors.white,
+                    : AppColors.inkDeep,
               ),
             ],
           ),

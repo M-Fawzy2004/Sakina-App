@@ -58,7 +58,7 @@ class HadithPageCard extends StatelessWidget {
       child: Container(
         padding: EdgeInsets.all(18.r),
         decoration: BoxDecoration(
-          color: colors.background,
+          color: colors.cardSurface,
           borderRadius: BorderRadius.circular(20.r),
           border: Border.all(
             color: colors.borderHairline.withValues(alpha: 0.8),
@@ -75,7 +75,7 @@ class HadithPageCard extends StatelessWidget {
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 5.h),
                   decoration: BoxDecoration(
-                    color: colors.background,
+                    color: colors.surfaceElevated,
                     borderRadius: BorderRadius.circular(8.r),
                     border: Border.all(
                       color: colors.accentGold.withValues(alpha: 0.5),
@@ -96,7 +96,7 @@ class HadithPageCard extends StatelessWidget {
                     child: Container(
                       padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
                       decoration: BoxDecoration(
-                        color: colors.background,
+                        color: colors.surfaceElevated,
                         borderRadius: BorderRadius.circular(8.r),
                         border: Border.all(
                           color: colors.borderHairline.withValues(alpha: 0.7),
@@ -164,7 +164,7 @@ class HadithPageCard extends StatelessWidget {
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 6.h),
                   decoration: BoxDecoration(
-                    color: colors.background,
+                    color: colors.surfaceElevated,
                     borderRadius: BorderRadius.circular(10.r),
                     border: Border.all(
                       color: colors.borderHairline.withValues(alpha: 0.7),

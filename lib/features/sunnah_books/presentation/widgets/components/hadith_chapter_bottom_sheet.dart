@@ -83,7 +83,7 @@ class _HadithChapterBottomSheetState extends State<HadithChapterBottomSheet> {
           bottom: bottomInset > 0 ? bottomInset + 12.h : 20.h,
         ),
         decoration: BoxDecoration(
-          color: colors.background,
+          color: colors.cardSurface,
           borderRadius: BorderRadius.vertical(top: Radius.circular(28.r)),
           border: Border.all(
             color: colors.borderHairline.withValues(alpha: 0.7),
@@ -134,7 +134,7 @@ class _HadithChapterBottomSheetState extends State<HadithChapterBottomSheet> {
             Container(
               height: 44.h,
               decoration: BoxDecoration(
-                color: colors.background,
+                color: colors.surfaceElevated,
                 borderRadius: BorderRadius.circular(12.r),
                 border: Border.all(
                   color: colors.borderHairline.withValues(alpha: 0.7),
@@ -208,7 +208,9 @@ class _HadithChapterBottomSheetState extends State<HadithChapterBottomSheet> {
                 ),
                 itemBuilder: (context, index) {
                   if (index == 0) {
-                    final isAll = widget.selectedChapterId == null || widget.selectedChapterId == 0;
+                    final isAll =
+                        widget.selectedChapterId == null ||
+                        widget.selectedChapterId == 0;
                     return _GridChapterTile(
                       badge: 'الكل',
                       title: 'جميع الأبواب',
@@ -270,7 +272,7 @@ class _GridChapterTile extends StatelessWidget {
         decoration: BoxDecoration(
           color: isSelected
               ? colors.accentGold.withValues(alpha: 0.14)
-              : colors.background,
+              : colors.surfaceElevated,
           borderRadius: BorderRadius.circular(12.r),
           border: Border.all(
             color: isSelected

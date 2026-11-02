@@ -114,7 +114,7 @@ class _ChapterChip extends StatelessWidget {
         decoration: BoxDecoration(
           color: isSelected
               ? colors.accentGold.withValues(alpha: 0.16)
-              : colors.background,
+              : colors.cardSurface,
           borderRadius: BorderRadius.circular(8.r),
           border: Border.all(
             color: isSelected ? colors.accentGold : colors.borderHairline.withValues(alpha: 0.7),

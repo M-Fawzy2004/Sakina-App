@@ -66,7 +66,7 @@ class _MaladhPrayerContextBarState extends State<MaladhPrayerContextBar> {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 16.w),
       decoration: BoxDecoration(
-        color: colors.background,
+        color: colors.cardSurface,
         borderRadius: BorderRadius.circular(16.r),
         border: Border.all(
           color: colors.borderHairline.withValues(alpha: 0.6),
@@ -132,7 +132,7 @@ class _TopContextRow extends StatelessWidget {
               currentPrayerText,
               textAlign: TextAlign.start,
               style: GoogleFonts.cairo(
-                color: Colors.white,
+                color: colors.textPrimary,
                 fontSize: 11.5.sp,
                 fontWeight: FontWeight.w700,
                 letterSpacing: 0.2,
@@ -159,7 +159,7 @@ class _TopContextRow extends StatelessWidget {
                 Text(
                   hijriDay,
                   style: GoogleFonts.cairo(
-                    color: Colors.white,
+                    color: colors.textPrimary,
                     fontSize: 12.sp,
                     fontWeight: FontWeight.w800,
                     height: 1.05,

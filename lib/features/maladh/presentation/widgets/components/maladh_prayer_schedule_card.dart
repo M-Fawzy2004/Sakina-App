@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:sakina_app/core/theme/app_colors.dart';
 import 'package:sakina_app/core/theme/app_colors_scheme.dart';
 import 'package:sakina_app/core/utils/haptic_service.dart';
 import 'package:sakina_app/features/maladh/domain/services/cairo_prayer_times_calculator.dart';
@@ -32,7 +31,7 @@ class MaladhPrayerScheduleCard extends StatelessWidget {
       padding: EdgeInsets.fromLTRB(16.w, 4.h, 16.w, 6.h),
       child: Container(
         decoration: BoxDecoration(
-          color: colors.background,
+          color: colors.cardSurface,
           borderRadius: BorderRadius.circular(18.r),
           border: Border.all(
             color: colors.borderHairline.withValues(alpha: 0.6),
@@ -76,31 +75,11 @@ class _MainPrayersRow extends StatelessWidget {
   const _MainPrayersRow({required this.activePrayerIndex});
 
   static const List<({String name, String time, IconData icon})> _prayers = [
-    (
-      name: 'الفجر',
-      time: '4:41',
-      icon: Icons.wb_twilight_rounded,
-    ),
-    (
-      name: 'الظهر',
-      time: '11:40',
-      icon: Icons.wb_sunny_rounded,
-    ),
-    (
-      name: 'العصر',
-      time: '2:43',
-      icon: Iconsax.cloud_sunny,
-    ),
-    (
-      name: 'المغرب',
-      time: '5:07',
-      icon: Icons.wb_twilight_rounded,
-    ),
-    (
-      name: 'العشاء',
-      time: '6:26',
-      icon: Iconsax.moon,
-    ),
+    (name: 'الفجر', time: '4:41', icon: Icons.wb_twilight_rounded),
+    (name: 'الظهر', time: '11:40', icon: Icons.wb_sunny_rounded),
+    (name: 'العصر', time: '2:43', icon: Iconsax.cloud_sunny),
+    (name: 'المغرب', time: '5:07', icon: Icons.wb_twilight_rounded),
+    (name: 'العشاء', time: '6:26', icon: Iconsax.moon),
   ];
 
   @override
@@ -139,9 +118,8 @@ class _SinglePrayerSlot extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final primaryColor = isNext ? AppColors.champagneGold : Colors.white;
-    final subtitleColor =
-        isNext ? AppColors.champagneGold : colors.textSecondary;
+    final primaryColor = isNext ? colors.accentGold : colors.textPrimary;
+    final subtitleColor = isNext ? colors.accentGold : colors.textSecondary;
 
     return InkWell(
       onTap: () => HapticService.selectionClick(),
@@ -161,11 +139,7 @@ class _SinglePrayerSlot extends StatelessWidget {
               maxLines: 1,
             ),
             SizedBox(height: 5.h),
-            Icon(
-              icon,
-              size: 20.r,
-              color: primaryColor,
-            ),
+            Icon(icon, size: 20.r, color: primaryColor),
             SizedBox(height: 5.h),
             Text(
               time,
@@ -236,10 +210,7 @@ class _SupplementaryTimeItem extends StatelessWidget {
   final String name;
   final String time;
 
-  const _SupplementaryTimeItem({
-    required this.name,
-    required this.time,
-  });
+  const _SupplementaryTimeItem({required this.name, required this.time});
 
   @override
   Widget build(BuildContext context) {
