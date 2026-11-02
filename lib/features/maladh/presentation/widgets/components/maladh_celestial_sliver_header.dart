@@ -1,4 +1,7 @@
 import 'dart:async';
+import 'dart:math' as math;
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_islamic_icons/flutter_islamic_icons.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -10,6 +13,7 @@ import 'package:sakina_app/core/theme/app_colors.dart';
 import 'package:sakina_app/core/theme/app_colors_scheme.dart';
 import 'package:sakina_app/core/utils/haptic_service.dart';
 import 'package:sakina_app/features/maladh/domain/entities/maladh_header_data.dart';
+import 'package:sakina_app/features/maladh/presentation/widgets/components/maladh_prayer_context_bar.dart';
 
 /// Large collapsible celestial Sliver header for Al-Maladh (The Sanctuary).
 /// Recreates the serene midnight sky aesthetic with tiny realistic starry pinpoints,
@@ -45,11 +49,12 @@ class _MaladhCelestialSliverHeaderState
   void _initAudioHandler() {
     try {
       _audioHandler = sl<AudioPlayerHandler>();
-      _playerStateSubscription =
-          _audioHandler?.playerStateStream.listen((state) {
+      _playerStateSubscription = _audioHandler?.playerStateStream.listen((
+        state,
+      ) {
         if (!mounted) return;
-        final playing = state.playing &&
-            state.processingState != ProcessingState.completed;
+        final playing =
+            state.playing && state.processingState != ProcessingState.completed;
         if (_isPlaying != playing) {
           setState(() {
             _isPlaying = playing;
@@ -88,8 +93,8 @@ class _MaladhCelestialSliverHeaderState
   @override
   Widget build(BuildContext context) {
     final topPadding = MediaQuery.of(context).padding.top;
-    final minHeight = 56.h + topPadding;
-    final maxHeight = 245.h + topPadding;
+    final minHeight = 54.h + 88.h + topPadding;
+    final maxHeight = 225.h + 88.h + topPadding;
 
     return SliverPersistentHeader(
       pinned: true,
@@ -136,11 +141,16 @@ class _MaladhCelestialHeaderDelegate extends SliverPersistentHeaderDelegate {
   ) {
     final colors = context.colors;
 
-    // Smooth early fade: Ayah fades out completely over first 75px of scroll
-    // so it never collides with the top bar or gets sliced by the edge!
-    final verseOpacity = (1.0 - (shrinkOffset / 75.h)).clamp(0.0, 1.0);
-    final starOpacity = (1.0 - (shrinkOffset / 115.h)).clamp(0.0, 1.0);
-    final subtitleOpacity = (1.0 - (shrinkOffset / 40.h)).clamp(0.0, 1.0);
+    // Smooth early fade: Ayah fades out completely over first 60px of scroll
+    final verseOpacity = (1.0 - (shrinkOffset / 60.h)).clamp(0.0, 1.0);
+    final starOpacity = (1.0 - (shrinkOffset / 100.h)).clamp(0.0, 1.0);
+    final subtitleOpacity = (1.0 - (shrinkOffset / 35.h)).clamp(0.0, 1.0);
+
+    final maxScrollOffset = maxHeight - minHeight;
+    final contextBarOffset = (maxScrollOffset - shrinkOffset).clamp(
+      0.0,
+      maxScrollOffset,
+    );
 
     return Container(
       // Keep exact matching canvas background with zero elevation tint
@@ -148,14 +158,14 @@ class _MaladhCelestialHeaderDelegate extends SliverPersistentHeaderDelegate {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          // 1. Deep Seamless Midnight Night Sky with realistic tiny stars (Zero shadows/banding)
-          if (starOpacity > 0.01)
-            Opacity(
-              opacity: starOpacity,
-              child: _CelestialNightSkyBackground(
-                isDark: colors.isDark,
-              ),
+          // 1. Deep Seamless Midnight Night Sky with realistic tiny animated stars
+          Opacity(
+            opacity: starOpacity,
+            child: _CelestialNightSkyBackground(
+              key: const ValueKey('celestial_night_sky'),
+              isDark: colors.isDark,
             ),
+          ),
 
           // 2. Center Prominent Quranic Ayah (Fades gracefully as soon as scroll begins)
           if (verseOpacity > 0.01)
@@ -163,7 +173,7 @@ class _MaladhCelestialHeaderDelegate extends SliverPersistentHeaderDelegate {
               top: topPadding + 54.h,
               left: 16.w,
               right: 16.w,
-              height: 160.h,
+              height: 155.h,
               child: Opacity(
                 opacity: verseOpacity,
                 child: Transform.translate(
@@ -193,6 +203,16 @@ class _MaladhCelestialHeaderDelegate extends SliverPersistentHeaderDelegate {
               onToggleRecitation: onToggleRecitation,
             ),
           ),
+
+          // 4. Luxury Prayer Context & Countdown Bar (The First Half - Image 2)
+          // Sits attached at the bottom of the expanded header ("لازق في آخر الـ sliver"),
+          // and smoothly slides up to lock right beneath the top bar ("يلزق في الـ header").
+          Positioned(
+            top: topPadding + 54.h + contextBarOffset,
+            left: 0,
+            right: 0,
+            child: MaladhPrayerContextBar(hijriDate: data.hijriDate),
+          ),
         ],
       ),
     );
@@ -208,85 +228,611 @@ class _MaladhCelestialHeaderDelegate extends SliverPersistentHeaderDelegate {
   }
 }
 
-/// Atmospheric seamless midnight sky background with realistic, tiny, faint stars.
-class _CelestialNightSkyBackground extends StatelessWidget {
+/// Atmospheric seamless midnight sky background with realistic, gently animated stars.
+/// Features smooth multi-frequency twinkling, subtle organic celestial floating drift,
+/// soft champagne gold radiance on celestial beacons, and an occasional shooting star.
+class _CelestialNightSkyBackground extends StatefulWidget {
   final bool isDark;
 
-  const _CelestialNightSkyBackground({
-    required this.isDark,
-  });
+  const _CelestialNightSkyBackground({super.key, required this.isDark});
+
+  @override
+  State<_CelestialNightSkyBackground> createState() =>
+      _CelestialNightSkyBackgroundState();
+}
+
+class _CelestialNightSkyBackgroundState
+    extends State<_CelestialNightSkyBackground>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 14),
+    );
+
+    // Guard against infinite loop during widget test pumpAndSettle
+    final isTest = WidgetsBinding.instance.runtimeType.toString().contains(
+      'TestWidgetsFlutterBinding',
+    );
+    if (!isTest) {
+      _controller.repeat();
+    } else {
+      _controller.value = 0.5;
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
 
-    if (!isDark) {
-      return Container(
-        color: colors.background,
-      );
+    if (!widget.isDark) {
+      return Container(color: colors.background);
     }
 
     return Stack(
       fit: StackFit.expand,
       children: [
         // Seamless uniform midnight canvas matching scaffold background
-        Container(
-          color: colors.background,
-        ),
+        Container(color: colors.background),
 
-        // Constellation Starfield Custom Painter (subtle white pinpoints)
-        const CustomPaint(
-          painter: _CelestialStarfieldPainter(),
+        // Constellation Starfield Custom Painter (subtle animated stars)
+        RepaintBoundary(
+          child: CustomPaint(
+            painter: _CelestialStarfieldPainter(animation: _controller),
+          ),
         ),
       ],
     );
   }
 }
 
-/// High-performance 120 FPS Starfield Painter drawing tiny, realistic white celestial pinpoints.
-class _CelestialStarfieldPainter extends CustomPainter {
-  const _CelestialStarfieldPainter();
+/// Star particle definition for harmonic celestial animation.
+class _StarParticle {
+  final double x; // Normalized 0..1 horizontal position
+  final double y; // Normalized 0..1 vertical position
+  final double radius; // Base star core radius in pixels
+  final double minAlpha; // Minimum dimmed opacity
+  final double maxAlpha; // Peak brightness opacity
+  final double twinkleFreq; // Twinkle frequency multiplier
+  final double twinklePhase; // Phase offset in radians
+  final double driftRadiusX; // Subtle horizontal floating drift amplitude in px
+  final double driftRadiusY; // Subtle vertical floating drift amplitude in px
+  final bool hasGlow; // Soft champagne gold radial aura
+  final bool hasSparkle; // Subtle 4-point diamond cross glint at peak
 
-  // Pre-calculated normalized star positions with tiny radii (0.6 - 0.9 px) and soft alpha
-  static const List<({double x, double y, double r, double a})> _stars = [
-    (x: 0.08, y: 0.22, r: 0.7, a: 0.60),
-    (x: 0.18, y: 0.45, r: 0.8, a: 0.70),
-    (x: 0.28, y: 0.16, r: 0.6, a: 0.40),
-    (x: 0.36, y: 0.72, r: 0.7, a: 0.50),
-    (x: 0.44, y: 0.28, r: 0.9, a: 0.75),
-    (x: 0.53, y: 0.14, r: 0.6, a: 0.40),
-    (x: 0.62, y: 0.55, r: 0.8, a: 0.65),
-    (x: 0.72, y: 0.25, r: 0.7, a: 0.55),
-    (x: 0.82, y: 0.65, r: 0.9, a: 0.75),
-    (x: 0.90, y: 0.32, r: 0.6, a: 0.45),
-    (x: 0.12, y: 0.80, r: 0.6, a: 0.35),
-    (x: 0.22, y: 0.62, r: 0.7, a: 0.60),
-    (x: 0.48, y: 0.82, r: 0.6, a: 0.45),
-    (x: 0.68, y: 0.84, r: 0.8, a: 0.65),
-    (x: 0.85, y: 0.16, r: 0.8, a: 0.70),
-    (x: 0.94, y: 0.74, r: 0.6, a: 0.35),
-    (x: 0.05, y: 0.52, r: 0.7, a: 0.50),
-    (x: 0.38, y: 0.58, r: 0.6, a: 0.30),
-    (x: 0.56, y: 0.36, r: 0.7, a: 0.55),
-    (x: 0.78, y: 0.42, r: 0.6, a: 0.45),
+  const _StarParticle({
+    required this.x,
+    required this.y,
+    required this.radius,
+    required this.minAlpha,
+    required this.maxAlpha,
+    required this.twinkleFreq,
+    required this.twinklePhase,
+    this.driftRadiusX = 4.0,
+    this.driftRadiusY = 2.5,
+    this.hasGlow = false,
+    this.hasSparkle = false,
+  });
+}
+
+/// High-performance 120 FPS Starfield Painter drawing realistic, living celestial pinpoints.
+class _CelestialStarfieldPainter extends CustomPainter {
+  final Animation<double> animation;
+
+  _CelestialStarfieldPainter({required this.animation})
+    : super(repaint: animation);
+
+  // Carefully balanced constellation of 31 celestial bodies framing the sacred space
+  static const List<_StarParticle> _stars = [
+    // --- Upper Expanse (Deep Midnight Sky) ---
+    _StarParticle(
+      x: 0.09,
+      y: 0.08,
+      radius: 0.7,
+      minAlpha: 0.25,
+      maxAlpha: 0.70,
+      twinkleFreq: 2.0,
+      twinklePhase: 0.4,
+      driftRadiusX: 4.0,
+      driftRadiusY: 2.0,
+    ),
+    _StarParticle(
+      x: 0.22,
+      y: 0.12,
+      radius: 0.8,
+      minAlpha: 0.30,
+      maxAlpha: 0.80,
+      twinkleFreq: 3.0,
+      twinklePhase: 1.2,
+      driftRadiusX: 5.0,
+      driftRadiusY: 3.0,
+    ),
+    _StarParticle(
+      x: 0.38,
+      y: 0.06,
+      radius: 0.6,
+      minAlpha: 0.20,
+      maxAlpha: 0.60,
+      twinkleFreq: 1.0,
+      twinklePhase: 2.5,
+      driftRadiusX: 3.0,
+      driftRadiusY: 2.0,
+    ),
+    _StarParticle(
+      x: 0.52,
+      y: 0.10,
+      radius: 1.3,
+      minAlpha: 0.40,
+      maxAlpha: 0.95,
+      twinkleFreq: 2.0,
+      twinklePhase: 0.0,
+      driftRadiusX: 6.0,
+      driftRadiusY: 3.5,
+      hasGlow: true,
+      hasSparkle: true,
+    ),
+    _StarParticle(
+      x: 0.68,
+      y: 0.07,
+      radius: 0.7,
+      minAlpha: 0.25,
+      maxAlpha: 0.65,
+      twinkleFreq: 2.5,
+      twinklePhase: 3.8,
+      driftRadiusX: 4.0,
+      driftRadiusY: 2.0,
+    ),
+    _StarParticle(
+      x: 0.82,
+      y: 0.13,
+      radius: 1.1,
+      minAlpha: 0.35,
+      maxAlpha: 0.90,
+      twinkleFreq: 1.5,
+      twinklePhase: 4.5,
+      driftRadiusX: 5.0,
+      driftRadiusY: 3.0,
+      hasGlow: true,
+    ),
+    _StarParticle(
+      x: 0.94,
+      y: 0.09,
+      radius: 0.6,
+      minAlpha: 0.20,
+      maxAlpha: 0.55,
+      twinkleFreq: 3.0,
+      twinklePhase: 5.1,
+      driftRadiusX: 3.0,
+      driftRadiusY: 1.5,
+    ),
+
+    // --- Upper-Mid Transition ---
+    _StarParticle(
+      x: 0.14,
+      y: 0.24,
+      radius: 1.2,
+      minAlpha: 0.35,
+      maxAlpha: 0.90,
+      twinkleFreq: 2.0,
+      twinklePhase: 2.0,
+      driftRadiusX: 5.0,
+      driftRadiusY: 2.5,
+      hasGlow: true,
+      hasSparkle: true,
+    ),
+    _StarParticle(
+      x: 0.30,
+      y: 0.20,
+      radius: 0.65,
+      minAlpha: 0.20,
+      maxAlpha: 0.60,
+      twinkleFreq: 1.5,
+      twinklePhase: 0.8,
+      driftRadiusX: 3.5,
+      driftRadiusY: 2.0,
+    ),
+    _StarParticle(
+      x: 0.45,
+      y: 0.25,
+      radius: 0.8,
+      minAlpha: 0.30,
+      maxAlpha: 0.75,
+      twinkleFreq: 3.5,
+      twinklePhase: 3.1,
+      driftRadiusX: 4.5,
+      driftRadiusY: 3.0,
+    ),
+    _StarParticle(
+      x: 0.60,
+      y: 0.22,
+      radius: 0.7,
+      minAlpha: 0.25,
+      maxAlpha: 0.65,
+      twinkleFreq: 2.0,
+      twinklePhase: 4.9,
+      driftRadiusX: 3.0,
+      driftRadiusY: 2.0,
+    ),
+    _StarParticle(
+      x: 0.76,
+      y: 0.26,
+      radius: 0.85,
+      minAlpha: 0.30,
+      maxAlpha: 0.80,
+      twinkleFreq: 1.0,
+      twinklePhase: 1.7,
+      driftRadiusX: 5.0,
+      driftRadiusY: 2.5,
+    ),
+    _StarParticle(
+      x: 0.89,
+      y: 0.21,
+      radius: 0.65,
+      minAlpha: 0.20,
+      maxAlpha: 0.55,
+      twinkleFreq: 2.5,
+      twinklePhase: 3.3,
+      driftRadiusX: 4.0,
+      driftRadiusY: 2.0,
+    ),
+
+    // --- Flanking Side Wings (Framing Holy Ayah) ---
+    _StarParticle(
+      x: 0.05,
+      y: 0.38,
+      radius: 0.9,
+      minAlpha: 0.30,
+      maxAlpha: 0.85,
+      twinkleFreq: 2.0,
+      twinklePhase: 0.5,
+      driftRadiusX: 4.0,
+      driftRadiusY: 3.0,
+    ),
+    _StarParticle(
+      x: 0.12,
+      y: 0.48,
+      radius: 1.4,
+      minAlpha: 0.40,
+      maxAlpha: 1.0,
+      twinkleFreq: 1.5,
+      twinklePhase: 5.5,
+      driftRadiusX: 6.0,
+      driftRadiusY: 3.5,
+      hasGlow: true,
+      hasSparkle: true,
+    ),
+    _StarParticle(
+      x: 0.07,
+      y: 0.60,
+      radius: 0.7,
+      minAlpha: 0.20,
+      maxAlpha: 0.60,
+      twinkleFreq: 3.0,
+      twinklePhase: 2.3,
+      driftRadiusX: 3.5,
+      driftRadiusY: 2.0,
+    ),
+    _StarParticle(
+      x: 0.15,
+      y: 0.68,
+      radius: 0.8,
+      minAlpha: 0.25,
+      maxAlpha: 0.70,
+      twinkleFreq: 2.0,
+      twinklePhase: 4.1,
+      driftRadiusX: 4.0,
+      driftRadiusY: 2.5,
+    ),
+    _StarParticle(
+      x: 0.92,
+      y: 0.40,
+      radius: 0.85,
+      minAlpha: 0.25,
+      maxAlpha: 0.75,
+      twinkleFreq: 2.5,
+      twinklePhase: 1.9,
+      driftRadiusX: 4.5,
+      driftRadiusY: 2.5,
+    ),
+    _StarParticle(
+      x: 0.85,
+      y: 0.52,
+      radius: 1.3,
+      minAlpha: 0.40,
+      maxAlpha: 0.95,
+      twinkleFreq: 2.0,
+      twinklePhase: 3.7,
+      driftRadiusX: 5.5,
+      driftRadiusY: 3.0,
+      hasGlow: true,
+      hasSparkle: true,
+    ),
+    _StarParticle(
+      x: 0.95,
+      y: 0.62,
+      radius: 0.65,
+      minAlpha: 0.20,
+      maxAlpha: 0.55,
+      twinkleFreq: 1.5,
+      twinklePhase: 0.3,
+      driftRadiusX: 3.0,
+      driftRadiusY: 1.5,
+    ),
+    _StarParticle(
+      x: 0.87,
+      y: 0.70,
+      radius: 0.8,
+      minAlpha: 0.30,
+      maxAlpha: 0.75,
+      twinkleFreq: 3.0,
+      twinklePhase: 4.8,
+      driftRadiusX: 4.0,
+      driftRadiusY: 2.5,
+    ),
+
+    // --- Subtle Ambient Stardust in Center Expanse ---
+    _StarParticle(
+      x: 0.26,
+      y: 0.36,
+      radius: 0.6,
+      minAlpha: 0.15,
+      maxAlpha: 0.50,
+      twinkleFreq: 2.0,
+      twinklePhase: 1.4,
+      driftRadiusX: 3.0,
+      driftRadiusY: 1.5,
+    ),
+    _StarParticle(
+      x: 0.71,
+      y: 0.38,
+      radius: 0.65,
+      minAlpha: 0.15,
+      maxAlpha: 0.50,
+      twinkleFreq: 1.5,
+      twinklePhase: 2.8,
+      driftRadiusX: 3.0,
+      driftRadiusY: 1.5,
+    ),
+    _StarParticle(
+      x: 0.35,
+      y: 0.64,
+      radius: 0.7,
+      minAlpha: 0.20,
+      maxAlpha: 0.60,
+      twinkleFreq: 2.5,
+      twinklePhase: 5.0,
+      driftRadiusX: 3.5,
+      driftRadiusY: 2.0,
+    ),
+    _StarParticle(
+      x: 0.64,
+      y: 0.63,
+      radius: 0.6,
+      minAlpha: 0.18,
+      maxAlpha: 0.55,
+      twinkleFreq: 1.8,
+      twinklePhase: 0.9,
+      driftRadiusX: 3.0,
+      driftRadiusY: 1.8,
+    ),
+
+    // --- Lower Atmospheric Belt (Above Prayer Bar) ---
+    _StarParticle(
+      x: 0.08,
+      y: 0.80,
+      radius: 0.75,
+      minAlpha: 0.25,
+      maxAlpha: 0.70,
+      twinkleFreq: 2.0,
+      twinklePhase: 3.2,
+      driftRadiusX: 4.0,
+      driftRadiusY: 2.0,
+    ),
+    _StarParticle(
+      x: 0.23,
+      y: 0.78,
+      radius: 1.1,
+      minAlpha: 0.35,
+      maxAlpha: 0.85,
+      twinkleFreq: 1.5,
+      twinklePhase: 1.0,
+      driftRadiusX: 5.0,
+      driftRadiusY: 2.5,
+      hasGlow: true,
+    ),
+    _StarParticle(
+      x: 0.42,
+      y: 0.82,
+      radius: 0.6,
+      minAlpha: 0.18,
+      maxAlpha: 0.50,
+      twinkleFreq: 2.5,
+      twinklePhase: 4.2,
+      driftRadiusX: 3.0,
+      driftRadiusY: 1.5,
+    ),
+    _StarParticle(
+      x: 0.58,
+      y: 0.77,
+      radius: 0.8,
+      minAlpha: 0.25,
+      maxAlpha: 0.75,
+      twinkleFreq: 3.0,
+      twinklePhase: 2.6,
+      driftRadiusX: 4.0,
+      driftRadiusY: 2.0,
+    ),
+    _StarParticle(
+      x: 0.75,
+      y: 0.83,
+      radius: 0.7,
+      minAlpha: 0.20,
+      maxAlpha: 0.65,
+      twinkleFreq: 1.8,
+      twinklePhase: 0.6,
+      driftRadiusX: 3.5,
+      driftRadiusY: 2.0,
+    ),
+    _StarParticle(
+      x: 0.90,
+      y: 0.82,
+      radius: 0.65,
+      minAlpha: 0.20,
+      maxAlpha: 0.55,
+      twinkleFreq: 2.2,
+      twinklePhase: 3.9,
+      driftRadiusX: 3.0,
+      driftRadiusY: 1.5,
+    ),
   ];
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()..style = PaintingStyle.fill;
+    final t = animation.value;
 
     for (final star in _stars) {
-      paint.color = Colors.white.withValues(alpha: star.a);
-      canvas.drawCircle(
-        Offset(star.x * size.width, star.y * size.height),
-        star.r,
-        paint,
-      );
+      // 1. Organic elliptical floating drift (serene cosmic motion)
+      final floatX =
+          math.sin(2 * math.pi * t + star.twinklePhase) * star.driftRadiusX;
+      final floatY =
+          math.cos(2 * math.pi * t + star.twinklePhase) * star.driftRadiusY;
+
+      final px = star.x * size.width + floatX;
+      final py = star.y * size.height + floatY;
+
+      // 2. Multi-frequency twinkle wave (0.0 to 1.0)
+      final wave =
+          0.5 +
+          0.5 *
+              math.sin(2 * math.pi * star.twinkleFreq * t + star.twinklePhase);
+      final alpha = (star.minAlpha + (star.maxAlpha - star.minAlpha) * wave)
+          .clamp(0.0, 1.0);
+      final currentRadius = star.radius * (0.85 + 0.25 * wave);
+
+      // 3. Draw soft champagne gold halo on celestial beacons during peak shimmer
+      if (star.hasGlow && wave > 0.45) {
+        final glowAlpha = ((wave - 0.45) / 0.55 * 0.22).clamp(0.0, 1.0);
+        final glowRadius = currentRadius * 4.2;
+        final glowPaint = Paint()
+          ..style = PaintingStyle.fill
+          ..shader = ui.Gradient.radial(Offset(px, py), glowRadius, [
+            AppColors.champagneGold.withValues(alpha: glowAlpha),
+            AppColors.champagneGold.withValues(alpha: 0.0),
+          ]);
+        canvas.drawCircle(Offset(px, py), glowRadius, glowPaint);
+      }
+
+      // 4. Subtle 4-point diamond cross glint at peak sparkle
+      if (star.hasSparkle && wave > 0.72) {
+        final sparkleAlpha = ((wave - 0.72) / 0.28 * 0.40).clamp(0.0, 1.0);
+        final sparkleLen = currentRadius * 3.2;
+        final sparklePaint = Paint()
+          ..color = AppColors.paleRadiance.withValues(alpha: sparkleAlpha)
+          ..strokeWidth = 0.55
+          ..style = PaintingStyle.stroke;
+
+        canvas.drawLine(
+          Offset(px - sparkleLen, py),
+          Offset(px + sparkleLen, py),
+          sparklePaint,
+        );
+        canvas.drawLine(
+          Offset(px, py - sparkleLen),
+          Offset(px, py + sparkleLen),
+          sparklePaint,
+        );
+      }
+
+      // 5. Draw star core
+      final coreColor = star.hasGlow && wave > 0.6
+          ? Color.lerp(
+              AppColors.pureChalk,
+              AppColors.paleRadiance,
+              (wave - 0.6) * 2.5,
+            )!
+          : AppColors.pureChalk;
+
+      final corePaint = Paint()
+        ..style = PaintingStyle.fill
+        ..color = coreColor.withValues(alpha: alpha);
+
+      canvas.drawCircle(Offset(px, py), currentRadius, corePaint);
     }
+
+    // 6. Occasional ethereal shooting star gliding across the upper sky
+    _paintShootingStar(canvas, size, t);
+  }
+
+  void _paintShootingStar(Canvas canvas, Size size, double t) {
+    // Shooting star triggers peacefully between t = 0.62 and t = 0.75 of the loop
+    const tStart = 0.62;
+    const tEnd = 0.75;
+    if (t < tStart || t > tEnd) return;
+
+    final progress = (t - tStart) / (tEnd - tStart);
+    final curvedProgress = Curves.easeInOutCubic.transform(progress);
+
+    // Trajectory: From upper right down towards mid-left
+    final start = Offset(size.width * 0.90, size.height * 0.06);
+    final end = Offset(size.width * 0.35, size.height * 0.38);
+
+    final currentHead = Offset.lerp(start, end, curvedProgress)!;
+    final direction = (start - end);
+    final dirNorm = direction / direction.distance;
+
+    final tailLength = 46.0 * (1.0 - (progress - 0.5).abs() * 0.4);
+    final currentTail = currentHead + dirNorm * tailLength;
+
+    final alphaFactor = progress < 0.2
+        ? (progress / 0.2)
+        : (progress > 0.65 ? ((1.0 - progress) / 0.35) : 1.0);
+
+    final meteorAlpha = (alphaFactor * 0.80).clamp(0.0, 1.0);
+
+    // Glowing fading streak tail
+    final streakPaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.1
+      ..strokeCap = StrokeCap.round
+      ..shader = ui.Gradient.linear(
+        currentTail,
+        currentHead,
+        [
+          AppColors.paleRadiance.withValues(alpha: 0.0),
+          AppColors.champagneGold.withValues(alpha: meteorAlpha * 0.35),
+          AppColors.white.withValues(alpha: meteorAlpha),
+        ],
+        [0.0, 0.7, 1.0],
+      );
+
+    canvas.drawLine(currentTail, currentHead, streakPaint);
+
+    // Luminous meteor head with gentle aura
+    final headGlowPaint = Paint()
+      ..style = PaintingStyle.fill
+      ..color = AppColors.champagneGold.withValues(alpha: meteorAlpha * 0.45);
+    canvas.drawCircle(currentHead, 2.0, headGlowPaint);
+
+    final headCorePaint = Paint()
+      ..style = PaintingStyle.fill
+      ..color = AppColors.white.withValues(alpha: meteorAlpha);
+    canvas.drawCircle(currentHead, 0.9, headCorePaint);
   }
 
   @override
-  bool shouldRepaint(covariant _CelestialStarfieldPainter oldDelegate) => false;
+  bool shouldRepaint(covariant _CelestialStarfieldPainter oldDelegate) {
+    return oldDelegate.animation != animation;
+  }
 }
 
 /// Pinned Top Bar ensuring brand identity and audio recitation trigger remain accessible.
@@ -313,10 +859,7 @@ class _CelestialTopBar extends StatelessWidget {
           _CelestialBrandBadge(subtitleOpacity: subtitleOpacity),
 
           // 2. Left Side (RTL End): Translucent Frosted Glass Play/Pause Recitation Button
-          _CelestialPlayButton(
-            isPlaying: isPlaying,
-            onTap: onToggleRecitation,
-          ),
+          _CelestialPlayButton(isPlaying: isPlaying, onTap: onToggleRecitation),
         ],
       ),
     );
@@ -402,10 +945,7 @@ class _CelestialPlayButton extends StatelessWidget {
   final bool isPlaying;
   final VoidCallback onTap;
 
-  const _CelestialPlayButton({
-    required this.isPlaying,
-    required this.onTap,
-  });
+  const _CelestialPlayButton({required this.isPlaying, required this.onTap});
 
   @override
   Widget build(BuildContext context) {

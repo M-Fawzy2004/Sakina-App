@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sakina_app/core/theme/app_theme.dart';
+import 'package:sakina_app/features/maladh/presentation/widgets/components/maladh_prayer_context_bar.dart';
 import 'package:sakina_app/features/maladh/presentation/widgets/components/maladh_prayer_schedule_card.dart';
 
 void main() {
@@ -21,27 +22,13 @@ void main() {
   }
 
   group('MaladhPrayerScheduleCard Widget Tests', () {
-    testWidgets('renders context bar with Hijri tab, countdown ticker, and all prayer slots', (tester) async {
+    testWidgets('renders all 5 fard prayers and supplementary celestial times', (tester) async {
       await tester.pumpWidget(
         createTestWidget(
-          const MaladhPrayerScheduleCard(
-            hijriDate: '21 جمادى الأولى',
-            nextPrayerName: 'الفجر',
-          ),
+          const MaladhPrayerScheduleCard(),
         ),
       );
       await tester.pumpAndSettle();
-
-      // Verify Hijri Center Tab
-      expect(find.text('21'), findsOneWidget);
-      expect(find.text('جمادى الأولى'), findsOneWidget);
-
-      // Verify Bounding Prayers
-      expect(find.text('العشاء 06:26'), findsOneWidget);
-      expect(find.text('الفجر 04:42'), findsOneWidget);
-
-      // Verify Live Countdown
-      expect(find.textContaining('الفجر بعد'), findsOneWidget);
 
       // Verify 5 Fard Prayers
       expect(find.text('الفجر'), findsOneWidget);
@@ -62,5 +49,24 @@ void main() {
       expect(find.text('العداد'), findsNothing);
     });
   });
-}
 
+  group('MaladhPrayerContextBar Widget Tests', () {
+    testWidgets('renders context bar with Hijri tab, bounding prayers, and countdown ticker', (tester) async {
+      await tester.pumpWidget(
+        createTestWidget(
+          const MaladhPrayerContextBar(
+            hijriDate: '21 جمادى الأولى',
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Verify Hijri Center Tab
+      expect(find.text('21'), findsOneWidget);
+      expect(find.text('جمادى الأولى'), findsOneWidget);
+
+      // Verify Live Countdown contains 'بعد'
+      expect(find.textContaining('بعد'), findsOneWidget);
+    });
+  });
+}

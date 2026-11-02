@@ -1,5 +1,6 @@
 import 'package:sakina_app/core/services/storage/preferences_service.dart';
 import 'package:sakina_app/features/maladh/data/models/maladh_header_model.dart';
+import 'package:sakina_app/features/maladh/domain/services/cairo_prayer_times_calculator.dart';
 
 abstract interface class MaladhLocalDataSource {
   Future<MaladhHeaderModel> getHeaderData();
@@ -20,39 +21,27 @@ class MaladhLocalDataSourceImpl implements MaladhLocalDataSource {
     // 1. Time-aware Serene Greeting & Next Prayer Determination
     final String greetingTitle;
     final String greetingSubtitle;
-    final String nextPrayerName;
-    final int minutesUntilPrayer;
 
     if (hour >= 4 && hour < 12) {
       greetingTitle = 'صَبَاحُ السَّكِينَةِ وَالطُّمَأْنِينَةِ';
       greetingSubtitle = 'أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ';
-      nextPrayerName = 'الظُّهْرُ';
-      minutesUntilPrayer = ((12 - hour) * 60 - now.minute).clamp(10, 360);
     } else if (hour >= 12 && hour < 15) {
       greetingTitle = 'طُمَأْنِينَةُ النَّهَارِ وَذِكْرُ اللهِ';
       greetingSubtitle = 'أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ';
-      nextPrayerName = 'الْعَصْرُ';
-      minutesUntilPrayer = ((15 - hour) * 60 + 30 - now.minute).clamp(10, 210);
     } else if (hour >= 15 && hour < 18) {
       greetingTitle = 'سَكِينَةُ العَصْرِ وَبَرَكَةُ الوَقْتِ';
       greetingSubtitle = 'سُبْحَانَ اللَّهِ حِينَ تُمْسُونَ وَحِينَ تُصْبِحُونَ';
-      nextPrayerName = 'الْمَغْرِبُ';
-      minutesUntilPrayer = ((18 - hour) * 60 - now.minute).clamp(10, 180);
     } else if (hour >= 18 && hour < 21) {
       greetingTitle = 'مَسَاءُ السَّكِينَةِ وَالرَّحْمَةِ';
       greetingSubtitle = 'أَمْسَيْنَا وَأَمْسَى الْمُلْكُ لِلَّهِ، رَبِّ لَكَ الْحَمْدُ';
-      nextPrayerName = 'الْعِشَاءُ';
-      minutesUntilPrayer = ((20 - hour) * 60 + 30 - now.minute).clamp(10, 150);
     } else {
       greetingTitle = 'سَكِينَةُ اللَّيْلِ وَأُنْسُ القُرْآنِ';
       greetingSubtitle = 'وَالمُسْتَغْفِرِينَ بِالأَسْحَارِ 🕊️';
-      nextPrayerName = 'الْفَجْرُ';
-      final hoursUntilFajr = hour >= 21 ? (28 - hour) : (4 - hour);
-      minutesUntilPrayer = (hoursUntilFajr * 60 - now.minute).clamp(10, 420);
     }
 
-    // Format remaining time elegantly into hours & minutes
-    final String nextPrayerRemaining = _formatRemainingTime(minutesUntilPrayer);
+    final prayerInfo = CairoPrayerTimesCalculator.calculate(now);
+    final String nextPrayerName = prayerInfo.nextPrayerName;
+    final String nextPrayerRemaining = _formatRemainingTime(prayerInfo.remainingToNext.inMinutes);
 
     // 2. Sequential Daily Ayah from Surah Al-Baqarah
     final dayOfYear = now.difference(DateTime(now.year, 1, 1)).inDays;
