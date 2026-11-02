@@ -4,16 +4,18 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:sakina_app/core/theme/app_colors_scheme.dart';
 import 'package:sakina_app/core/theme/app_spacing.dart';
+import 'package:sakina_app/features/maladh/presentation/widgets/components/maladh_hisn_muslim_card.dart';
 import 'package:sakina_app/features/maladh/presentation/widgets/components/maladh_portal_card.dart';
 import 'package:sakina_app/features/maladh/presentation/widgets/components/maladh_portals_header.dart';
 
-/// "بَوَّابَاتُ السَّكِينَةِ" - 2x2 grid section of quick-access spiritual portals.
+/// "بَوَّابَاتُ السَّكِينَةِ" - 2x2 grid section of quick-access spiritual portals with Hisn al-Muslim flagship card.
 class MaladhPortalsSection extends StatelessWidget {
   final VoidCallback? onDirectAccessTap;
   final VoidCallback? onMushafTap;
   final VoidCallback? onMaqraTap;
   final VoidCallback? onCardMakerTap;
   final VoidCallback? onAthkarTap;
+  final VoidCallback? onHisnMuslimTap;
 
   const MaladhPortalsSection({
     super.key,
@@ -22,6 +24,7 @@ class MaladhPortalsSection extends StatelessWidget {
     this.onMaqraTap,
     this.onCardMakerTap,
     this.onAthkarTap,
+    this.onHisnMuslimTap,
   });
 
   @override
@@ -119,6 +122,13 @@ class MaladhPortalsSection extends StatelessWidget {
                     ),
                   ),
                 ],
+              ),
+
+              SizedBox(height: 10.h),
+
+              // Row 3: حصن المسلم - Hisn al-Muslim Flagship Card
+              MaladhHisnMuslimCard(
+                onTap: onHisnMuslimTap,
               ),
             ],
           ),

@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sakina_app/core/di/injection_container.dart';
 import 'package:sakina_app/core/utils/app_logger.dart';
 import 'package:sakina_app/features/athkar/presentation/cubit/athkar_cubit.dart';
+import 'package:sakina_app/features/hisn_muslim/presentation/cubit/hisn_cubit.dart';
 import 'package:sakina_app/features/quran_reading/presentation/cubit/quran_cubit.dart';
 import 'package:sakina_app/sakina_app.dart';
 
@@ -37,9 +38,10 @@ void main() async {
     await initServiceLocator();
     AppLogger.info('Service locator successfully initialized', 'INIT');
 
-    // Pre-warm local Quran catalog and Athkar in memory for 0ms instantaneous opening
+    // Pre-warm local Quran catalog, Athkar, and Hisn al-Muslim in memory for 0ms instantaneous opening
     unawaited(sl<QuranCubit>().loadQuranData());
     unawaited(sl<AthkarCubit>().loadAthkar());
+    unawaited(sl<HisnCubit>().ensureLoaded());
   } catch (e, stack) {
     AppLogger.error('Failed to initialize dependencies', e, stack, 'INIT');
   }

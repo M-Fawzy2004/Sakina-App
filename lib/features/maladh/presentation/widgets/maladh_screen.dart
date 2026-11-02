@@ -120,6 +120,9 @@ class _MaladhView extends StatelessWidget {
                                   onAthkarTap: () {
                                     context.push(AppRoutes.athkar);
                                   },
+                                  onHisnMuslimTap: () {
+                                    context.push(AppRoutes.hisnMuslim);
+                                  },
                                 ),
                               ],
                             ),

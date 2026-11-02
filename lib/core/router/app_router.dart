@@ -4,6 +4,7 @@ import 'package:sakina_app/core/router/route_constants.dart';
 import 'package:sakina_app/core/widgets/navigation/main_scaffold_shell.dart';
 import 'package:sakina_app/features/athkar/presentation/widgets/athkar_screen.dart';
 import 'package:sakina_app/features/audio_reciters/presentation/widgets/audio_reciters_screen.dart';
+import 'package:sakina_app/features/hisn_muslim/presentation/widgets/hisn_muslim_screen.dart';
 import 'package:sakina_app/features/inaba_recovery/presentation/widgets/inaba_screen.dart';
 import 'package:sakina_app/features/maladh/presentation/widgets/maladh_screen.dart';
 import 'package:sakina_app/features/onboarding/presentation/widgets/onboarding_screen.dart';
@@ -32,6 +33,11 @@ final GoRouter appRouter = GoRouter(
       path: AppRoutes.athkar,
       parentNavigatorKey: rootNavigatorKey,
       builder: (context, state) => const AthkarScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.hisnMuslim,
+      parentNavigatorKey: rootNavigatorKey,
+      builder: (context, state) => const HisnMuslimScreen(),
     ),
 
     // Stateful Navigation Shell preserving tab state & scroll physics across the 5 core features

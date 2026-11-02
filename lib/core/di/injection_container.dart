@@ -21,6 +21,12 @@ import 'package:sakina_app/features/athkar/domain/repositories/athkar_repository
 import 'package:sakina_app/features/athkar/domain/usecases/get_athkar_by_category_usecase.dart';
 import 'package:sakina_app/features/athkar/domain/usecases/get_athkar_categories_usecase.dart';
 import 'package:sakina_app/features/athkar/presentation/cubit/athkar_cubit.dart';
+import 'package:sakina_app/features/hisn_muslim/data/datasources/hisn_local_data_source.dart';
+import 'package:sakina_app/features/hisn_muslim/data/repositories/hisn_repository_impl.dart';
+import 'package:sakina_app/features/hisn_muslim/domain/repositories/hisn_repository.dart';
+import 'package:sakina_app/features/hisn_muslim/domain/usecases/get_hisn_chapter_detail_usecase.dart';
+import 'package:sakina_app/features/hisn_muslim/domain/usecases/get_hisn_chapters_usecase.dart';
+import 'package:sakina_app/features/hisn_muslim/presentation/cubit/hisn_cubit.dart';
 import 'package:sakina_app/features/inaba_recovery/data/datasources/inaba_local_data_source.dart';
 import 'package:sakina_app/features/inaba_recovery/data/repositories/inaba_repository_impl.dart';
 import 'package:sakina_app/features/inaba_recovery/domain/repositories/inaba_repository.dart';
@@ -310,6 +316,26 @@ void _initFeatureModules() {
     () => AthkarCubit(
       getCategoriesUseCase: sl(),
       getAthkarByCategoryUseCase: sl(),
+    ),
+  );
+
+  // Hisn al-Muslim (Fortress of the Muslim) Feature
+  sl.registerLazySingleton<HisnLocalDataSource>(
+    () => HisnLocalDataSourceImpl(),
+  );
+  sl.registerLazySingleton<HisnRepository>(
+    () => HisnRepositoryImpl(localDataSource: sl()),
+  );
+  sl.registerLazySingleton<GetHisnChaptersUseCase>(
+    () => GetHisnChaptersUseCase(repository: sl()),
+  );
+  sl.registerLazySingleton<GetHisnChapterDetailUseCase>(
+    () => GetHisnChapterDetailUseCase(repository: sl()),
+  );
+  sl.registerLazySingleton<HisnCubit>(
+    () => HisnCubit(
+      getChaptersUseCase: sl(),
+      repository: sl(),
     ),
   );
 }
