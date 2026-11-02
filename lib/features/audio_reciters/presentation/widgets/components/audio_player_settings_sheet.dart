@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:sakina_app/core/theme/app_colors_scheme.dart';
 import 'package:sakina_app/core/theme/app_spacing.dart';
+import 'package:sakina_app/features/audio_reciters/presentation/widgets/components/player_settings_sections.dart';
 
 /// Luxury bottom sheet for audio player adjustments and timer controls with instant reactive state.
 class AudioPlayerSettingsSheet extends StatefulWidget {
@@ -55,7 +56,8 @@ class AudioPlayerSettingsSheet extends StatefulWidget {
   }
 
   @override
-  State<AudioPlayerSettingsSheet> createState() => _AudioPlayerSettingsSheetState();
+  State<AudioPlayerSettingsSheet> createState() =>
+      _AudioPlayerSettingsSheetState();
 }
 
 class _AudioPlayerSettingsSheetState extends State<AudioPlayerSettingsSheet> {
@@ -129,7 +131,7 @@ class _AudioPlayerSettingsSheetState extends State<AudioPlayerSettingsSheet> {
             SizedBox(height: 20.h),
 
             // 1. Sleep Timer Section
-            _SettingsSectionTitle(
+            SettingsSectionTitle(
               icon: Iconsax.timer_1,
               title: 'مؤقت النوم',
               subtitle: _activeSleepTimer != null
@@ -137,7 +139,7 @@ class _AudioPlayerSettingsSheetState extends State<AudioPlayerSettingsSheet> {
                   : 'متوقف حالياً',
             ),
             SizedBox(height: 10.h),
-            _SleepTimerOptions(
+            SleepTimerOptions(
               selectedMinutes: _activeSleepTimer,
               onSelected: (minutes) {
                 HapticFeedback.lightImpact();
@@ -149,22 +151,22 @@ class _AudioPlayerSettingsSheetState extends State<AudioPlayerSettingsSheet> {
 
             if (widget.isLive) ...[
               // Live Sanctuary Stream Information Card
-              const _SettingsSectionTitle(
+              const SettingsSectionTitle(
                 icon: Iconsax.radio,
                 title: 'معلومات البث الحي المباشر',
                 subtitle: 'نقل رقمي متواصل فوري بأعلى جودة استماع 320kbps',
               ),
               SizedBox(height: 10.h),
-              const _LiveBroadcastInfoBox(),
+              const LiveBroadcastInfoBox(),
             ] else ...[
               // 2. Playback Speed Section
-              const _SettingsSectionTitle(
+              const SettingsSectionTitle(
                 icon: Iconsax.speedometer,
                 title: 'سرعة التلاوة',
                 subtitle: 'اختر سرعة الاستماع المناسبة لك (تتغير فورياً)',
               ),
               SizedBox(height: 10.h),
-              _SpeedOptions(
+              SpeedOptions(
                 selectedSpeed: _activeSpeed,
                 onSelected: (speed) {
                   HapticFeedback.lightImpact();
@@ -182,12 +184,15 @@ class _AudioPlayerSettingsSheetState extends State<AudioPlayerSettingsSheet> {
                   widget.onToggleRepeat();
                 },
                 child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
                   decoration: BoxDecoration(
                     color: colors.surfaceElevated,
                     borderRadius: AppSpacing.radiusMd,
                     border: Border.all(
-                      color: _activeIsRepeating ? colors.accentGold : colors.borderHairline,
+                      color: _activeIsRepeating
+                          ? colors.accentGold
+                          : colors.borderHairline,
                       width: 1.r,
                     ),
                   ),
@@ -199,7 +204,9 @@ class _AudioPlayerSettingsSheetState extends State<AudioPlayerSettingsSheet> {
                           children: [
                             Icon(
                               Iconsax.repeate_one,
-                              color: _activeIsRepeating ? colors.accentGold : colors.textSecondary,
+                              color: _activeIsRepeating
+                                  ? colors.accentGold
+                                  : colors.textSecondary,
                               size: 20.r,
                             ),
                             SizedBox(width: 10.w),
@@ -209,7 +216,9 @@ class _AudioPlayerSettingsSheetState extends State<AudioPlayerSettingsSheet> {
                                 style: GoogleFonts.cairo(
                                   fontSize: 13.5.sp,
                                   fontWeight: FontWeight.w600,
-                                  color: _activeIsRepeating ? colors.accentGold : colors.textPrimary,
+                                  color: _activeIsRepeating
+                                      ? colors.accentGold
+                                      : colors.textPrimary,
                                 ),
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -219,8 +228,12 @@ class _AudioPlayerSettingsSheetState extends State<AudioPlayerSettingsSheet> {
                       ),
                       SizedBox(width: 8.w),
                       Icon(
-                        _activeIsRepeating ? Iconsax.tick_circle : Iconsax.close_circle,
-                        color: _activeIsRepeating ? colors.accentGold : colors.textSecondary,
+                        _activeIsRepeating
+                            ? Iconsax.tick_circle
+                            : Iconsax.close_circle,
+                        color: _activeIsRepeating
+                            ? colors.accentGold
+                            : colors.textSecondary,
                         size: 20.r,
                       ),
                     ],
@@ -231,224 +244,6 @@ class _AudioPlayerSettingsSheetState extends State<AudioPlayerSettingsSheet> {
             SizedBox(height: 14.h),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _SettingsSectionTitle extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String subtitle;
-
-  const _SettingsSectionTitle({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.colors;
-
-    return Row(
-      children: [
-        Icon(icon, color: colors.accentGold, size: 18.r),
-        SizedBox(width: 8.w),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: GoogleFonts.cairo(
-                  fontSize: 14.sp,
-                  fontWeight: FontWeight.bold,
-                  color: colors.textPrimary,
-                ),
-              ),
-              Text(
-                subtitle,
-                style: GoogleFonts.cairo(
-                  fontSize: 11.5.sp,
-                  color: colors.textSecondary,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _SleepTimerOptions extends StatelessWidget {
-  final int? selectedMinutes;
-  final ValueChanged<int?> onSelected;
-
-  const _SleepTimerOptions({
-    required this.selectedMinutes,
-    required this.onSelected,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.colors;
-    final options = <Map<String, dynamic>>[
-      {'label': 'إيقاف', 'minutes': null},
-      {'label': '15 د', 'minutes': 15},
-      {'label': '30 د', 'minutes': 30},
-      {'label': '45 د', 'minutes': 45},
-      {'label': '60 د', 'minutes': 60},
-    ];
-
-    return Row(
-      children: options.map((opt) {
-        final minutes = opt['minutes'] as int?;
-        final label = opt['label'] as String;
-        final isSelected = selectedMinutes == minutes;
-
-        return Expanded(
-          child: GestureDetector(
-            onTap: () => onSelected(minutes),
-            child: Container(
-              margin: EdgeInsets.symmetric(horizontal: 3.w),
-              padding: EdgeInsets.symmetric(vertical: 8.h),
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: isSelected ? colors.accentGold.withValues(alpha: 0.16) : colors.surfaceElevated,
-                borderRadius: AppSpacing.radiusSm,
-                border: Border.all(
-                  color: isSelected ? colors.accentGold : colors.borderHairline,
-                  width: 1.r,
-                ),
-              ),
-              child: Text(
-                label,
-                style: GoogleFonts.cairo(
-                  fontSize: 12.sp,
-                  fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                  color: isSelected ? colors.accentGold : colors.textSecondary,
-                ),
-              ),
-            ),
-          ),
-        );
-      }).toList(),
-    );
-  }
-}
-
-class _SpeedOptions extends StatelessWidget {
-  final double selectedSpeed;
-  final ValueChanged<double> onSelected;
-
-  const _SpeedOptions({
-    required this.selectedSpeed,
-    required this.onSelected,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.colors;
-    final speeds = [0.75, 1.0, 1.25, 1.5, 2.0];
-
-    return Row(
-      children: speeds.map((speed) {
-        final isSelected = selectedSpeed == speed;
-
-        return Expanded(
-          child: GestureDetector(
-            onTap: () => onSelected(speed),
-            child: Container(
-              margin: EdgeInsets.symmetric(horizontal: 3.w),
-              padding: EdgeInsets.symmetric(vertical: 8.h),
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: isSelected ? colors.accentGold.withValues(alpha: 0.16) : colors.surfaceElevated,
-                borderRadius: AppSpacing.radiusSm,
-                border: Border.all(
-                  color: isSelected ? colors.accentGold : colors.borderHairline,
-                  width: 1.r,
-                ),
-              ),
-              child: Text(
-                '${speed}x',
-                style: GoogleFonts.cairo(
-                  fontSize: 12.sp,
-                  fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                  color: isSelected ? colors.accentGold : colors.textSecondary,
-                ),
-              ),
-            ),
-          ),
-        );
-      }).toList(),
-    );
-  }
-}
-
-class _LiveBroadcastInfoBox extends StatelessWidget {
-  const _LiveBroadcastInfoBox();
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.colors;
-
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
-      decoration: BoxDecoration(
-        color: colors.surfaceElevated,
-        borderRadius: AppSpacing.radiusMd,
-        border: Border.all(
-          color: colors.borderHairline,
-          width: 1.r,
-        ),
-      ),
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Icon(
-                Iconsax.wifi,
-                color: colors.accentEmerald,
-                size: 18.r,
-              ),
-              SizedBox(width: 8.w),
-              Expanded(
-                child: Text(
-                  'البث الرسمي المباشر من شبكة MP3Quran',
-                  style: GoogleFonts.cairo(
-                    fontSize: 12.5.sp,
-                    fontWeight: FontWeight.bold,
-                    color: colors.textPrimary,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 8.h),
-          Row(
-            children: [
-              Icon(
-                Iconsax.music_dashboard,
-                color: colors.accentGold,
-                size: 18.r,
-              ),
-              SizedBox(width: 8.w),
-              Expanded(
-                child: Text(
-                  'جودة الصوت: استريو فائق النقاء 320kbps HLS',
-                  style: GoogleFonts.cairo(
-                    fontSize: 12.sp,
-                    fontWeight: FontWeight.w500,
-                    color: colors.textSecondary,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
       ),
     );
   }

@@ -22,6 +22,7 @@ Whenever the AI is tasked with any assignment (writing features, refactoring, fi
 Any generated response or pull request containing any of the following anti-patterns will be rejected immediately:
 
 - ❌ **No Placeholder or Truncated Code:** Never output `// TODO: implement later`, `// ... rest of code`, or omit necessary imports/overrides. Every snippet must be fully typed, compilable, and production-ready.
+- ❌ **No Over-Sized God Files (> 400 Lines):** No single Dart file should exceed **400 lines** unless strictly and unavoidably required (such as dense immutable static Quranic mapping arrays or machine-generated models). Screens, sheets, components, painters, Cubits, and DataSources approaching 400 lines **MUST** be proactively refactored and decomposed into modular, isolated sub-widgets or helper delegates under dedicated component directories.
 - ❌ **No Hardcoded Values:** Never write raw dimensions (e.g. `width: 250`, `fontSize: 16`, `padding: EdgeInsets.all(12)`). All metrics must pass through `flutter_screenutil` (e.g. `250.w`, `16.sp`, `12.r`).
 - ❌ **No Raw Colors:** Never invoke `Colors.amber` or `Color(0xFF...)` inside presentation widgets. Every color must resolve from the centralized `AppColors` token palette.
 - ❌ **No Inline Helper UI Methods:** Never write `Widget _buildCard()` or `Widget _buildItem()` inside a Widget class. Break every atomic piece into an isolated, `const`-constructible `StatelessWidget`.

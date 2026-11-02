@@ -33,15 +33,25 @@ lib/features/<feature_name>/
     │   ├── <feature_name>_cubit.dart
     │   └── <feature_name>_state.dart (Freezed union states)
     └── widgets/
-        ├── <feature_name>_screen.dart (Scaffold & Base View)
+        ├── <feature_name>_screen.dart (Scaffold & Base View - Must be < 400 lines)
         └── components/
-            ├── <sub_widget>_card.dart
+            ├── <sub_widget>_card.dart (Modular atomic widgets - Each < 400 lines)
             └── <sub_widget>_shimmer.dart
 ```
 
 ---
 
-## 2. LAYER BOUNDARY RULES
+## 2. MODULARITY & FILE SIZE CONSTRAINT (< 400 LINES)
+- **Strict File Length Boundary:** No file across domain, data, or presentation may exceed **400 lines of code** (LOC).
+- **Legitimate Exceptions:** The only permitted exceptions are immutable static seed dictionaries or Quranic mapping tables (e.g. 114 Surah reference coordinates or 60 Hizb quarter offsets).
+- **Decomposition Mandate:**
+  - Whenever a Screen, Modal Sheet, or CustomPainter grows past 350-400 lines, it **must** be decomposed immediately into focused sub-widgets inside `widgets/components/` (or sub-folders).
+  - Multi-section sheets (e.g., Reader Settings, Audio Controls) must have each section in its own `_section.dart` component.
+  - Complex custom painters or canvas effects must reside in their own standalone painter file.
+
+---
+
+## 3. LAYER BOUNDARY RULES
 
 ### Domain Layer (Core & Indestructible)
 - **Zero Third-Party Dependencies:** Strictly pure Dart. No imports from `package:flutter/material.dart`, Dio, Sqflite, Hive, or device APIs. Only pure Dart, `equatable`, and `fpdart`.

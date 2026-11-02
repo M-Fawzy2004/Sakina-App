@@ -9,7 +9,11 @@ import 'package:sakina_app/core/utils/haptic_service.dart';
 import 'package:sakina_app/features/settings/domain/entities/app_accent_color.dart';
 import 'package:sakina_app/features/settings/presentation/cubit/settings_cubit.dart';
 import 'package:sakina_app/features/settings/presentation/cubit/settings_state.dart';
+import 'package:sakina_app/features/settings/presentation/widgets/components/settings_appearance_gateway_hero.dart';
+import 'package:sakina_app/features/settings/presentation/widgets/components/settings_brand_header.dart';
+import 'package:sakina_app/features/settings/presentation/widgets/components/settings_reset_card.dart';
 import 'package:sakina_app/features/settings/presentation/widgets/components/settings_section_card.dart';
+import 'package:sakina_app/features/settings/presentation/widgets/components/settings_switch_tile.dart';
 import 'package:sakina_app/features/settings/presentation/widgets/components/settings_tile_item.dart';
 import 'package:sakina_app/features/settings/presentation/widgets/theme_selector_screen.dart';
 
@@ -48,55 +52,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 physics: const BouncingScrollPhysics(),
                 slivers: [
                   // 1. Top Sacred Brand Header
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: EdgeInsets.fromLTRB(16.w, 12.h, 16.w, 8.h),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          // Brand Crescent & Title
-                          Row(
-                            children: [
-                              Text('🌙', style: TextStyle(fontSize: 18.sp)),
-                              SizedBox(width: 8.w),
-                              Text(
-                                'سَكِينَةُ',
-                                style: GoogleFonts.cairo(
-                                  fontSize: 20.sp,
-                                  fontWeight: FontWeight.w800,
-                                  color: colors.accentGold,
-                                  letterSpacing: 0.5,
-                                ),
-                              ),
-                            ],
-                          ),
-
-                          // Header Badge
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 14.w,
-                              vertical: 6.h,
-                            ),
-                            decoration: BoxDecoration(
-                              color: colors.cardSurface,
-                              borderRadius: BorderRadius.circular(20.r),
-                              border: Border.all(
-                                color: colors.borderHairline,
-                                width: 1.r,
-                              ),
-                            ),
-                            child: Text(
-                              'الإِعْدَادَاتُ العَامَّةُ',
-                              style: GoogleFonts.cairo(
-                                fontSize: 12.sp,
-                                fontWeight: FontWeight.w700,
-                                color: colors.textPrimary,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                  const SliverToBoxAdapter(
+                    child: SettingsBrandHeader(),
                   ),
 
                   SliverToBoxAdapter(child: SizedBox(height: 12.h)),
@@ -105,7 +62,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   SliverToBoxAdapter(
                     child: Padding(
                       padding: EdgeInsets.symmetric(horizontal: 16.w),
-                      child: _AppearanceGatewayHero(
+                      child: SettingsAppearanceGatewayHero(
                         themeTitle: state.appThemeMode.title,
                         accentTitle: currentAccent.title,
                         accentColor: state.primaryAccentColor,
@@ -221,7 +178,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         title: 'التَّذْكِيرَاتُ وَالوِرْدُ اليَوْمِيُّ',
                         icon: Iconsax.notification,
                         children: [
-                          _SettingsSwitchTile(
+                          SettingsSwitchTile(
                             icon: Iconsax.sun_1,
                             title: 'تَنْبِيهَاتُ أَذْكَارِ الصَّبَاحِ وَالمَسَاءِ',
                             subtitle: 'تَذْكِيرٌ يَوْمِيٌّ مُنْتَظَمٌ لِحِفْظِ الأَوْقَاتِ',
@@ -235,7 +192,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             color: colors.borderHairline.withValues(alpha: 0.5),
                             height: 1.h,
                           ),
-                          _SettingsSwitchTile(
+                          SettingsSwitchTile(
                             icon: Iconsax.calendar_tick,
                             title: 'تَنْبِيهُ الوِرْدِ القُرْآنِيِّ اليَوْمِيِّ',
                             subtitle: 'مُتَابَعَةُ القِرَاءَةِ وَتَحْقِيقُ خَتْمَةِ سَكِينَةَ',
@@ -256,7 +213,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   SliverToBoxAdapter(
                     child: Padding(
                       padding: EdgeInsets.symmetric(horizontal: 16.w),
-                      child: _SettingsResetCard(
+                      child: SettingsResetCard(
                         onResetTap: () => _confirmResetAll(cubit),
                       ),
                     ),
@@ -417,322 +374,5 @@ class _SettingsScreenState extends State<SettingsScreen> {
         icon: Iconsax.tick_circle,
       );
     }
-  }
-}
-
-/// High-Impact Featured Hero Card Gateway to Dedicated Themes Screen.
-class _AppearanceGatewayHero extends StatelessWidget {
-  final String themeTitle;
-  final String accentTitle;
-  final Color accentColor;
-  final VoidCallback onTap;
-
-  const _AppearanceGatewayHero({
-    required this.themeTitle,
-    required this.accentTitle,
-    required this.accentColor,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.colors;
-
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(20.r),
-        child: Container(
-          padding: EdgeInsets.all(16.r),
-          decoration: BoxDecoration(
-            color: colors.cardSurface,
-            borderRadius: BorderRadius.circular(20.r),
-            border: Border.all(
-              color: colors.accentGold.withValues(alpha: 0.4),
-              width: 1.2.r,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: colors.accentGold.withValues(alpha: 0.08),
-                blurRadius: 16.r,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          child: Row(
-            children: [
-              // Leading Icon Container
-              Container(
-                width: 48.r,
-                height: 48.r,
-                decoration: BoxDecoration(
-                  color: colors.surfaceElevated,
-                  borderRadius: BorderRadius.circular(14.r),
-                  border: Border.all(
-                    color: colors.accentGold.withValues(alpha: 0.5),
-                    width: 1.r,
-                  ),
-                ),
-                child: Icon(
-                  Iconsax.colorfilter,
-                  color: colors.accentGold,
-                  size: 24.r,
-                ),
-              ),
-
-              SizedBox(width: 14.w),
-
-              // Title and Active Theme Information
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'المَظْهَرُ وَالثِّيمَاتُ وَالأَلْوَانُ',
-                      style: GoogleFonts.cairo(
-                        fontSize: 15.sp,
-                        fontWeight: FontWeight.w700,
-                        color: colors.textPrimary,
-                      ),
-                    ),
-                    SizedBox(height: 3.h),
-                    Row(
-                      children: [
-                        Container(
-                          width: 12.r,
-                          height: 12.r,
-                          decoration: BoxDecoration(
-                            color: accentColor,
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                        SizedBox(width: 6.w),
-                        Expanded(
-                          child: Text(
-                            '$themeTitle • $accentTitle',
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: GoogleFonts.cairo(
-                              fontSize: 12.sp,
-                              color: colors.textSecondary,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-
-              // Trailing Action Pill
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
-                decoration: BoxDecoration(
-                  color: colors.surfaceElevated,
-                  borderRadius: BorderRadius.circular(12.r),
-                  border: Border.all(
-                    color: colors.borderHairline,
-                    width: 0.8.r,
-                  ),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'تَخْصِيص',
-                      style: GoogleFonts.cairo(
-                        fontSize: 11.5.sp,
-                        fontWeight: FontWeight.w700,
-                        color: colors.accentGold,
-                      ),
-                    ),
-                    SizedBox(width: 4.w),
-                    Icon(
-                      Iconsax.arrow_left_2,
-                      size: 14.r,
-                      color: colors.accentGold,
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-/// Dedicated Prominent Reset to Defaults Card.
-class _SettingsResetCard extends StatelessWidget {
-  final VoidCallback onResetTap;
-
-  const _SettingsResetCard({required this.onResetTap});
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.colors;
-
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: () {
-          HapticService.selectionClick();
-          onResetTap();
-        },
-        borderRadius: BorderRadius.circular(20.r),
-        child: Container(
-          padding: EdgeInsets.all(16.r),
-          decoration: BoxDecoration(
-            color: colors.cardSurface,
-            borderRadius: BorderRadius.circular(20.r),
-            border: Border.all(
-              color: colors.borderHairline.withValues(alpha: 0.65),
-              width: 1.r,
-            ),
-          ),
-          child: Row(
-            children: [
-              Container(
-                width: 42.r,
-                height: 42.r,
-                decoration: BoxDecoration(
-                  color: colors.surfaceElevated,
-                  borderRadius: BorderRadius.circular(12.r),
-                  border: Border.all(
-                    color: colors.borderHairline,
-                    width: 0.8.r,
-                  ),
-                ),
-                child: Icon(
-                  Iconsax.rotate_left,
-                  color: colors.accentGold,
-                  size: 20.r,
-                ),
-              ),
-
-              SizedBox(width: 12.w),
-
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'اسْتِعَادَةُ الإِعْدَادَاتِ الاِفْتِرَاضِيَّةِ',
-                      style: GoogleFonts.cairo(
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.w700,
-                        color: colors.textPrimary,
-                      ),
-                    ),
-                    SizedBox(height: 2.h),
-                    Text(
-                      'إرجاع الثيم ولون التمييز وكافة التفضيلات إلى الضبط الأولي',
-                      style: GoogleFonts.cairo(
-                        fontSize: 11.sp,
-                        color: colors.textSecondary,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
-                decoration: BoxDecoration(
-                  color: colors.surfaceElevated,
-                  borderRadius: BorderRadius.circular(10.r),
-                  border: Border.all(
-                    color: colors.borderHairline,
-                    width: 0.8.r,
-                  ),
-                ),
-                child: Text(
-                  'اسْتِعَادَة',
-                  style: GoogleFonts.cairo(
-                    fontSize: 11.5.sp,
-                    fontWeight: FontWeight.w700,
-                    color: colors.accentGold,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-/// Switch tile item for settings toggles.
-class _SettingsSwitchTile extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String subtitle;
-  final bool value;
-  final ValueChanged<bool> onChanged;
-
-  const _SettingsSwitchTile({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-    required this.value,
-    required this.onChanged,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.colors;
-
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
-      child: Row(
-        children: [
-          Container(
-            width: 38.r,
-            height: 38.r,
-            decoration: BoxDecoration(
-              color: colors.surfaceElevated,
-              borderRadius: BorderRadius.circular(10.r),
-              border: Border.all(
-                color: colors.borderHairline.withValues(alpha: 0.5),
-                width: 0.8.r,
-              ),
-            ),
-            child: Icon(icon, color: colors.accentGold, size: 18.r),
-          ),
-          SizedBox(width: 12.w),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: GoogleFonts.cairo(
-                    fontSize: 13.5.sp,
-                    fontWeight: FontWeight.w600,
-                    color: colors.textPrimary,
-                  ),
-                ),
-                SizedBox(height: 1.h),
-                Text(
-                  subtitle,
-                  style: GoogleFonts.cairo(
-                    fontSize: 11.sp,
-                    color: colors.textSecondary,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Switch.adaptive(
-            value: value,
-            activeTrackColor: colors.accentGold,
-            onChanged: onChanged,
-          ),
-        ],
-      ),
-    );
   }
 }
