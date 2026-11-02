@@ -84,7 +84,7 @@ class _MaladhView extends StatelessWidget {
                         SliverToBoxAdapter(
                           child: Padding(
                             padding: EdgeInsets.only(
-                              top: 8.h,
+                              top: 0,
                               bottom: 80.h,
                             ),
                             child: Column(

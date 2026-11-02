@@ -5,7 +5,6 @@ import 'package:iconsax/iconsax.dart';
 import 'package:sakina_app/core/theme/app_colors_scheme.dart';
 import 'package:sakina_app/core/theme/app_text_styles.dart';
 import 'package:sakina_app/core/utils/haptic_service.dart';
-import 'package:sakina_app/core/widgets/glass/tactile_glass_card.dart';
 import 'package:sakina_app/features/sunnah_books/domain/entities/hadith_entity.dart';
 
 class HadithPageCard extends StatelessWidget {
@@ -56,22 +55,30 @@ class HadithPageCard extends StatelessWidget {
 
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-      child: TactileGlassCard(
+      child: Container(
         padding: EdgeInsets.all(18.r),
+        decoration: BoxDecoration(
+          color: colors.background,
+          borderRadius: BorderRadius.circular(20.r),
+          border: Border.all(
+            color: colors.borderHairline.withValues(alpha: 0.8),
+            width: 1.r,
+          ),
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Top Ribbon: Hadith Number & Chapter Pill
+            // Top Header: Hadith Number & Chapter Pill
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 5.h),
                   decoration: BoxDecoration(
-                    color: colors.accentGold.withValues(alpha: 0.14),
+                    color: colors.background,
                     borderRadius: BorderRadius.circular(8.r),
                     border: Border.all(
-                      color: colors.accentGold.withValues(alpha: 0.4),
+                      color: colors.accentGold.withValues(alpha: 0.5),
                       width: 1.r,
                     ),
                   ),
@@ -87,12 +94,12 @@ class HadithPageCard extends StatelessWidget {
                 if (chapterTitle != null && chapterTitle!.isNotEmpty)
                   Flexible(
                     child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
+                      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
                       decoration: BoxDecoration(
-                        color: colors.surfaceElevated,
+                        color: colors.background,
                         borderRadius: BorderRadius.circular(8.r),
                         border: Border.all(
-                          color: colors.borderHairline,
+                          color: colors.borderHairline.withValues(alpha: 0.7),
                           width: 0.8.r,
                         ),
                       ),
@@ -102,7 +109,7 @@ class HadithPageCard extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                         style: AppTextStyles.captionOf(context).copyWith(
                           color: colors.accentEmerald,
-                          fontSize: 11.sp,
+                          fontSize: 11.5.sp,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -113,41 +120,28 @@ class HadithPageCard extends StatelessWidget {
 
             SizedBox(height: 16.h),
 
-            // Scrollable Arabic Text Area
+            // Main Arabic Hadith Text
             Expanded(
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
-                decoration: BoxDecoration(
-                  color: colors.surfaceElevated.withValues(alpha: 0.35),
-                  borderRadius: BorderRadius.circular(14.r),
-                  border: Border.all(
-                    color: colors.borderHairline,
-                    width: 0.8.r,
-                  ),
-                ),
-                child: Scrollbar(
-                  thumbVisibility: false,
-                  child: SingleChildScrollView(
-                    physics: const BouncingScrollPhysics(),
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(vertical: 6.h),
-                      child: Text(
-                        hadith.arabic,
-                        textAlign: TextAlign.justify,
-                        style: AppTextStyles.quranAyahOf(context).copyWith(
-                          fontSize: 17.sp,
-                          height: 2.1,
-                          color: colors.textPrimary,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
+              child: Scrollbar(
+                thumbVisibility: false,
+                child: SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 6.h),
+                  child: Text(
+                    hadith.arabic,
+                    textAlign: TextAlign.justify,
+                    style: AppTextStyles.quranAyahOf(context).copyWith(
+                      fontSize: 18.sp,
+                      height: 2.15,
+                      color: colors.textPrimary,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
               ),
             ),
 
-            SizedBox(height: 14.h),
+            SizedBox(height: 12.h),
 
             // Bottom Navigation & Actions Bar
             Row(
@@ -159,28 +153,33 @@ class HadithPageCard extends StatelessWidget {
                   icon: Icon(
                     Iconsax.arrow_right_3,
                     size: 20.r,
-                    color: onPrevious != null ? colors.textPrimary : colors.textSecondary.withValues(alpha: 0.3),
+                    color: onPrevious != null
+                        ? colors.textPrimary
+                        : colors.textSecondary.withValues(alpha: 0.25),
                   ),
                   tooltip: 'الحديث السابق',
                 ),
 
-                // Counter Badge: X of Y
+                // Counter Badge (Directionality LTR ensures "1 / 7277" order)
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 6.h),
                   decoration: BoxDecoration(
-                    color: colors.surfaceElevated,
+                    color: colors.background,
                     borderRadius: BorderRadius.circular(10.r),
                     border: Border.all(
-                      color: colors.borderHairline,
+                      color: colors.borderHairline.withValues(alpha: 0.7),
                       width: 0.8.r,
                     ),
                   ),
-                  child: Text(
-                    '${currentIndex + 1} / $totalCount',
-                    style: AppTextStyles.captionOf(context).copyWith(
-                      color: colors.textSecondary,
-                      fontSize: 12.sp,
-                      fontWeight: FontWeight.bold,
+                  child: Directionality(
+                    textDirection: TextDirection.ltr,
+                    child: Text(
+                      '${currentIndex + 1} / $totalCount',
+                      style: AppTextStyles.captionOf(context).copyWith(
+                        color: colors.textSecondary,
+                        fontSize: 12.sp,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ),
@@ -191,7 +190,9 @@ class HadithPageCard extends StatelessWidget {
                   icon: Icon(
                     Iconsax.arrow_left_2,
                     size: 20.r,
-                    color: onNext != null ? colors.textPrimary : colors.textSecondary.withValues(alpha: 0.3),
+                    color: onNext != null
+                        ? colors.textPrimary
+                        : colors.textSecondary.withValues(alpha: 0.25),
                   ),
                   tooltip: 'الحديث التالي',
                 ),
@@ -214,4 +215,3 @@ class HadithPageCard extends StatelessWidget {
     );
   }
 }
-

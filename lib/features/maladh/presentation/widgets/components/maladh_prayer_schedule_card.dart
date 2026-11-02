@@ -29,14 +29,14 @@ class MaladhPrayerScheduleCard extends StatelessWidget {
     final scheduleInfo = CairoPrayerTimesCalculator.calculate();
 
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 6.h),
+      padding: EdgeInsets.fromLTRB(16.w, 4.h, 16.w, 6.h),
       child: Container(
         decoration: BoxDecoration(
-          color: colors.cardSurface,
+          color: colors.background,
           borderRadius: BorderRadius.circular(18.r),
           border: Border.all(
-            color: colors.borderHairline,
-            width: 1.r,
+            color: colors.borderHairline.withValues(alpha: 0.6),
+            width: 0.8.r,
           ),
         ),
         clipBehavior: Clip.antiAlias,

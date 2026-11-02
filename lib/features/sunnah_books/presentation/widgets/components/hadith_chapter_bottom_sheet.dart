@@ -67,14 +67,15 @@ class _HadithChapterBottomSheetState extends State<HadithChapterBottomSheet> {
     final filteredChapters = _filter.isEmpty
         ? widget.chapters
         : widget.chapters.where((c) {
-            return c.arabic.contains(_filter) ||
-                c.english.toLowerCase().contains(_filter.toLowerCase());
+            return c.arabic.contains(_filter);
           }).toList();
+
+    final totalGridItems = filteredChapters.length + 1;
 
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Container(
-        height: 0.80.sh,
+        height: 0.82.sh,
         padding: EdgeInsets.only(
           left: 16.w,
           right: 16.w,
@@ -82,15 +83,16 @@ class _HadithChapterBottomSheetState extends State<HadithChapterBottomSheet> {
           bottom: bottomInset > 0 ? bottomInset + 12.h : 20.h,
         ),
         decoration: BoxDecoration(
-          color: colors.cardSurface,
+          color: colors.background,
           borderRadius: BorderRadius.vertical(top: Radius.circular(28.r)),
           border: Border.all(
-            color: colors.borderHairline,
+            color: colors.borderHairline.withValues(alpha: 0.7),
             width: 1.r,
           ),
         ),
         child: Column(
           children: [
+            // Top Handle
             Center(
               child: Container(
                 width: 44.w,
@@ -101,41 +103,42 @@ class _HadithChapterBottomSheetState extends State<HadithChapterBottomSheet> {
                 ),
               ),
             ),
-            SizedBox(height: 14.h),
+            SizedBox(height: 12.h),
 
-            // Header Title
+            // Header Title & Close Button
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'أبواب وفصول الكتاب',
+                  'فهرس أبواب الكتاب',
                   style: AppTextStyles.titleMediumOf(context).copyWith(
                     fontWeight: FontWeight.bold,
                     fontSize: 16.sp,
                     color: colors.textPrimary,
                   ),
                 ),
-                Text(
-                  '${widget.chapters.length} باباً',
-                  style: AppTextStyles.captionOf(context).copyWith(
-                    color: colors.accentGold,
-                    fontSize: 11.sp,
-                    fontWeight: FontWeight.bold,
+                IconButton(
+                  icon: Icon(
+                    Iconsax.close_circle,
+                    size: 20.r,
+                    color: colors.textSecondary,
                   ),
+                  onPressed: () => Navigator.of(context).pop(),
+                  tooltip: 'إغلاق',
                 ),
               ],
             ),
-            SizedBox(height: 12.h),
+            SizedBox(height: 8.h),
 
-            // Search filter field
+            // Filter Search Bar
             Container(
               height: 44.h,
               decoration: BoxDecoration(
-                color: colors.surfaceElevated,
+                color: colors.background,
                 borderRadius: BorderRadius.circular(12.r),
                 border: Border.all(
-                  color: colors.borderHairline,
-                  width: 1.r,
+                  color: colors.borderHairline.withValues(alpha: 0.7),
+                  width: 0.8.r,
                 ),
               ),
               child: Row(
@@ -190,121 +193,46 @@ class _HadithChapterBottomSheetState extends State<HadithChapterBottomSheet> {
                 ],
               ),
             ),
-            SizedBox(height: 10.h),
+            SizedBox(height: 12.h),
 
-            // "جميع الأبواب" Tile
-            InkWell(
-              borderRadius: BorderRadius.circular(12.r),
-              onTap: () {
-                HapticService.selectionClick();
-                widget.onChapterSelected(null);
-                Navigator.of(context).pop();
-              },
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 10.h),
-                decoration: BoxDecoration(
-                  color: widget.selectedChapterId == null
-                      ? colors.accentGold.withValues(alpha: 0.14)
-                      : colors.surfaceElevated,
-                  borderRadius: BorderRadius.circular(12.r),
-                  border: Border.all(
-                    color: widget.selectedChapterId == null
-                        ? colors.accentGold
-                        : colors.borderHairline,
-                    width: 1.r,
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      Iconsax.book,
-                      size: 16.r,
-                      color: widget.selectedChapterId == null
-                          ? colors.accentGold
-                          : colors.textSecondary,
-                    ),
-                    SizedBox(width: 10.w),
-                    Text(
-                      'جميع الأبواب (عرض كامل الكتاب)',
-                      style: AppTextStyles.captionOf(context).copyWith(
-                        color: widget.selectedChapterId == null
-                            ? colors.accentGold
-                            : colors.textPrimary,
-                        fontSize: 12.sp,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            SizedBox(height: 8.h),
-
-            // Chapters List
+            // 2-Column Chapters Grid
             Expanded(
-              child: ListView.separated(
+              child: GridView.builder(
                 physics: const BouncingScrollPhysics(),
-                itemCount: filteredChapters.length,
-                separatorBuilder: (_, _) => SizedBox(height: 6.h),
+                itemCount: totalGridItems,
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  childAspectRatio: 2.3,
+                  crossAxisSpacing: 8.w,
+                  mainAxisSpacing: 8.h,
+                ),
                 itemBuilder: (context, index) {
-                  final ch = filteredChapters[index];
+                  if (index == 0) {
+                    final isAll = widget.selectedChapterId == null || widget.selectedChapterId == 0;
+                    return _GridChapterTile(
+                      badge: 'الكل',
+                      title: 'جميع الأبواب',
+                      isSelected: isAll,
+                      onTap: () {
+                        HapticService.selectionClick();
+                        widget.onChapterSelected(null);
+                        Navigator.of(context).pop();
+                      },
+                    );
+                  }
+
+                  final ch = filteredChapters[index - 1];
                   final isSelected = widget.selectedChapterId == ch.id;
 
-                  return InkWell(
-                    borderRadius: BorderRadius.circular(12.r),
+                  return _GridChapterTile(
+                    badge: '#${ch.id}',
+                    title: ch.arabic,
+                    isSelected: isSelected,
                     onTap: () {
                       HapticService.selectionClick();
                       widget.onChapterSelected(ch.id);
                       Navigator.of(context).pop();
                     },
-                    child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
-                      decoration: BoxDecoration(
-                        color: isSelected
-                            ? colors.accentGold.withValues(alpha: 0.12)
-                            : colors.cardSurface,
-                        borderRadius: BorderRadius.circular(12.r),
-                        border: Border.all(
-                          color: isSelected ? colors.accentGold : colors.borderHairline,
-                          width: isSelected ? 1.2.r : 0.8.r,
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 26.r,
-                            height: 26.r,
-                            decoration: BoxDecoration(
-                              color: colors.surfaceElevated,
-                              borderRadius: BorderRadius.circular(8.r),
-                            ),
-                            child: Center(
-                              child: Text(
-                                '${ch.id}',
-                                style: AppTextStyles.captionOf(context).copyWith(
-                                  color: isSelected ? colors.accentGold : colors.textSecondary,
-                                  fontSize: 10.sp,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ),
-                          SizedBox(width: 10.w),
-                          Expanded(
-                            child: Text(
-                              ch.arabic,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: AppTextStyles.captionOf(context).copyWith(
-                                color: isSelected ? colors.accentGold : colors.textPrimary,
-                                fontSize: 12.sp,
-                                fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
                   );
                 },
               ),
@@ -316,3 +244,77 @@ class _HadithChapterBottomSheetState extends State<HadithChapterBottomSheet> {
   }
 }
 
+class _GridChapterTile extends StatelessWidget {
+  final String badge;
+  final String title;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _GridChapterTile({
+    required this.badge,
+    required this.title,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+
+    return InkWell(
+      borderRadius: BorderRadius.circular(12.r),
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? colors.accentGold.withValues(alpha: 0.14)
+              : colors.background,
+          borderRadius: BorderRadius.circular(12.r),
+          border: Border.all(
+            color: isSelected
+                ? colors.accentGold
+                : colors.borderHairline.withValues(alpha: 0.6),
+            width: isSelected ? 1.2.r : 0.8.r,
+          ),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 3.h),
+              decoration: BoxDecoration(
+                color: isSelected
+                    ? colors.accentGold.withValues(alpha: 0.2)
+                    : colors.borderHairline.withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(6.r),
+              ),
+              child: Text(
+                badge,
+                style: AppTextStyles.captionOf(context).copyWith(
+                  color: isSelected ? colors.accentGold : colors.textSecondary,
+                  fontSize: 10.sp,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            SizedBox(width: 8.w),
+            Expanded(
+              child: Text(
+                title,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: AppTextStyles.captionOf(context).copyWith(
+                  color: isSelected ? colors.accentGold : colors.textPrimary,
+                  fontSize: 11.sp,
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                  height: 1.25,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

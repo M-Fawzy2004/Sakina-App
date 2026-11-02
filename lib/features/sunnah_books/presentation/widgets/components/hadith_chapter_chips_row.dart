@@ -21,38 +21,70 @@ class HadithChapterChipsRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final isAllSelected = selectedChapterId == null || selectedChapterId == 0;
 
-    return SizedBox(
-      height: 38.h,
-      child: ListView.separated(
+    final allChips = <Widget>[
+      _ChapterChip(
+        label: 'جميع الأبواب',
+        isSelected: isAllSelected,
+        onTap: () {
+          HapticService.selectionClick();
+          onChapterSelected(null);
+        },
+      ),
+      ...chapters.map((chapter) {
+        final isSelected = selectedChapterId == chapter.id;
+        return _ChapterChip(
+          label: chapter.arabic,
+          isSelected: isSelected,
+          onTap: () {
+            HapticService.selectionClick();
+            onChapterSelected(chapter.id);
+          },
+        );
+      }),
+    ];
+
+    final row1 = <Widget>[];
+    final row2 = <Widget>[];
+
+    for (int i = 0; i < allChips.length; i++) {
+      if (i.isEven) {
+        row1.add(allChips[i]);
+      } else {
+        row2.add(allChips[i]);
+      }
+    }
+
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 4.h),
+      child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         physics: const BouncingScrollPhysics(),
         padding: EdgeInsets.symmetric(horizontal: 16.w),
-        itemCount: chapters.length + 1,
-        separatorBuilder: (_, _) => SizedBox(width: 8.w),
-        itemBuilder: (context, index) {
-          if (index == 0) {
-            return _ChapterChip(
-              label: 'جميع الأبواب',
-              isSelected: isAllSelected,
-              onTap: () {
-                HapticService.selectionClick();
-                onChapterSelected(null);
-              },
-            );
-          }
-
-          final chapter = chapters[index - 1];
-          final isSelected = selectedChapterId == chapter.id;
-
-          return _ChapterChip(
-            label: chapter.arabic,
-            isSelected: isSelected,
-            onTap: () {
-              HapticService.selectionClick();
-              onChapterSelected(chapter.id);
-            },
-          );
-        },
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                for (int i = 0; i < row1.length; i++) ...[
+                  if (i > 0) SizedBox(width: 8.w),
+                  row1[i],
+                ],
+              ],
+            ),
+            SizedBox(height: 5.h),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                for (int i = 0; i < row2.length; i++) ...[
+                  if (i > 0) SizedBox(width: 8.w),
+                  row2[i],
+                ],
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -75,27 +107,25 @@ class _ChapterChip extends StatelessWidget {
 
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(10.r),
+      borderRadius: BorderRadius.circular(8.r),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+        padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 3.h),
         decoration: BoxDecoration(
           color: isSelected
               ? colors.accentGold.withValues(alpha: 0.16)
-              : colors.surfaceElevated,
-          borderRadius: BorderRadius.circular(10.r),
+              : colors.background,
+          borderRadius: BorderRadius.circular(8.r),
           border: Border.all(
-            color: isSelected
-                ? colors.accentGold
-                : colors.borderHairline,
+            color: isSelected ? colors.accentGold : colors.borderHairline.withValues(alpha: 0.7),
             width: isSelected ? 1.2.r : 0.8.r,
           ),
           boxShadow: isSelected
               ? [
                   BoxShadow(
-                    color: colors.accentGold.withValues(alpha: 0.2),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
+                    color: colors.accentGold.withValues(alpha: 0.18),
+                    blurRadius: 6,
+                    offset: const Offset(0, 1),
                   ),
                 ]
               : null,
@@ -106,7 +136,7 @@ class _ChapterChip extends StatelessWidget {
           style: AppTextStyles.captionOf(context).copyWith(
             color: isSelected ? colors.accentGold : colors.textSecondary,
             fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-            fontSize: 12.sp,
+            fontSize: 11.sp,
           ),
         ),
       ),

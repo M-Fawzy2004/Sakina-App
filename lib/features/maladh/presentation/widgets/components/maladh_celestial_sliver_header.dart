@@ -92,8 +92,8 @@ class _MaladhCelestialSliverHeaderState
   @override
   Widget build(BuildContext context) {
     final topPadding = MediaQuery.of(context).padding.top;
-    final minHeight = 54.h + 88.h + topPadding;
-    final maxHeight = 225.h + 88.h + topPadding;
+    final minHeight = 54.h + 74.h + topPadding;
+    final maxHeight = 225.h + 74.h + topPadding;
 
     return SliverPersistentHeader(
       pinned: true,
@@ -144,12 +144,6 @@ class _MaladhCelestialHeaderDelegate extends SliverPersistentHeaderDelegate {
     final verseOpacity = (1.0 - (shrinkOffset / 60.h)).clamp(0.0, 1.0);
     final starOpacity = (1.0 - (shrinkOffset / 100.h)).clamp(0.0, 1.0);
     final subtitleOpacity = (1.0 - (shrinkOffset / 35.h)).clamp(0.0, 1.0);
-
-    final maxScrollOffset = maxHeight - minHeight;
-    final contextBarOffset = (maxScrollOffset - shrinkOffset).clamp(
-      0.0,
-      maxScrollOffset,
-    );
 
     return Container(
       // Keep exact matching canvas background with zero elevation tint
@@ -203,13 +197,12 @@ class _MaladhCelestialHeaderDelegate extends SliverPersistentHeaderDelegate {
             ),
           ),
 
-          // 4. Luxury Prayer Context & Countdown Bar (The First Half - Image 2)
-          // Sits attached at the bottom of the expanded header ("لازق في آخر الـ sliver"),
-          // and smoothly slides up to lock right beneath the top bar ("يلزق في الـ header").
+          // 4. Luxury Prayer Context & Countdown Bar
+          // Glued flush to the bottom of the sliver header with zero gap
           Positioned(
-            top: topPadding + 54.h + contextBarOffset,
             left: 0,
             right: 0,
+            bottom: 0,
             child: MaladhPrayerContextBar(hijriDate: data.hijriDate),
           ),
         ],

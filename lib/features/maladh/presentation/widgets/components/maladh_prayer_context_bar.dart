@@ -66,11 +66,11 @@ class _MaladhPrayerContextBarState extends State<MaladhPrayerContextBar> {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 16.w),
       decoration: BoxDecoration(
-        color: colors.cardSurface,
+        color: colors.background,
         borderRadius: BorderRadius.circular(16.r),
         border: Border.all(
-          color: colors.borderHairline.withValues(alpha: 0.9),
-          width: 1.r,
+          color: colors.borderHairline.withValues(alpha: 0.6),
+          width: 0.8.r,
         ),
       ),
       clipBehavior: Clip.antiAlias,
