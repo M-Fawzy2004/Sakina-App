@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_islamic_icons/flutter_islamic_icons.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:sakina_app/core/theme/app_colors_scheme.dart';
 import 'package:sakina_app/core/theme/app_text_styles.dart';
 import 'package:sakina_app/features/inaba_recovery/presentation/cubit/inaba_cubit.dart';
 import 'package:sakina_app/features/inaba_recovery/presentation/cubit/inaba_state.dart';
+import 'package:sakina_app/features/inaba_recovery/presentation/widgets/components/inaba_hope_background_selector.dart';
+import 'package:sakina_app/features/inaba_recovery/presentation/widgets/components/inaba_hope_card_exporter.dart';
+import 'package:sakina_app/features/inaba_recovery/presentation/widgets/components/inaba_hope_card_view.dart';
 
-class InabaDailyHopeSheet extends StatelessWidget {
+/// Modal bottom sheet showcasing daily hope dose cards with custom background selection & image export.
+class InabaDailyHopeSheet extends StatefulWidget {
   const InabaDailyHopeSheet({super.key});
 
   static Future<void> show(
@@ -30,6 +33,29 @@ class InabaDailyHopeSheet extends StatelessWidget {
   }
 
   @override
+  State<InabaDailyHopeSheet> createState() => _InabaDailyHopeSheetState();
+}
+
+class _InabaDailyHopeSheetState extends State<InabaDailyHopeSheet> {
+  final GlobalKey _cardKey = GlobalKey();
+  String? _selectedBackground =
+      InabaHopeBackgroundSelector.backgroundAssets.first;
+  bool _isExporting = false;
+
+  Future<void> _handleExportCard(String verseSource) async {
+    if (_isExporting) return;
+    setState(() => _isExporting = true);
+    await InabaHopeCardExporter.exportAndShare(
+      context: context,
+      boundaryKey: _cardKey,
+      verseSource: verseSource,
+    );
+    if (mounted) {
+      setState(() => _isExporting = false);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final colors = context.colors;
     final bottomInset = MediaQuery.paddingOf(context).bottom;
@@ -42,12 +68,12 @@ class InabaDailyHopeSheet extends StatelessWidget {
         return Directionality(
           textDirection: TextDirection.rtl,
           child: Container(
-            height: 0.82.sh,
+            height: 0.88.sh,
             padding: EdgeInsets.only(
-              left: 20.w,
-              right: 20.w,
-              top: 16.h,
-              bottom: bottomInset > 0 ? bottomInset + 12.h : 20.h,
+              left: 18.w,
+              right: 18.w,
+              top: 14.h,
+              bottom: bottomInset > 0 ? bottomInset + 10.h : 18.h,
             ),
             decoration: BoxDecoration(
               color: colors.cardSurface,
@@ -67,135 +93,87 @@ class InabaDailyHopeSheet extends StatelessWidget {
                     ),
                   ),
                 ),
-                SizedBox(height: 16.h),
+                SizedBox(height: 12.h),
 
                 // Header
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Container(
-                      padding: EdgeInsets.all(8.r),
-                      decoration: BoxDecoration(
-                        color: colors.surfaceElevated,
-                        borderRadius: BorderRadius.circular(12.r),
-                        border: Border.all(
-                          color: colors.borderHairline,
-                          width: 1.r,
-                        ),
-                      ),
-                      child: Icon(
-                        Iconsax.gift,
-                        size: 22.r,
-                        color: colors.accentGold,
-                      ),
-                    ),
-                    SizedBox(width: 12.w),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    Row(
                       children: [
-                        Text(
-                          'جُرْعَةُ أَمَلٍ يَوْمِيَّةٍ',
-                          style: AppTextStyles.titleMediumOf(context).copyWith(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 17.sp,
-                            color: colors.textPrimary,
-                          ),
-                        ),
-                        Text(
-                          'حديث شريف أو قصة ملهمة لتقوية قلبك وبعث الرجاء',
-                          style: AppTextStyles.captionOf(context).copyWith(
-                            color: colors.textSecondary,
-                            fontSize: 11.sp,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                SizedBox(height: 20.h),
-
-                // Manuscript Card
-                if (activeDose != null)
-                  Expanded(
-                    child: Container(
-                      width: double.infinity,
-                      padding: EdgeInsets.symmetric(
-                          horizontal: 22.w, vertical: 22.h),
-                      decoration: BoxDecoration(
-                        color: colors.surfaceElevated,
-                        borderRadius: BorderRadius.circular(24.r),
-                        border: Border.all(
-                          color: colors.accentGold.withValues(alpha: 0.5),
-                          width: 1.2.r,
-                        ),
-                      ),
-                      child: SingleChildScrollView(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              FlutterIslamicIcons.quran2,
-                              size: 30.r,
-                              color: colors.accentGold,
+                        Container(
+                          padding: EdgeInsets.all(7.r),
+                          decoration: BoxDecoration(
+                            color: colors.surfaceElevated,
+                            borderRadius: BorderRadius.circular(12.r),
+                            border: Border.all(
+                              color: colors.borderHairline,
+                              width: 1.r,
                             ),
-                            SizedBox(height: 16.h),
-
-                            // Quotation
+                          ),
+                          child: Icon(
+                            Iconsax.gift,
+                            size: 20.r,
+                            color: colors.accentGold,
+                          ),
+                        ),
+                        SizedBox(width: 10.w),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
                             Text(
-                              activeDose.quotation,
-                              textAlign: TextAlign.center,
+                              'جُرْعَةُ أَمَلٍ يَوْمِيَّةٍ',
                               style:
-                                  AppTextStyles.quranAyahOf(context).copyWith(
-                                fontSize: 18.5.sp,
+                                  AppTextStyles.titleMediumOf(context).copyWith(
                                 fontWeight: FontWeight.bold,
-                                height: 1.9,
+                                fontSize: 16.sp,
                                 color: colors.textPrimary,
                               ),
                             ),
-                            SizedBox(height: 12.h),
-
-                            // Source
-                            Container(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 12.w, vertical: 4.h),
-                              decoration: BoxDecoration(
-                                color: colors.cardSurface,
-                                borderRadius: BorderRadius.circular(12.r),
-                                border: Border.all(
-                                  color: colors.borderHairline,
-                                  width: 1.r,
-                                ),
-                              ),
-                              child: Text(
-                                activeDose.source,
-                                style:
-                                    AppTextStyles.captionOf(context).copyWith(
-                                  color: colors.accentGold,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 11.sp,
-                                ),
-                              ),
-                            ),
-                            SizedBox(height: 18.h),
-
-                            // Explanation
                             Text(
-                              activeDose.explanation,
-                              textAlign: TextAlign.center,
-                              style:
-                                  AppTextStyles.bodyMediumOf(context).copyWith(
-                                fontSize: 13.sp,
-                                height: 1.6,
+                              'حديث شريف أو آية ملهمة لتقوية قلبك وبعث الرجاء',
+                              style: AppTextStyles.captionOf(context).copyWith(
                                 color: colors.textSecondary,
+                                fontSize: 10.5.sp,
                               ),
                             ),
                           ],
                         ),
+                      ],
+                    ),
+                    IconButton(
+                      icon: Icon(
+                        Iconsax.close_circle,
+                        size: 20.r,
+                        color: colors.textSecondary,
                       ),
+                      onPressed: () => Navigator.of(context).pop(),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 12.h),
+
+                // Hope Dose Manuscript Card
+                if (activeDose != null)
+                  Expanded(
+                    child: InabaHopeCardView(
+                      cardKey: _cardKey,
+                      activeDose: activeDose,
+                      selectedBackground: _selectedBackground,
                     ),
                   ),
-                SizedBox(height: 18.h),
 
-                // Bottom Actions: Next, Save
+                SizedBox(height: 12.h),
+
+                // Background Thumbnails Selector
+                InabaHopeBackgroundSelector(
+                  selectedAsset: _selectedBackground,
+                  onSelect: (bg) => setState(() => _selectedBackground = bg),
+                ),
+
+                SizedBox(height: 12.h),
+
+                // Bottom Actions: Next, Save as Image, Bookmark
                 Row(
                   children: [
                     // Next Card Button
@@ -207,9 +185,9 @@ class InabaDailyHopeSheet extends StatelessWidget {
                           foregroundColor: colors.background,
                           elevation: 0,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16.r),
+                            borderRadius: BorderRadius.circular(14.r),
                           ),
-                          padding: EdgeInsets.symmetric(vertical: 13.h),
+                          padding: EdgeInsets.symmetric(vertical: 11.h),
                         ),
                         onPressed: () {
                           HapticFeedback.lightImpact();
@@ -217,59 +195,96 @@ class InabaDailyHopeSheet extends StatelessWidget {
                         },
                         icon: Icon(
                           Iconsax.refresh,
-                          size: 18.r,
+                          size: 17.r,
                           color: colors.background,
                         ),
                         label: Text(
-                          'بِطَاقَةٌ تَالِيَةٌ',
+                          'تَالِيَةٌ',
                           style: TextStyle(
-                            fontSize: 13.sp,
+                            fontSize: 12.sp,
                             fontWeight: FontWeight.bold,
                             color: colors.background,
                           ),
                         ),
                       ),
                     ),
-                    SizedBox(width: 10.w),
+                    SizedBox(width: 8.w),
 
-                    // Save Button
+                    // Export / Save Card as Image Button
                     Expanded(
-                      flex: 2,
+                      flex: 3,
                       child: OutlinedButton.icon(
                         style: OutlinedButton.styleFrom(
-                          foregroundColor: activeDose?.isSaved == true
-                              ? colors.accentGold
-                              : colors.textSecondary,
+                          foregroundColor: colors.accentGold,
+                          side: BorderSide(
+                            color: colors.accentGold.withValues(alpha: 0.7),
+                            width: 1.r,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14.r),
+                          ),
+                          padding: EdgeInsets.symmetric(vertical: 11.h),
+                        ),
+                        onPressed: _isExporting || activeDose == null
+                            ? null
+                            : () => _handleExportCard(activeDose.source),
+                        icon: _isExporting
+                            ? SizedBox(
+                                width: 14.r,
+                                height: 14.r,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2.r,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    colors.accentGold,
+                                  ),
+                                ),
+                              )
+                            : Icon(
+                                Iconsax.gallery_export,
+                                size: 17.r,
+                                color: colors.accentGold,
+                              ),
+                        label: Text(
+                          _isExporting ? 'جاري الحفظ...' : 'حفظ كصورة',
+                          style: TextStyle(
+                            fontSize: 12.sp,
+                            fontWeight: FontWeight.bold,
+                            color: colors.accentGold,
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 8.w),
+
+                    // Bookmark Button
+                    IconButton(
+                      tooltip:
+                          activeDose?.isSaved == true ? 'محفوظة' : 'حفظ',
+                      style: IconButton.styleFrom(
+                        backgroundColor: colors.surfaceElevated,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14.r),
                           side: BorderSide(
                             color: activeDose?.isSaved == true
                                 ? colors.accentGold
                                 : colors.borderHairline,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16.r),
-                          ),
-                          padding: EdgeInsets.symmetric(vertical: 13.h),
-                        ),
-                        onPressed: () {
-                          HapticFeedback.selectionClick();
-                          cubit.toggleSaveCurrentHopeDose();
-                        },
-                        icon: Icon(
-                          activeDose?.isSaved == true
-                              ? Iconsax.archive_tick
-                              : Iconsax.archive_1,
-                          size: 18.r,
-                          color: activeDose?.isSaved == true
-                              ? colors.accentGold
-                              : colors.textSecondary,
-                        ),
-                        label: Text(
-                          activeDose?.isSaved == true ? 'محفوظة' : 'حِفْظٌ',
-                          style: TextStyle(
-                            fontSize: 12.sp,
-                            fontWeight: FontWeight.bold,
+                            width: 1.r,
                           ),
                         ),
+                        padding: EdgeInsets.all(11.r),
+                      ),
+                      onPressed: () {
+                        HapticFeedback.selectionClick();
+                        cubit.toggleSaveCurrentHopeDose();
+                      },
+                      icon: Icon(
+                        activeDose?.isSaved == true
+                            ? Iconsax.archive_tick
+                            : Iconsax.archive_1,
+                        size: 19.r,
+                        color: activeDose?.isSaved == true
+                            ? colors.accentGold
+                            : colors.textSecondary,
                       ),
                     ),
                   ],
