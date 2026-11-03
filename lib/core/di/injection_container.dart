@@ -27,6 +27,7 @@ import 'package:sakina_app/features/hisn_muslim/domain/repositories/hisn_reposit
 import 'package:sakina_app/features/hisn_muslim/domain/usecases/get_hisn_chapter_detail_usecase.dart';
 import 'package:sakina_app/features/hisn_muslim/domain/usecases/get_hisn_chapters_usecase.dart';
 import 'package:sakina_app/features/hisn_muslim/presentation/cubit/hisn_cubit.dart';
+import 'package:sakina_app/features/istighfar/di/istighfar_di.dart';
 import 'package:sakina_app/features/sunnah_books/data/datasources/sunnah_local_data_source.dart';
 import 'package:sakina_app/features/sunnah_books/data/repositories/sunnah_repository_impl.dart';
 import 'package:sakina_app/features/sunnah_books/domain/repositories/sunnah_repository.dart';
@@ -372,4 +373,7 @@ void _initFeatureModules() {
       searchHadithsUseCase: sl(),
     ),
   );
+
+  // Istighfar & Digital Sibha Feature
+  initIstighfarDI(sl);
 }

@@ -12,5 +12,6 @@ abstract final class AppRoutes {
   static const String athkar = '/athkar';
   static const String hisnMuslim = '/hisn-muslim';
   static const String sunnahBooks = '/sunnah-books';
+  static const String istighfar = '/istighfar';
   static const String settings = '/settings';
 }

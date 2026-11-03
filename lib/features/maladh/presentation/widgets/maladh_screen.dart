@@ -14,6 +14,7 @@ import 'package:sakina_app/features/maladh/presentation/widgets/components/malad
 import 'package:sakina_app/features/maladh/presentation/widgets/components/maladh_continue_quran_card.dart';
 import 'package:sakina_app/features/maladh/presentation/widgets/components/maladh_daily_hadith_card.dart';
 import 'package:sakina_app/features/maladh/presentation/widgets/components/maladh_header_shimmer.dart';
+import 'package:sakina_app/features/maladh/presentation/widgets/components/maladh_istighfar_card.dart';
 import 'package:sakina_app/features/maladh/presentation/widgets/components/maladh_portals_section.dart';
 import 'package:sakina_app/features/maladh/presentation/widgets/components/maladh_prayer_schedule_card.dart';
 
@@ -106,6 +107,11 @@ class _MaladhView extends StatelessWidget {
 
                                 // C. "واصل وردك القرآني" - Continue Quranic Portion Card
                                 const MaladhContinueQuranCard(),
+
+                                AppSpacing.verticalSm,
+
+                                // D. "مَسْبَحَةُ الاسْتِغْفَارِ" - Interactive Istighfar & Sibha Card
+                                const MaladhIstighfarCard(),
 
                                 AppSpacing.verticalMd,
 
