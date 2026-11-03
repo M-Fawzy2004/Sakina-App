@@ -27,16 +27,18 @@ void main() {
         (tester) async {
       await tester.pumpWidget(
         buildTestApp(
-          child: Builder(
-            builder: (context) => ElevatedButton(
-              onPressed: () {
-                AppTopSnackBar.show(
-                  context: context,
-                  message: 'رسالة إشعار تجريبية',
-                  icon: Iconsax.notification,
-                );
-              },
-              child: const Text('Show'),
+          child: Center(
+            child: Builder(
+              builder: (context) => ElevatedButton(
+                onPressed: () {
+                  AppTopSnackBar.show(
+                    context: context,
+                    message: 'رسالة إشعار تجريبية',
+                    icon: Iconsax.notification,
+                  );
+                },
+                child: const Text('Show'),
+              ),
             ),
           ),
         ),
@@ -62,16 +64,18 @@ void main() {
         (tester) async {
       await tester.pumpWidget(
         buildTestApp(
-          child: Builder(
-            builder: (context) => ElevatedButton(
-              onPressed: () {
-                AppTopSnackBar.showSuccess(
-                  context: context,
-                  message: 'تم بنجاح',
-                  duration: const Duration(seconds: 1),
-                );
-              },
-              child: const Text('Success'),
+          child: Center(
+            child: Builder(
+              builder: (context) => ElevatedButton(
+                onPressed: () {
+                  AppTopSnackBar.showSuccess(
+                    context: context,
+                    message: 'تم بنجاح',
+                    duration: const Duration(seconds: 1),
+                  );
+                },
+                child: const Text('Success'),
+              ),
             ),
           ),
         ),
@@ -94,30 +98,34 @@ void main() {
         (tester) async {
       await tester.pumpWidget(
         buildTestApp(
-          child: Builder(
-            builder: (context) => Column(
-              children: [
-                ElevatedButton(
-                  onPressed: () {
-                    AppTopSnackBar.showSuccess(
-                      context: context,
-                      message: 'الأول',
-                      duration: const Duration(seconds: 1),
-                    );
-                  },
-                  child: const Text('First'),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    AppTopSnackBar.showError(
-                      context: context,
-                      message: 'حدث خطأ',
-                      duration: const Duration(seconds: 1),
-                    );
-                  },
-                  child: const Text('Second'),
-                ),
-              ],
+          child: Center(
+            child: Builder(
+              builder: (context) => Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      AppTopSnackBar.showSuccess(
+                        context: context,
+                        message: 'الأول',
+                        duration: const Duration(seconds: 1),
+                      );
+                    },
+                    child: const Text('First'),
+                  ),
+                  SizedBox(height: 20.h),
+                  ElevatedButton(
+                    onPressed: () {
+                      AppTopSnackBar.showError(
+                        context: context,
+                        message: 'حدث خطأ',
+                        duration: const Duration(seconds: 1),
+                      );
+                    },
+                    child: const Text('Second'),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -9,7 +10,7 @@ import 'package:sakina_app/core/theme/app_colors.dart';
 
 /// Centralized, top-anchored floating toast & notification system for Sakina.
 /// Positions feedback messages gracefully at the top of the viewport (below the status bar/notch),
-/// strictly floating above modal sheets, bottom navigation bars, and dialogs.
+/// strictly floating above modal sheets, bottom navigation bars, and dialogs with safe area immunity.
 abstract final class AppTopSnackBar {
   static OverlayEntry? _activeEntry;
   static Timer? _activeTimer;
@@ -22,7 +23,8 @@ abstract final class AppTopSnackBar {
     _activeEntry = null;
   }
 
-  /// Shows a standardized top-anchored notification with high-contrast text and a dismiss action.
+  /// Shows a standardized top-anchored notification with high-contrast text,
+  /// safe area protection (preventing notch/camera overlap), and a dismiss action.
   static void show({
     required BuildContext context,
     required String message,
@@ -54,7 +56,6 @@ abstract final class AppTopSnackBar {
       return;
     }
 
-    final topPadding = MediaQuery.maybePaddingOf(context)?.top ?? 44.0;
     final bg = backgroundColor ?? AppColors.carbonSlate;
     final stroke = borderColor ?? AppColors.champagneGold;
     final fg = textColor ?? AppColors.pureChalk;
@@ -64,7 +65,6 @@ abstract final class AppTopSnackBar {
     late final OverlayEntry entry;
     entry = OverlayEntry(
       builder: (ctx) => _TopToastWidget(
-        topOffset: topPadding + 8.h,
         message: message,
         icon: effectiveIcon,
         iconColor: ico,
@@ -121,7 +121,6 @@ abstract final class AppTopSnackBar {
 }
 
 class _TopToastWidget extends StatelessWidget {
-  final double topOffset;
   final String message;
   final IconData icon;
   final Color iconColor;
@@ -131,7 +130,6 @@ class _TopToastWidget extends StatelessWidget {
   final VoidCallback onDismiss;
 
   const _TopToastWidget({
-    required this.topOffset,
     required this.message,
     required this.icon,
     required this.iconColor,
@@ -143,8 +141,20 @@ class _TopToastWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Determine the true hardware status bar height from the native FlutterView
+    // to prevent any collision with the camera punch hole, notch, or clock
+    final view = View.maybeOf(context);
+    final hardwareTop =
+        view != null ? view.padding.top / view.devicePixelRatio : 0.0;
+    final mediaTop = MediaQuery.maybePaddingOf(context)?.top ?? 0.0;
+    final statusBarHeight = math.max(hardwareTop, mediaTop);
+
+    // Guaranteed clearance below status bar, notch, and punch-hole camera
+    final safeTop =
+        (statusBarHeight > 0 ? math.max(statusBarHeight, 36.h) : 44.h) + 12.h;
+
     return Positioned(
-      top: topOffset,
+      top: safeTop,
       left: 16.w,
       right: 16.w,
       child: Material(
