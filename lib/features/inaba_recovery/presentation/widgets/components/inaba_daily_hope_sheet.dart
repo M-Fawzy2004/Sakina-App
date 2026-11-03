@@ -42,10 +42,22 @@ class _InabaDailyHopeSheetState extends State<InabaDailyHopeSheet> {
       InabaHopeBackgroundSelector.backgroundAssets.first;
   bool _isExporting = false;
 
-  Future<void> _handleExportCard(String verseSource) async {
+  Future<void> _handleSaveCard() async {
     if (_isExporting) return;
     setState(() => _isExporting = true);
-    await InabaHopeCardExporter.exportAndShare(
+    await InabaHopeCardExporter.saveToGallery(
+      context: context,
+      boundaryKey: _cardKey,
+    );
+    if (mounted) {
+      setState(() => _isExporting = false);
+    }
+  }
+
+  Future<void> _handleShareCard(String verseSource) async {
+    if (_isExporting) return;
+    setState(() => _isExporting = true);
+    await InabaHopeCardExporter.shareCard(
       context: context,
       boundaryKey: _cardKey,
       verseSource: verseSource,
@@ -227,7 +239,7 @@ class _InabaDailyHopeSheetState extends State<InabaDailyHopeSheet> {
                         ),
                         onPressed: _isExporting || activeDose == null
                             ? null
-                            : () => _handleExportCard(activeDose.source),
+                            : _handleSaveCard,
                         icon: _isExporting
                             ? SizedBox(
                                 width: 14.r,
@@ -252,6 +264,31 @@ class _InabaDailyHopeSheetState extends State<InabaDailyHopeSheet> {
                             color: colors.accentGold,
                           ),
                         ),
+                      ),
+                    ),
+                    SizedBox(width: 8.w),
+
+                    // Share Card Button
+                    IconButton(
+                      tooltip: 'مشاركة البطاقة',
+                      style: IconButton.styleFrom(
+                        backgroundColor: colors.surfaceElevated,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14.r),
+                          side: BorderSide(
+                            color: colors.borderHairline,
+                            width: 1.r,
+                          ),
+                        ),
+                        padding: EdgeInsets.all(11.r),
+                      ),
+                      onPressed: activeDose == null
+                          ? null
+                          : () => _handleShareCard(activeDose.source),
+                      icon: Icon(
+                        Iconsax.share,
+                        size: 19.r,
+                        color: colors.textSecondary,
                       ),
                     ),
                     SizedBox(width: 8.w),

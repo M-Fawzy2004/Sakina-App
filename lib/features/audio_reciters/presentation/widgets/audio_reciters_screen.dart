@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:sakina_app/core/di/injection_container.dart';
-import 'package:sakina_app/core/theme/app_colors.dart';
 import 'package:sakina_app/core/theme/app_colors_scheme.dart';
+import 'package:sakina_app/core/utils/app_top_snack_bar.dart';
 import 'package:sakina_app/features/audio_reciters/domain/entities/reciter_entity.dart';
 import 'package:sakina_app/features/audio_reciters/presentation/cubit/audio_reciters_cubit.dart';
 import 'package:sakina_app/features/audio_reciters/presentation/cubit/audio_reciters_state.dart';
@@ -114,19 +113,9 @@ class _AudioRecitersView extends StatelessWidget {
             listener: (context, state) {
               if (state.errorMessage != null &&
                   state.errorMessage!.isNotEmpty) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      state.errorMessage!,
-                      style: GoogleFonts.cairo(
-                        fontSize: 13.sp,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.pureChalk,
-                      ),
-                    ),
-                    backgroundColor: AppColors.carbonSlate,
-                    behavior: SnackBarBehavior.floating,
-                  ),
+                AppTopSnackBar.showError(
+                  context: context,
+                  message: state.errorMessage!,
                 );
               }
             },

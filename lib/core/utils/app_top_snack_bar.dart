@@ -1,12 +1,28 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:iconsax/iconsax.dart';
+import 'package:sakina_app/core/router/app_router.dart';
 import 'package:sakina_app/core/theme/app_colors.dart';
-import 'package:sakina_app/core/theme/app_text_styles.dart';
 
-/// Top-anchored floating notification snackbar utility for Sakina.
-/// Positions feedback messages gracefully at the top of the viewport (below status bar/notch),
-/// avoiding any obstruction of bottom navigation bars or modal sheets.
+/// Centralized, top-anchored floating toast & notification system for Sakina.
+/// Positions feedback messages gracefully at the top of the viewport (below the status bar/notch),
+/// strictly floating above modal sheets, bottom navigation bars, and dialogs.
 abstract final class AppTopSnackBar {
+  static OverlayEntry? _activeEntry;
+  static Timer? _activeTimer;
+
+  /// Dismisses any currently visible top notification immediately.
+  static void dismiss() {
+    _activeTimer?.cancel();
+    _activeTimer = null;
+    _activeEntry?.remove();
+    _activeEntry = null;
+  }
+
+  /// Shows a standardized top-anchored notification with high-contrast text and a dismiss action.
   static void show({
     required BuildContext context,
     required String message,
@@ -17,57 +33,210 @@ abstract final class AppTopSnackBar {
     Color? textColor,
     Duration duration = const Duration(seconds: 3),
   }) {
-    final mediaQuery = MediaQuery.of(context);
-    final topPadding = mediaQuery.padding.top;
-    final screenHeight = mediaQuery.size.height;
+    // Dismiss any previous toast to prevent stacking
+    dismiss();
 
-    // Calculate bottom clearance margin so the floating bar rests comfortably below the status bar
-    final topOffset = topPadding + 14.h;
-    final bottomMargin = (screenHeight - topOffset - 64.h).clamp(0.0, screenHeight);
+    HapticFeedback.lightImpact();
 
+    final overlay = Overlay.maybeOf(context, rootOverlay: true) ??
+        rootNavigatorKey.currentState?.overlay;
+
+    if (overlay == null) {
+      // Safe fallback for edge environments without an overlay
+      final messenger = ScaffoldMessenger.maybeOf(context);
+      messenger?.hideCurrentSnackBar();
+      messenger?.showSnackBar(
+        SnackBar(
+          content: Text(message),
+          duration: duration,
+        ),
+      );
+      return;
+    }
+
+    final topPadding = MediaQuery.maybePaddingOf(context)?.top ?? 44.0;
     final bg = backgroundColor ?? AppColors.carbonSlate;
     final stroke = borderColor ?? AppColors.champagneGold;
     final fg = textColor ?? AppColors.pureChalk;
     final ico = iconColor ?? stroke;
+    final effectiveIcon = icon ?? Iconsax.info_circle;
 
-    final scaffoldMessenger = ScaffoldMessenger.of(context);
-    scaffoldMessenger.hideCurrentSnackBar();
-    scaffoldMessenger.showSnackBar(
-      SnackBar(
+    late final OverlayEntry entry;
+    entry = OverlayEntry(
+      builder: (ctx) => _TopToastWidget(
+        topOffset: topPadding + 8.h,
+        message: message,
+        icon: effectiveIcon,
+        iconColor: ico,
         backgroundColor: bg,
-        elevation: 0,
-        behavior: SnackBarBehavior.floating,
-        duration: duration,
-        margin: EdgeInsets.only(
-          bottom: bottomMargin,
-          left: 16.w,
-          right: 16.w,
-        ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16.r),
-          side: BorderSide(color: stroke.withValues(alpha: 0.85), width: 1.r),
-        ),
-        padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
-        content: Row(
-          children: [
-            if (icon != null) ...[
-              Icon(icon, color: ico, size: 20.r),
-              SizedBox(width: 10.w),
-            ],
-            Expanded(
-              child: Text(
-                message,
-                style: AppTextStyles.caption.copyWith(
-                  color: fg,
-                  fontWeight: FontWeight.w700,
-                  fontSize: 12.5.sp,
+        borderColor: stroke,
+        textColor: fg,
+        onDismiss: dismiss,
+      ),
+    );
+
+    _activeEntry = entry;
+    overlay.insert(entry);
+
+    _activeTimer = Timer(duration, () {
+      if (_activeEntry == entry) {
+        dismiss();
+      }
+    });
+  }
+
+  /// Convenience shortcut for success notifications (emerald accents).
+  static void showSuccess({
+    required BuildContext context,
+    required String message,
+    IconData icon = Iconsax.tick_circle,
+    Duration duration = const Duration(seconds: 3),
+  }) {
+    show(
+      context: context,
+      message: message,
+      icon: icon,
+      borderColor: AppColors.emeraldGlow,
+      iconColor: AppColors.emeraldGlow,
+      duration: duration,
+    );
+  }
+
+  /// Convenience shortcut for error or warning notifications.
+  static void showError({
+    required BuildContext context,
+    required String message,
+    IconData icon = Iconsax.warning_2,
+    Duration duration = const Duration(seconds: 3),
+  }) {
+    show(
+      context: context,
+      message: message,
+      icon: icon,
+      borderColor: AppColors.errorRed,
+      iconColor: AppColors.errorRed,
+      duration: duration,
+    );
+  }
+}
+
+class _TopToastWidget extends StatelessWidget {
+  final double topOffset;
+  final String message;
+  final IconData icon;
+  final Color iconColor;
+  final Color backgroundColor;
+  final Color borderColor;
+  final Color textColor;
+  final VoidCallback onDismiss;
+
+  const _TopToastWidget({
+    required this.topOffset,
+    required this.message,
+    required this.icon,
+    required this.iconColor,
+    required this.backgroundColor,
+    required this.borderColor,
+    required this.textColor,
+    required this.onDismiss,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned(
+      top: topOffset,
+      left: 16.w,
+      right: 16.w,
+      child: Material(
+        type: MaterialType.transparency,
+        child: Directionality(
+          textDirection: TextDirection.rtl,
+          child: TweenAnimationBuilder<double>(
+            tween: Tween<double>(begin: 0.0, end: 1.0),
+            duration: const Duration(milliseconds: 260),
+            curve: Curves.easeOutCubic,
+            builder: (context, value, child) {
+              return Transform.translate(
+                offset: Offset(0, (1.0 - value) * -22.h),
+                child: Opacity(
+                  opacity: value.clamp(0.0, 1.0),
+                  child: child,
+                ),
+              );
+            },
+            child: GestureDetector(
+              onVerticalDragUpdate: (details) {
+                if (details.primaryDelta != null &&
+                    details.primaryDelta! < -3) {
+                  onDismiss();
+                }
+              },
+              child: Container(
+                constraints: BoxConstraints(
+                  minHeight: 40.h,
+                  maxHeight: 52.h,
+                ),
+                padding: EdgeInsets.symmetric(
+                  horizontal: 12.w,
+                  vertical: 6.h,
+                ),
+                decoration: BoxDecoration(
+                  color: backgroundColor,
+                  borderRadius: BorderRadius.circular(14.r),
+                  border: Border.all(
+                    color: borderColor.withValues(alpha: 0.85),
+                    width: 1.r,
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    // Status Icon
+                    Icon(
+                      icon,
+                      color: iconColor,
+                      size: 19.r,
+                    ),
+                    SizedBox(width: 9.w),
+
+                    // Message Content (Crisp, High-Contrast Text)
+                    Expanded(
+                      child: Text(
+                        message,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.cairo(
+                          color: textColor,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 12.sp,
+                          height: 1.3,
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 8.w),
+
+                    // Dismiss / Delete Action Button
+                    InkWell(
+                      onTap: () {
+                        HapticFeedback.selectionClick();
+                        onDismiss();
+                      },
+                      borderRadius: BorderRadius.circular(12.r),
+                      child: Padding(
+                        padding: EdgeInsets.all(4.r),
+                        child: Icon(
+                          Iconsax.close_circle,
+                          size: 18.r,
+                          color: textColor.withValues(alpha: 0.6),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
-          ],
+          ),
         ),
       ),
     );
   }
 }
-

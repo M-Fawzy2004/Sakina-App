@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:sakina_app/core/theme/app_colors_scheme.dart';
 import 'package:sakina_app/core/theme/app_text_styles.dart';
+import 'package:sakina_app/core/utils/app_top_snack_bar.dart';
 import 'package:sakina_app/core/utils/haptic_service.dart';
 import 'package:sakina_app/core/widgets/glass/tactile_glass_card.dart';
 import 'package:sakina_app/features/hisn_muslim/domain/entities/hisn_dua_entity.dart';
@@ -46,20 +47,11 @@ class _HisnDuaCardState extends State<HisnDuaCard> {
     final text = '${widget.dua.arabic}\n\n${widget.dua.reference}';
     Clipboard.setData(ClipboardData(text: text));
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Text(
-          'تم نسخ الذكر إلى الحافظة',
-          textAlign: TextAlign.center,
-        ),
-        duration: const Duration(seconds: 2),
-        backgroundColor: context.colors.cardSurface,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12.r),
-          side: BorderSide(color: context.colors.accentGold, width: 1.r),
-        ),
-      ),
+    AppTopSnackBar.show(
+      context: context,
+      message: 'تم نسخ الذكر المبارك إلى الحافظة',
+      icon: Iconsax.copy,
+      iconColor: context.colors.accentGold,
     );
   }
 

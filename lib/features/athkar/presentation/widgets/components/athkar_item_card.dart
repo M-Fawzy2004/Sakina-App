@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:sakina_app/core/theme/app_colors.dart';
 import 'package:sakina_app/core/theme/app_colors_scheme.dart';
+import 'package:sakina_app/core/utils/app_top_snack_bar.dart';
 import 'package:sakina_app/core/utils/haptic_service.dart';
 import 'package:sakina_app/features/athkar/domain/entities/athkar_item_entity.dart';
 import 'package:sakina_app/features/athkar/presentation/widgets/components/athkar_card_elements.dart';
@@ -35,21 +36,11 @@ class AthkarItemCard extends StatelessWidget {
   void _copyThikr(BuildContext context) {
     HapticService.selectionClick();
     Clipboard.setData(ClipboardData(text: item.content));
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          'تَمَّ نَسْخُ الذِّكْرِ المُبَارَكِ لِلحَافِظَةِ',
-          textAlign: TextAlign.center,
-          style: GoogleFonts.cairo(
-            fontSize: 12.5.sp,
-            fontWeight: FontWeight.w700,
-            color: AppColors.pureChalk,
-          ),
-        ),
-        backgroundColor: AppColors.carbonSlate,
-        duration: const Duration(seconds: 2),
-        behavior: SnackBarBehavior.floating,
-      ),
+    AppTopSnackBar.show(
+      context: context,
+      message: 'تَمَّ نَسْخُ الذِّكْرِ المُبَارَكِ لِلحَافِظَةِ',
+      icon: Iconsax.copy,
+      iconColor: AppColors.champagneGold,
     );
   }
 

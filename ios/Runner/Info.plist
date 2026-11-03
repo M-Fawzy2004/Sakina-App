@@ -28,6 +28,10 @@
 	<true/>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Sakina uses Face ID to securely authenticate and protect your private spiritual reflections and personal sanctuary.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Sakina requires access to save your customized Quranic hope cards to your photo library.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Sakina requires access to save your customized Quranic hope cards to your photo library.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

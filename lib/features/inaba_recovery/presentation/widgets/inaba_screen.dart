@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sakina_app/core/di/injection_container.dart';
 import 'package:sakina_app/core/theme/app_colors_scheme.dart';
 import 'package:sakina_app/core/theme/app_text_styles.dart';
+import 'package:sakina_app/core/utils/app_top_snack_bar.dart';
 import 'package:sakina_app/features/inaba_recovery/presentation/cubit/inaba_cubit.dart';
 import 'package:sakina_app/features/inaba_recovery/presentation/cubit/inaba_state.dart';
 import 'package:sakina_app/features/inaba_recovery/presentation/widgets/components/inaba_covenant_renewal_sheet.dart';
@@ -44,24 +45,9 @@ class _InabaScreenView extends StatelessWidget {
       listenWhen: (prev, curr) => curr.toastFeedback != null,
       listener: (context, state) {
         if (state.toastFeedback != null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                state.toastFeedback!,
-                style: TextStyle(
-                  color: colors.textPrimary,
-                  fontSize: 13.sp,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              backgroundColor: colors.cardSurface,
-              elevation: 0,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14.r),
-                side: BorderSide(color: colors.borderHairline),
-              ),
-            ),
+          AppTopSnackBar.show(
+            context: context,
+            message: state.toastFeedback!,
           );
           context.read<InabaCubit>().clearToastFeedback();
         }
