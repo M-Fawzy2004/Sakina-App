@@ -11,8 +11,10 @@ import 'package:sakina_app/features/inaba_recovery/presentation/widgets/componen
 import 'package:sakina_app/features/inaba_recovery/presentation/widgets/components/inaba_emergency_haven_card.dart';
 import 'package:sakina_app/features/inaba_recovery/presentation/widgets/components/inaba_emergency_rescue_sheet.dart';
 import 'package:sakina_app/features/inaba_recovery/presentation/widgets/components/inaba_good_deeds_sheet.dart';
+import 'package:sakina_app/features/inaba_recovery/presentation/widgets/components/inaba_plans_overview_card.dart';
 import 'package:sakina_app/features/inaba_recovery/presentation/widgets/components/inaba_portals_grid.dart';
 import 'package:sakina_app/features/inaba_recovery/presentation/widgets/components/inaba_quranic_hope_card.dart';
+import 'package:sakina_app/features/inaba_recovery/presentation/widgets/components/inaba_recovery_plans_sheet.dart';
 import 'package:sakina_app/features/inaba_recovery/presentation/widgets/components/inaba_sanctuary_confession_sheet.dart';
 import 'package:sakina_app/features/inaba_recovery/presentation/widgets/components/inaba_streak_progress_card.dart';
 import 'package:sakina_app/features/inaba_recovery/presentation/widgets/components/inaba_top_header.dart';
@@ -126,9 +128,31 @@ class _InabaScreenView extends StatelessWidget {
                     ),
                   ),
 
-                // 5. Inaba Portals
+                // 5. Practical Spiritual Recovery Roadmap Card
+                if (state.recoveryPlans.isNotEmpty)
+                  SliverToBoxAdapter(
+                    child: InabaPlansOverviewCard(
+                      plans: state.recoveryPlans,
+                      onTap: () {
+                        InabaRecoveryPlansSheet.show(
+                          context,
+                          plans: state.recoveryPlans,
+                          cubit: context.read<InabaCubit>(),
+                        );
+                      },
+                    ),
+                  ),
+
+                // 6. Inaba Portals
                 SliverToBoxAdapter(
                   child: InabaPortalsGrid(
+                    onPlansTap: () {
+                      InabaRecoveryPlansSheet.show(
+                        context,
+                        plans: state.recoveryPlans,
+                        cubit: context.read<InabaCubit>(),
+                      );
+                    },
                     onGoodDeedsTap: () {
                       InabaGoodDeedsSheet.show(
                         context,

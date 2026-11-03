@@ -144,10 +144,10 @@ class InabaDailyHopeSheet extends StatelessWidget {
                               activeDose.quotation,
                               textAlign: TextAlign.center,
                               style:
-                                  AppTextStyles.titleMediumOf(context).copyWith(
-                                fontSize: 17.sp,
+                                  AppTextStyles.quranAyahOf(context).copyWith(
+                                fontSize: 18.5.sp,
                                 fontWeight: FontWeight.bold,
-                                height: 1.8,
+                                height: 1.9,
                                 color: colors.textPrimary,
                               ),
                             ),

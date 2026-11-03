@@ -1,5 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sakina_app/core/usecases/usecase.dart';
+import 'package:sakina_app/features/inaba_recovery/data/datasources/inaba_recovery_plans_local_data_source.dart';
+import 'package:sakina_app/features/inaba_recovery/domain/services/mihrab_pin_service.dart';
 import 'package:sakina_app/features/inaba_recovery/domain/usecases/add_custom_good_deed_usecase.dart';
 import 'package:sakina_app/features/inaba_recovery/domain/usecases/delete_spiritual_reflection_usecase.dart';
 import 'package:sakina_app/features/inaba_recovery/domain/usecases/get_daily_hope_doses_usecase.dart';
@@ -31,6 +33,8 @@ class InabaCubit extends Cubit<InabaState> {
   final ToggleRepentanceStepUseCase toggleRepentanceStepUseCase;
   final RenewCovenantUseCase renewCovenantUseCase;
   final LogSpiritualVictoryUseCase logSpiritualVictoryUseCase;
+  final MihrabPinService? mihrabPinService;
+  final InabaRecoveryPlansLocalDataSource? recoveryPlansLocalDataSource;
 
   InabaCubit({
     required this.getInabaOverviewUseCase,
@@ -47,6 +51,8 @@ class InabaCubit extends Cubit<InabaState> {
     required this.toggleRepentanceStepUseCase,
     required this.renewCovenantUseCase,
     required this.logSpiritualVictoryUseCase,
+    this.mihrabPinService,
+    this.recoveryPlansLocalDataSource,
   }) : super(const InabaState());
 
   Future<void> loadInabaData() async {
@@ -59,6 +65,9 @@ class InabaCubit extends Cubit<InabaState> {
     final reflectionsRes =
         await getSpiritualReflectionsUseCase(const NoParams());
     final stepsRes = await getRepentanceStepsUseCase(const NoParams());
+
+    final plans = await recoveryPlansLocalDataSource?.getRecoveryPlans() ?? [];
+    final hasPin = mihrabPinService?.hasPin() ?? false;
 
     overviewRes.fold(
       (failure) => emit(
@@ -77,6 +86,8 @@ class InabaCubit extends Cubit<InabaState> {
             spiritualLevels: levelsRes.getOrElse((_) => []),
             reflections: reflectionsRes.getOrElse((_) => []),
             repentanceSteps: stepsRes.getOrElse((_) => []),
+            recoveryPlans: plans,
+            hasMihrabPin: hasPin,
           ),
         );
       },
@@ -173,6 +184,91 @@ class InabaCubit extends Cubit<InabaState> {
 
   void lockConfessionSanctuary() {
     emit(state.copyWith(isConfessionUnlocked: false));
+  }
+
+  // --- Recovery Plans Management ---
+  Future<void> togglePlanStep(String planId, int dayNumber) async {
+    if (recoveryPlansLocalDataSource == null) return;
+    try {
+      final updatedPlan = await recoveryPlansLocalDataSource!
+          .togglePlanDayStep(planId: planId, dayNumber: dayNumber);
+      final updatedPlans = state.recoveryPlans
+          .map((p) => p.id == planId ? updatedPlan : p)
+          .toList();
+      final step =
+          updatedPlan.steps.firstWhere((s) => s.dayNumber == dayNumber);
+      emit(
+        state.copyWith(
+          recoveryPlans: updatedPlans,
+          toastFeedback: step.isCompleted
+              ? 'تم إنجاز خطوة اليوم بنجاح، ثبّتك الله'
+              : 'تم تعديل حالة الخطوة',
+        ),
+      );
+    } catch (e) {
+      emit(state.copyWith(errorMessage: e.toString()));
+    }
+  }
+
+  Future<void> resetPlan(String planId) async {
+    if (recoveryPlansLocalDataSource == null) return;
+    try {
+      await recoveryPlansLocalDataSource!.resetPlan(planId);
+      final plans = await recoveryPlansLocalDataSource!.getRecoveryPlans();
+      emit(
+        state.copyWith(
+          recoveryPlans: plans,
+          toastFeedback: 'تمت إعادة ضبط الخطة لبدء مسار جديد',
+        ),
+      );
+    } catch (e) {
+      emit(state.copyWith(errorMessage: e.toString()));
+    }
+  }
+
+  // --- Mihrab PIN Security Management ---
+  bool verifyMihrabPin(String pin) {
+    if (mihrabPinService == null) {
+      unlockConfessionSanctuary();
+      return true;
+    }
+    final isValid = mihrabPinService!.verifyPin(pin);
+    if (isValid) {
+      unlockConfessionSanctuary();
+    }
+    return isValid;
+  }
+
+  Future<bool> setMihrabPin(String pin) async {
+    if (mihrabPinService == null) {
+      unlockConfessionSanctuary();
+      return true;
+    }
+    final success = await mihrabPinService!.setPin(pin);
+    if (success) {
+      emit(
+        state.copyWith(
+          hasMihrabPin: true,
+          isConfessionUnlocked: true,
+          toastFeedback: 'تم تفعيل رمز القفل لمحرابك بنجاح',
+        ),
+      );
+    }
+    return success;
+  }
+
+  Future<bool> removeMihrabPin() async {
+    if (mihrabPinService == null) return true;
+    final success = await mihrabPinService!.removePin();
+    if (success) {
+      emit(
+        state.copyWith(
+          hasMihrabPin: false,
+          toastFeedback: 'تمت إزالة رمز قفل المحراب',
+        ),
+      );
+    }
+    return success;
   }
 
   Future<void> saveReflection({

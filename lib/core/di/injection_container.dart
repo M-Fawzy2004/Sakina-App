@@ -37,6 +37,8 @@ import 'package:sakina_app/features/sunnah_books/domain/usecases/search_hadiths_
 import 'package:sakina_app/features/sunnah_books/presentation/cubit/book_reader_cubit.dart';
 import 'package:sakina_app/features/sunnah_books/presentation/cubit/sunnah_books_cubit.dart';
 import 'package:sakina_app/features/inaba_recovery/data/datasources/inaba_local_data_source.dart';
+import 'package:sakina_app/features/inaba_recovery/data/datasources/inaba_recovery_plans_local_data_source.dart';
+import 'package:sakina_app/features/inaba_recovery/domain/services/mihrab_pin_service.dart';
 import 'package:sakina_app/features/inaba_recovery/data/repositories/inaba_repository_impl.dart';
 import 'package:sakina_app/features/inaba_recovery/domain/repositories/inaba_repository.dart';
 import 'package:sakina_app/features/inaba_recovery/domain/usecases/add_custom_good_deed_usecase.dart';
@@ -289,6 +291,12 @@ void _initFeatureModules() {
   sl.registerLazySingleton<LogSpiritualVictoryUseCase>(
     () => LogSpiritualVictoryUseCase(sl()),
   );
+  sl.registerLazySingleton<MihrabPinService>(
+    () => MihrabPinServiceImpl(sl()),
+  );
+  sl.registerLazySingleton<InabaRecoveryPlansLocalDataSource>(
+    () => InabaRecoveryPlansLocalDataSourceImpl(sl()),
+  );
   sl.registerFactory<InabaCubit>(
     () => InabaCubit(
       getInabaOverviewUseCase: sl(),
@@ -305,6 +313,8 @@ void _initFeatureModules() {
       toggleRepentanceStepUseCase: sl(),
       renewCovenantUseCase: sl(),
       logSpiritualVictoryUseCase: sl(),
+      mihrabPinService: sl(),
+      recoveryPlansLocalDataSource: sl(),
     ),
   );
 

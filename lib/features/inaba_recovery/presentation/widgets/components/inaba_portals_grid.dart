@@ -12,6 +12,7 @@ class InabaPortalsGrid extends StatelessWidget {
   final VoidCallback onCovenantTap;
   final VoidCallback onTreeTap;
   final VoidCallback onHopeDoseTap;
+  final VoidCallback? onPlansTap;
 
   const InabaPortalsGrid({
     super.key,
@@ -20,6 +21,7 @@ class InabaPortalsGrid extends StatelessWidget {
     required this.onCovenantTap,
     required this.onTreeTap,
     required this.onHopeDoseTap,
+    this.onPlansTap,
   });
 
   @override
@@ -69,14 +71,26 @@ class InabaPortalsGrid extends StatelessWidget {
             // 2. محراب البوح
             InabaPortalCard(
               title: 'مِحْرَابُ البَوْحِ',
-              subtitle: 'مساحتك الآمنة للتأمل، المحاسبة، والفضفضة مع الله',
+              subtitle: 'مساحتك الآمنة للتأمل والمحاسبة والفضفضة مع الله',
               icon: Iconsax.lock,
-              badgeText: 'مساحة مشفرة',
+              badgeText: 'قفل بأرقام',
               onTap: onConfessionTap,
             ),
             SizedBox(height: 10.h),
 
-            // 3. تجديد العهد والتوبة
+            // 3. خطط الإنابة والتعافي المنهجية
+            if (onPlansTap != null) ...[
+              InabaPortalCard(
+                title: 'خُطَطُ التَّعَافِي المَنْهَجِيَّة',
+                subtitle: 'مسارات عملية (٧ أيام • ٣٠ يوماً • بروتوكول طوارئ)',
+                icon: Iconsax.shield_tick,
+                badgeText: 'خطوات يومية',
+                onTap: onPlansTap!,
+              ),
+              SizedBox(height: 10.h),
+            ],
+
+            // 4. تجديد العهد والتوبة
             InabaPortalCard(
               title: 'تَجْدِيدُ العَهْدِ وَالتَّوْبَةِ',
               subtitle: 'ابدأ من جديد.. فالله يقبل التوبة ويفرح بعودتك',

@@ -4,6 +4,7 @@ import 'package:sakina_app/features/inaba_recovery/domain/entities/good_deed_ent
 import 'package:sakina_app/features/inaba_recovery/domain/entities/inaba_overview_entity.dart';
 import 'package:sakina_app/features/inaba_recovery/domain/entities/repentance_step_entity.dart';
 import 'package:sakina_app/features/inaba_recovery/domain/entities/spiritual_level_entity.dart';
+import 'package:sakina_app/features/inaba_recovery/domain/entities/spiritual_recovery_plan_entity.dart';
 import 'package:sakina_app/features/inaba_recovery/domain/entities/spiritual_reflection_entity.dart';
 
 enum InabaStatus { initial, loading, loaded, error }
@@ -17,6 +18,8 @@ class InabaState extends Equatable {
   final List<SpiritualLevelEntity> spiritualLevels;
   final List<SpiritualReflectionEntity> reflections;
   final List<RepentanceStepEntity> repentanceSteps;
+  final List<SpiritualRecoveryPlanEntity> recoveryPlans;
+  final bool hasMihrabPin;
   final bool isConfessionUnlocked;
   final String? errorMessage;
   final String? toastFeedback;
@@ -30,6 +33,8 @@ class InabaState extends Equatable {
     this.spiritualLevels = const [],
     this.reflections = const [],
     this.repentanceSteps = const [],
+    this.recoveryPlans = const [],
+    this.hasMihrabPin = false,
     this.isConfessionUnlocked = false,
     this.errorMessage,
     this.toastFeedback,
@@ -50,6 +55,8 @@ class InabaState extends Equatable {
     List<SpiritualLevelEntity>? spiritualLevels,
     List<SpiritualReflectionEntity>? reflections,
     List<RepentanceStepEntity>? repentanceSteps,
+    List<SpiritualRecoveryPlanEntity>? recoveryPlans,
+    bool? hasMihrabPin,
     bool? isConfessionUnlocked,
     String? errorMessage,
     String? toastFeedback,
@@ -63,6 +70,8 @@ class InabaState extends Equatable {
       spiritualLevels: spiritualLevels ?? this.spiritualLevels,
       reflections: reflections ?? this.reflections,
       repentanceSteps: repentanceSteps ?? this.repentanceSteps,
+      recoveryPlans: recoveryPlans ?? this.recoveryPlans,
+      hasMihrabPin: hasMihrabPin ?? this.hasMihrabPin,
       isConfessionUnlocked: isConfessionUnlocked ?? this.isConfessionUnlocked,
       errorMessage: errorMessage,
       toastFeedback: toastFeedback,
@@ -79,6 +88,8 @@ class InabaState extends Equatable {
         spiritualLevels,
         reflections,
         repentanceSteps,
+        recoveryPlans,
+        hasMihrabPin,
         isConfessionUnlocked,
         errorMessage,
         toastFeedback,

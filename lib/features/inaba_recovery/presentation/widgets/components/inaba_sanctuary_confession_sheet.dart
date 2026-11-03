@@ -167,17 +167,35 @@ class _InabaSanctuaryConfessionSheetState
                       ],
                     ),
                     if (isUnlocked)
-                      IconButton(
-                        tooltip: 'قفل المحراب',
-                        icon: Icon(
-                          Iconsax.lock,
-                          size: 20.r,
-                          color: colors.accentGold,
-                        ),
-                        onPressed: () {
-                          HapticFeedback.lightImpact();
-                          cubit.lockConfessionSanctuary();
-                        },
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            tooltip: 'إعادة تعيين رمز القفل',
+                            icon: Icon(
+                              Iconsax.key,
+                              size: 18.r,
+                              color: colors.textSecondary,
+                            ),
+                            onPressed: () async {
+                              HapticFeedback.lightImpact();
+                              await cubit.removeMihrabPin();
+                              cubit.lockConfessionSanctuary();
+                            },
+                          ),
+                          IconButton(
+                            tooltip: 'قفل المحراب',
+                            icon: Icon(
+                              Iconsax.lock,
+                              size: 20.r,
+                              color: colors.accentGold,
+                            ),
+                            onPressed: () {
+                              HapticFeedback.lightImpact();
+                              cubit.lockConfessionSanctuary();
+                            },
+                          ),
+                        ],
                       ),
                   ],
                 ),
@@ -242,7 +260,10 @@ class _InabaSanctuaryConfessionSheetState
                           ),
                         )
                       : InabaSanctuaryLockedView(
-                          onUnlock: cubit.unlockConfessionSanctuary,
+                          hasPin: state.hasMihrabPin,
+                          onVerifyPin: cubit.verifyMihrabPin,
+                          onSetPin: cubit.setMihrabPin,
+                          onResetPin: cubit.removeMihrabPin,
                         ),
                 ),
               ],
