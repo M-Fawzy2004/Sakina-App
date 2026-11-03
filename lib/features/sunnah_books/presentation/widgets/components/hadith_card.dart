@@ -108,12 +108,13 @@ class HadithCard extends StatelessWidget {
             ),
             child: Text(
               hadith.arabic,
-              textAlign: TextAlign.justify,
+              textAlign: TextAlign.center,
+              textDirection: TextDirection.rtl,
               style: AppTextStyles.quranAyahOf(context).copyWith(
-                fontSize: 16.sp,
-                height: 1.85,
+                fontSize: 18.sp,
+                height: 1.95,
                 color: colors.textPrimary,
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeight.w700,
               ),
             ),
           ),

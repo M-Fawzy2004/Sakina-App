@@ -343,7 +343,7 @@ class _HangingSibhaPainter extends CustomPainter {
   }) {
     final textSpan = TextSpan(
       text: '+1',
-      style: GoogleFonts.cairo(
+      style: GoogleFonts.almarai(
         fontSize: 13.5.sp,
         fontWeight: FontWeight.w800,
         color: colors.accentGold.withValues(alpha: opacity),

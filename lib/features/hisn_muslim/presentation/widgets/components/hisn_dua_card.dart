@@ -129,11 +129,12 @@ class _HisnDuaCardState extends State<HisnDuaCard> {
             child: Text(
               widget.dua.arabic,
               textAlign: TextAlign.center,
+              textDirection: TextDirection.rtl,
               style: AppTextStyles.quranAyahOf(context).copyWith(
-                fontSize: 16.5.sp,
-                height: 1.8,
+                fontSize: 19.sp,
+                height: 1.95,
                 color: colors.textPrimary,
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeight.w700,
               ),
             ),
           ),

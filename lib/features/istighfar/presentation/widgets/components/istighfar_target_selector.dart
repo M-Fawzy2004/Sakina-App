@@ -64,11 +64,11 @@ class IstighfarTargetSelector extends StatelessWidget {
                   child: Center(
                     child: Text(
                       t.label,
-                      style: GoogleFonts.cairo(
+                      style: GoogleFonts.almarai(
                         color: isSelected
                             ? colors.accentGold
                             : colors.textSecondary,
-                        fontSize: 13.sp,
+                        fontSize: 12.5.sp,
                         fontWeight:
                             isSelected ? FontWeight.w800 : FontWeight.w600,
                       ),

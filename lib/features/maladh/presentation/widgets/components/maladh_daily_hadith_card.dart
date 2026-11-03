@@ -76,17 +76,18 @@ class MaladhDailyHadithCard extends StatelessWidget {
 
               SizedBox(height: 10.h),
 
-              // 2. Prophetic Hadith Text (Compact: max 3 lines)
+              // 2. Prophetic Hadith Text (Centered & Prominent)
               Text(
                 '«${hadith.arabic}»',
-                maxLines: 3,
+                maxLines: 4,
                 overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.justify,
+                textAlign: TextAlign.center,
+                textDirection: TextDirection.rtl,
                 style: AppTextStyles.quranAyahOf(context).copyWith(
-                  fontSize: 14.5.sp,
-                  height: 1.85,
+                  fontSize: 17.5.sp,
+                  height: 1.95,
                   color: colors.textPrimary,
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
 

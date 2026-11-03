@@ -90,7 +90,7 @@ class CelestialBrandBadge extends StatelessWidget {
             children: [
               Text(
                 'سَكِينَة',
-                style: GoogleFonts.cairo(
+                style: GoogleFonts.almarai(
                   fontSize: 18.sp,
                   height: 1.15,
                   color: colors.textPrimary,
@@ -102,11 +102,11 @@ class CelestialBrandBadge extends StatelessWidget {
                   opacity: subtitleOpacity,
                   child: Text(
                     'مَلَاذُ الرُّوحِ',
-                    style: GoogleFonts.cairo(
+                    style: GoogleFonts.almarai(
                       color: colors.textSecondary,
                       fontSize: 9.sp,
                       height: 1.1,
-                      fontWeight: FontWeight.w500,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
                 ),
@@ -185,17 +185,17 @@ class CelestialAyahCard extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // Holy Ayah Text (Adapts cleanly to dark/light theme, high-contrast)
+          // Holy Ayah Text (Classical Amiri Naskh, Large, Crystal-Clear)
           Text(
             verseText,
             textAlign: TextAlign.center,
             textDirection: TextDirection.rtl,
-            style: GoogleFonts.cairo(
-              fontSize: 21.sp,
-              fontWeight: FontWeight.w700,
+            style: GoogleFonts.amiri(
+              fontSize: 28.sp,
+              fontWeight: FontWeight.bold,
               color: colors.textPrimary,
-              height: 1.85,
-              letterSpacing: 0.2,
+              height: 1.75,
+              letterSpacing: 0.3,
             ),
             maxLines: 3,
             overflow: TextOverflow.ellipsis,
@@ -203,13 +203,14 @@ class CelestialAyahCard extends StatelessWidget {
 
           SizedBox(height: 8.h),
 
-          // Delicate Surah Citation in Soft Champagne/Warm Gold
+          // Delicate Surah Citation in Soft Champagne/Warm Gold (Almarai)
           Text(
             surahSource,
-            style: GoogleFonts.cairo(
+            textAlign: TextAlign.center,
+            style: GoogleFonts.almarai(
               color: colors.accentGold,
-              fontSize: 12.sp,
-              fontWeight: FontWeight.w600,
+              fontSize: 13.sp,
+              fontWeight: FontWeight.w700,
               letterSpacing: 0.3,
             ),
           ),

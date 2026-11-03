@@ -91,7 +91,7 @@ class _MaladhCelestialSliverHeaderState
   Widget build(BuildContext context) {
     final topPadding = MediaQuery.of(context).padding.top;
     final minHeight = 54.h + 74.h + topPadding;
-    final maxHeight = 225.h + 74.h + topPadding;
+    final maxHeight = 240.h + 74.h + topPadding;
 
     return SliverPersistentHeader(
       pinned: true,
@@ -161,10 +161,10 @@ class _MaladhCelestialHeaderDelegate extends SliverPersistentHeaderDelegate {
           // 2. Center Prominent Quranic Ayah (Fades gracefully as soon as scroll begins)
           if (verseOpacity > 0.01)
             Positioned(
-              top: topPadding + 54.h,
+              top: topPadding + 50.h,
               left: 16.w,
               right: 16.w,
-              height: 155.h,
+              height: 180.h,
               child: Opacity(
                 opacity: verseOpacity,
                 child: Transform.translate(

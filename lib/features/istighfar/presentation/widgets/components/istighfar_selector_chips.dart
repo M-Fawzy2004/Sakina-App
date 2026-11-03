@@ -78,11 +78,11 @@ class _ChipItem extends StatelessWidget {
         child: Center(
           child: Text(
             item.shortTitle,
-            style: GoogleFonts.cairo(
+            style: GoogleFonts.almarai(
               color: isSelected
                   ? (colors.isDark ? AppColors.obsidianCore : AppColors.inkDeep)
                   : colors.textSecondary,
-              fontSize: 13.sp,
+              fontSize: 12.5.sp,
               fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
             ),
           ),

@@ -80,16 +80,17 @@ class MaladhReflectionCard extends StatelessWidget {
 
             AppSpacing.verticalSm,
 
-            // 2. The Sacred Quranic Verse
+            // 2. The Sacred Quranic Verse (Centered & Clear)
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 6.h),
               child: Text(
                 verseText,
                 textAlign: TextAlign.center,
                 textDirection: TextDirection.rtl,
-                style: AppTextStyles.quranAyah.copyWith(
-                  fontSize: 19.sp,
-                  height: 2.1,
+                style: AppTextStyles.quranAyahOf(context).copyWith(
+                  fontSize: 22.sp,
+                  height: 2.05,
+                  fontWeight: FontWeight.w700,
                   color: colors.textPrimary,
                 ),
               ),

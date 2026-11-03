@@ -90,7 +90,7 @@ class AthkarCardHeader extends StatelessWidget {
               SizedBox(width: 5.w),
               Text(
                 '$targetCount ${targetCount == 1 ? "مَرَّة" : "مَرَّاتٍ"}',
-                style: GoogleFonts.cairo(
+                style: GoogleFonts.almarai(
                   fontSize: 11.sp,
                   fontWeight: FontWeight.w700,
                   color: isCompleted ? colors.accentEmerald : colors.textPrimary,
@@ -116,14 +116,13 @@ class AthkarCardBodyText extends StatelessWidget {
 
     return Text(
       content,
-      textAlign: TextAlign.start,
+      textAlign: TextAlign.center,
       textDirection: TextDirection.rtl,
-      style: GoogleFonts.cairo(
-        fontSize: 17.sp,
-        fontWeight: FontWeight.w600,
+      style: GoogleFonts.amiri(
+        fontSize: 21.sp,
+        fontWeight: FontWeight.w700,
         color: colors.textPrimary,
-        height: 1.9,
-        letterSpacing: 0.1,
+        height: 2.05,
       ),
     );
   }

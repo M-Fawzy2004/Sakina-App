@@ -67,7 +67,7 @@ class IstighfarCounterGauge extends StatelessWidget {
                         children: [
                           Text(
                             '${item.currentCycleCount}',
-                            style: GoogleFonts.cairo(
+                            style: GoogleFonts.almarai(
                               fontSize: 36.sp,
                               fontWeight: FontWeight.w800,
                               color: colors.textPrimary,
@@ -78,9 +78,9 @@ class IstighfarCounterGauge extends StatelessWidget {
                             SizedBox(height: 2.h),
                             Text(
                               '/ ${item.targetCount}',
-                              style: GoogleFonts.cairo(
+                              style: GoogleFonts.almarai(
                                 fontSize: 12.5.sp,
-                                fontWeight: FontWeight.w600,
+                                fontWeight: FontWeight.w700,
                                 color: colors.textSecondary,
                                 height: 1.0,
                               ),
@@ -124,7 +124,7 @@ class IstighfarCounterGauge extends StatelessWidget {
                   SizedBox(width: 5.w),
                   Text(
                     'الدورات: ${item.lapsCompleted}',
-                    style: GoogleFonts.cairo(
+                    style: GoogleFonts.almarai(
                       color: colors.textSecondary,
                       fontSize: 11.sp,
                       fontWeight: FontWeight.w600,
@@ -163,7 +163,7 @@ class IstighfarCounterGauge extends StatelessWidget {
                       SizedBox(width: 4.w),
                       Text(
                         'تصفير الدورة',
-                        style: GoogleFonts.cairo(
+                        style: GoogleFonts.almarai(
                           color: colors.textSecondary,
                           fontSize: 11.sp,
                           fontWeight: FontWeight.w600,

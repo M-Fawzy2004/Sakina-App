@@ -17,8 +17,8 @@ abstract final class AppTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
-      fontFamily: GoogleFonts.cairo().fontFamily,
-      textTheme: GoogleFonts.cairoTextTheme().apply(
+      fontFamily: GoogleFonts.almarai().fontFamily,
+      textTheme: GoogleFonts.almaraiTextTheme().apply(
         bodyColor: AppColors.pureChalk,
         displayColor: AppColors.pureChalk,
       ),
@@ -67,8 +67,8 @@ abstract final class AppTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
-      fontFamily: GoogleFonts.cairo().fontFamily,
-      textTheme: GoogleFonts.cairoTextTheme().apply(
+      fontFamily: GoogleFonts.almarai().fontFamily,
+      textTheme: GoogleFonts.almaraiTextTheme().apply(
         bodyColor: AppColors.pureChalk,
         displayColor: AppColors.pureChalk,
       ),
@@ -117,8 +117,8 @@ abstract final class AppTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
-      fontFamily: GoogleFonts.cairo().fontFamily,
-      textTheme: GoogleFonts.cairoTextTheme().apply(
+      fontFamily: GoogleFonts.almarai().fontFamily,
+      textTheme: GoogleFonts.almaraiTextTheme().apply(
         bodyColor: AppColors.inkDeep,
         displayColor: AppColors.inkDeep,
       ),
@@ -168,8 +168,8 @@ abstract final class AppTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
-      fontFamily: GoogleFonts.cairo().fontFamily,
-      textTheme: GoogleFonts.cairoTextTheme().apply(
+      fontFamily: GoogleFonts.almarai().fontFamily,
+      textTheme: GoogleFonts.almaraiTextTheme().apply(
         bodyColor: AppColors.pureChalk,
         displayColor: AppColors.pureChalk,
       ),

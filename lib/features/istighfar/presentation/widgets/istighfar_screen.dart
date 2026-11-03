@@ -66,7 +66,7 @@ class _IstighfarView extends StatelessWidget {
                 return Center(
                   child: Text(
                     state.message,
-                    style: GoogleFonts.cairo(color: colors.textSecondary),
+                    style: GoogleFonts.almarai(color: colors.textSecondary),
                   ),
                 );
               }
@@ -202,7 +202,7 @@ class _IstighfarHeader extends StatelessWidget {
         // Title
         Text(
           'مَسْبَحَةُ الاسْتِغْفَارِ',
-          style: GoogleFonts.cairo(
+          style: GoogleFonts.almarai(
             color: colors.textPrimary,
             fontSize: 16.sp,
             fontWeight: FontWeight.w800,

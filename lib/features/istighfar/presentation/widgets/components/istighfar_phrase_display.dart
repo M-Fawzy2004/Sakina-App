@@ -38,8 +38,8 @@ class IstighfarPhraseDisplay extends StatelessWidget {
               textAlign: TextAlign.center,
               textDirection: TextDirection.rtl,
               style: AppTextStyles.quranAyahOf(context).copyWith(
-                fontSize: 21.sp,
-                height: 1.75,
+                fontSize: 25.sp,
+                height: 1.8,
                 color: colors.textPrimary,
                 fontWeight: FontWeight.w700,
                 letterSpacing: 0.2,
@@ -96,11 +96,11 @@ class IstighfarPhraseDisplay extends StatelessWidget {
               child: Text(
                 '«${item.virtue}»',
                 textAlign: TextAlign.center,
-                style: GoogleFonts.cairo(
+                style: GoogleFonts.almarai(
                   color: colors.accentGold,
-                  fontSize: 10.5.sp,
-                  fontWeight: FontWeight.w600,
-                  height: 1.35,
+                  fontSize: 11.5.sp,
+                  fontWeight: FontWeight.w700,
+                  height: 1.4,
                 ),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,

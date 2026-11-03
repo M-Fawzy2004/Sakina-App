@@ -30,16 +30,16 @@ abstract final class AppTextStyles {
         );
     }
   }
-  static TextStyle quranAyahOf(BuildContext context) => GoogleFonts.cairo(
-        fontSize: 23.sp,
+  static TextStyle quranAyahOf(BuildContext context) => GoogleFonts.amiri(
+        fontSize: 24.sp,
         fontWeight: FontWeight.w700,
         color: context.colors.textPrimary,
         height: 2.1,
         letterSpacing: 0.3,
       );
 
-  static TextStyle quranAyahLargeOf(BuildContext context) => GoogleFonts.cairo(
-        fontSize: 28.sp,
+  static TextStyle quranAyahLargeOf(BuildContext context) => GoogleFonts.amiri(
+        fontSize: 29.sp,
         fontWeight: FontWeight.w700,
         color: context.colors.textPrimary,
         height: 2.2,
@@ -54,52 +54,52 @@ abstract final class AppTextStyles {
         letterSpacing: 0.3,
       );
 
-  static TextStyle headlineLargeOf(BuildContext context) => GoogleFonts.cairo(
-        fontSize: 25.sp,
+  static TextStyle headlineLargeOf(BuildContext context) => GoogleFonts.almarai(
+        fontSize: 24.sp,
         fontWeight: FontWeight.w800,
         color: context.colors.accentGold,
         height: 1.35,
         letterSpacing: 0.2,
       );
 
-  static TextStyle headlineMediumOf(BuildContext context) => GoogleFonts.cairo(
+  static TextStyle headlineMediumOf(BuildContext context) => GoogleFonts.almarai(
         fontSize: 18.sp,
         fontWeight: FontWeight.w700,
         color: context.colors.accentGold,
         height: 1.35,
       );
 
-  static TextStyle titleLargeOf(BuildContext context) => GoogleFonts.cairo(
-        fontSize: 17.sp,
+  static TextStyle titleLargeOf(BuildContext context) => GoogleFonts.almarai(
+        fontSize: 16.5.sp,
         fontWeight: FontWeight.w700,
         color: context.colors.textPrimary,
         height: 1.35,
       );
 
-  static TextStyle titleMediumOf(BuildContext context) => GoogleFonts.cairo(
-        fontSize: 14.5.sp,
+  static TextStyle titleMediumOf(BuildContext context) => GoogleFonts.almarai(
+        fontSize: 14.sp,
         fontWeight: FontWeight.w700,
         color: context.colors.textPrimary,
         height: 1.35,
       );
 
-  static TextStyle bodyLargeOf(BuildContext context) => GoogleFonts.cairo(
+  static TextStyle bodyLargeOf(BuildContext context) => GoogleFonts.almarai(
         fontSize: 13.5.sp,
-        fontWeight: FontWeight.w600,
+        fontWeight: FontWeight.w700,
         color: context.colors.textPrimary,
-        height: 1.45,
+        height: 1.5,
       );
 
-  static TextStyle bodyMediumOf(BuildContext context) => GoogleFonts.cairo(
+  static TextStyle bodyMediumOf(BuildContext context) => GoogleFonts.almarai(
         fontSize: 12.5.sp,
-        fontWeight: FontWeight.w500,
+        fontWeight: FontWeight.w400,
         color: context.colors.textSecondary,
-        height: 1.45,
+        height: 1.5,
       );
 
-  static TextStyle captionOf(BuildContext context) => GoogleFonts.cairo(
+  static TextStyle captionOf(BuildContext context) => GoogleFonts.almarai(
         fontSize: 11.sp,
-        fontWeight: FontWeight.w500,
+        fontWeight: FontWeight.w400,
         color: context.colors.textSecondary,
         height: 1.3,
       );
@@ -107,17 +107,17 @@ abstract final class AppTextStyles {
   // ---------------------------------------------------------------------------
   // Static Default Typography Tokens (Maintained for Backwards Compatibility)
   // ---------------------------------------------------------------------------
-  // Quranic Sacred Scripture (Crisp, Straight & Highly Legible Cairo Script)
-  static TextStyle get quranAyah => GoogleFonts.cairo(
-        fontSize: 23.sp,
+  // Quranic Sacred Scripture (Classical Amiri Naskh)
+  static TextStyle get quranAyah => GoogleFonts.amiri(
+        fontSize: 24.sp,
         fontWeight: FontWeight.w700,
         color: AppColors.pureChalk,
         height: 2.1,
         letterSpacing: 0.3,
       );
 
-  static TextStyle get quranAyahLarge => GoogleFonts.cairo(
-        fontSize: 28.sp,
+  static TextStyle get quranAyahLarge => GoogleFonts.amiri(
+        fontSize: 29.sp,
         fontWeight: FontWeight.w700,
         color: AppColors.pureChalk,
         height: 2.2,
@@ -133,59 +133,59 @@ abstract final class AppTextStyles {
         letterSpacing: 0.3,
       );
 
-  // Modern Bold Headings & Surah Titles (Cairo - matching Onboarding)
-  static TextStyle get headlineLarge => GoogleFonts.cairo(
-        fontSize: 25.sp,
+  // Modern Bold Headings & Surah Titles (Almarai - Clean, Elegant & Crisp)
+  static TextStyle get headlineLarge => GoogleFonts.almarai(
+        fontSize: 24.sp,
         fontWeight: FontWeight.w800,
         color: AppColors.champagneGold,
         height: 1.35,
         letterSpacing: 0.2,
       );
 
-  static TextStyle get headlineMedium => GoogleFonts.cairo(
+  static TextStyle get headlineMedium => GoogleFonts.almarai(
         fontSize: 18.sp,
         fontWeight: FontWeight.w700,
         color: AppColors.champagneGold,
         height: 1.35,
       );
 
-  // Modern Arabic UI Body & Subtitles (Cairo)
-  static TextStyle get titleLarge => GoogleFonts.cairo(
-        fontSize: 17.sp,
+  // Modern Arabic UI Body & Subtitles (Almarai)
+  static TextStyle get titleLarge => GoogleFonts.almarai(
+        fontSize: 16.5.sp,
         fontWeight: FontWeight.w700,
         color: AppColors.pureChalk,
         height: 1.35,
       );
 
-  static TextStyle get titleMedium => GoogleFonts.cairo(
-        fontSize: 14.5.sp,
+  static TextStyle get titleMedium => GoogleFonts.almarai(
+        fontSize: 14.sp,
         fontWeight: FontWeight.w700,
         color: AppColors.pureChalk,
         height: 1.35,
       );
 
-  static TextStyle get bodyLarge => GoogleFonts.cairo(
+  static TextStyle get bodyLarge => GoogleFonts.almarai(
         fontSize: 13.5.sp,
-        fontWeight: FontWeight.w600,
+        fontWeight: FontWeight.w700,
         color: AppColors.pureChalk,
-        height: 1.45,
+        height: 1.5,
       );
 
-  static TextStyle get bodyMedium => GoogleFonts.cairo(
+  static TextStyle get bodyMedium => GoogleFonts.almarai(
         fontSize: 12.5.sp,
-        fontWeight: FontWeight.w500,
+        fontWeight: FontWeight.w400,
         color: AppColors.mutedSilver,
-        height: 1.45,
+        height: 1.5,
       );
 
-  static TextStyle get caption => GoogleFonts.cairo(
+  static TextStyle get caption => GoogleFonts.almarai(
         fontSize: 11.sp,
-        fontWeight: FontWeight.w500,
+        fontWeight: FontWeight.w400,
         color: AppColors.mutedSilver,
         height: 1.3,
       );
 
-  static TextStyle get button => GoogleFonts.cairo(
+  static TextStyle get button => GoogleFonts.almarai(
         fontSize: 13.sp,
         fontWeight: FontWeight.w700,
         color: AppColors.obsidianCore,
@@ -193,16 +193,16 @@ abstract final class AppTextStyles {
       );
 
   // Modern Surah Card & TabBar Typography Tokens (matching image specifications)
-  static TextStyle get surahCardEnglishTitle => GoogleFonts.cairo(
+  static TextStyle get surahCardEnglishTitle => GoogleFonts.almarai(
         fontSize: 14.5.sp,
         fontWeight: FontWeight.w700,
         color: AppColors.emeraldGlow,
         height: 1.25,
       );
 
-  static TextStyle get surahCardEnglishSubtitle => GoogleFonts.cairo(
+  static TextStyle get surahCardEnglishSubtitle => GoogleFonts.almarai(
         fontSize: 11.sp,
-        fontWeight: FontWeight.w500,
+        fontWeight: FontWeight.w400,
         color: AppColors.mutedSilver,
         height: 1.25,
       );
@@ -214,21 +214,21 @@ abstract final class AppTextStyles {
         height: 1.25,
       );
 
-  static TextStyle get surahCardIndex => GoogleFonts.cairo(
+  static TextStyle get surahCardIndex => GoogleFonts.almarai(
         fontSize: 15.sp,
         fontWeight: FontWeight.w800,
         color: AppColors.pureChalk,
         height: 1.2,
       );
 
-  static TextStyle get tabActiveText => GoogleFonts.cairo(
+  static TextStyle get tabActiveText => GoogleFonts.almarai(
         fontSize: 12.5.sp,
         fontWeight: FontWeight.w800,
         color: AppColors.obsidianCore,
         height: 1.2,
       );
 
-  static TextStyle get tabInactiveText => GoogleFonts.cairo(
+  static TextStyle get tabInactiveText => GoogleFonts.almarai(
         fontSize: 12.sp,
         fontWeight: FontWeight.w600,
         color: AppColors.mutedSilver,

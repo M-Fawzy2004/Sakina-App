@@ -54,15 +54,16 @@ class InabaQuranicHopeCard extends StatelessWidget {
               ),
               SizedBox(height: 12.h),
 
-              // The Sacred Verse
+              // The Sacred Verse (Centered & Clear)
               Text(
                 '﴿ قُلْ يَا عِبَادِيَ الَّذِينَ أَسْرَفُوا عَلَىٰ أَنفُسِهِمْ لَا تَقْنَطُوا مِن رَّحْمَةِ اللَّهِ ۚ إِنَّ اللَّهَ يَغْفِرُ الذُّنُوبَ جَمِيعًا ۚ إِنَّهُ هُوَ الْغَفُورُ الرَّحِيمُ ﴾',
                 textAlign: TextAlign.center,
+                textDirection: TextDirection.rtl,
                 style: AppTextStyles.quranAyahOf(context).copyWith(
-                  fontSize: 16.sp,
+                  fontSize: 19.sp,
                   height: 2.1,
                   color: colors.textPrimary,
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
               SizedBox(height: 10.h),
@@ -70,10 +71,11 @@ class InabaQuranicHopeCard extends StatelessWidget {
               // Surah reference
               Text(
                 'سُورَةُ الزُّمَرِ • الآيَةُ ٥٣',
+                textAlign: TextAlign.center,
                 style: AppTextStyles.captionOf(context).copyWith(
                   color: colors.accentGold,
-                  fontSize: 11.sp,
-                  fontWeight: FontWeight.w500,
+                  fontSize: 11.5.sp,
+                  fontWeight: FontWeight.w600,
                   letterSpacing: 0.3,
                 ),
               ),

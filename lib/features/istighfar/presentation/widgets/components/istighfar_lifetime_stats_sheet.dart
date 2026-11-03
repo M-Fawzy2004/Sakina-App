@@ -146,7 +146,7 @@ class IstighfarLifetimeStatsSheet extends StatelessWidget {
                       children: [
                         Text(
                           'إِجْمَالِيُّ الاسْتِغْفَارِ وَالتَّسْبِيحِ',
-                          style: GoogleFonts.cairo(
+                          style: GoogleFonts.almarai(
                             color: colors.textSecondary,
                             fontSize: 11.sp,
                             fontWeight: FontWeight.w600,
@@ -155,7 +155,7 @@ class IstighfarLifetimeStatsSheet extends StatelessWidget {
                         SizedBox(height: 2.h),
                         Text(
                           '$totalLifetimeCount مَرَّة',
-                          style: GoogleFonts.cairo(
+                          style: GoogleFonts.almarai(
                             color: colors.accentGold,
                             fontSize: 22.sp,
                             fontWeight: FontWeight.w800,
@@ -173,7 +173,7 @@ class IstighfarLifetimeStatsSheet extends StatelessWidget {
             // Section Header
             Text(
               'تَفْصِيلُ الأَذْكَارِ الْمَحْفُوظَةِ مَحَلِّيّاً',
-              style: GoogleFonts.cairo(
+              style: GoogleFonts.almarai(
                 color: colors.textSecondary,
                 fontSize: 12.sp,
                 fontWeight: FontWeight.w700,
@@ -242,7 +242,7 @@ class _StatItemTile extends StatelessWidget {
                   item.arabic,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.cairo(
+                  style: GoogleFonts.almarai(
                     color: colors.textPrimary,
                     fontSize: 12.5.sp,
                     fontWeight: FontWeight.w700,
@@ -252,7 +252,7 @@ class _StatItemTile extends StatelessWidget {
               SizedBox(width: 10.w),
               Text(
                 '${item.lifetimeCount} مَرَّة',
-                style: GoogleFonts.cairo(
+                style: GoogleFonts.almarai(
                   color: colors.accentGold,
                   fontSize: 12.sp,
                   fontWeight: FontWeight.w800,

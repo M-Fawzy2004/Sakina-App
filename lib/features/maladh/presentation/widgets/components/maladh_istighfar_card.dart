@@ -108,9 +108,9 @@ class _MaladhIstighfarCardState extends State<MaladhIstighfarCard> {
                   ),
                   child: Text(
                     _totalCount > 0 ? '$_totalCount مَرَّة' : 'ابدأ الذكر',
-                    style: GoogleFonts.cairo(
+                    style: GoogleFonts.almarai(
                       color: colors.accentEmerald,
-                      fontSize: 10.sp,
+                      fontSize: 10.5.sp,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
@@ -120,13 +120,14 @@ class _MaladhIstighfarCardState extends State<MaladhIstighfarCard> {
 
             SizedBox(height: 10.h),
 
-            // 2. Prophetic Quote
+            // 2. Prophetic Quote (Centered & Prominent)
             Text(
               '«أَسْتَغْفِرُ اللَّهَ الْعَظِيمَ وَأَتُوبُ إِلَيْهِ»',
               textAlign: TextAlign.center,
+              textDirection: TextDirection.rtl,
               style: AppTextStyles.quranAyahOf(context).copyWith(
-                fontSize: 15.sp,
-                height: 1.7,
+                fontSize: 18.5.sp,
+                height: 1.85,
                 color: colors.textPrimary,
                 fontWeight: FontWeight.w700,
               ),
