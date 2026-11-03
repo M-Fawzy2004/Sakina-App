@@ -67,17 +67,6 @@ class _InabaScreenView extends StatelessWidget {
         }
       },
       builder: (context, state) {
-        if (state.status == InabaStatus.loading && state.overview == null) {
-          return Scaffold(
-            backgroundColor: colors.background,
-            body: Center(
-              child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(colors.accentGold),
-              ),
-            ),
-          );
-        }
-
         final overview = state.overview;
 
         return Scaffold(

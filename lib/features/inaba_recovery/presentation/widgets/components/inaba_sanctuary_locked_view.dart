@@ -13,6 +13,7 @@ class InabaSanctuaryLockedView extends StatefulWidget {
   final bool Function(String pin) onVerifyPin;
   final Future<bool> Function(String pin) onSetPin;
   final Future<void> Function() onResetPin;
+  final Future<void> Function()? onBiometricTap;
 
   const InabaSanctuaryLockedView({
     super.key,
@@ -20,6 +21,7 @@ class InabaSanctuaryLockedView extends StatefulWidget {
     required this.onVerifyPin,
     required this.onSetPin,
     required this.onResetPin,
+    this.onBiometricTap,
   });
 
   @override
@@ -43,6 +45,13 @@ class _InabaSanctuaryLockedViewState extends State<InabaSanctuaryLockedView>
       vsync: this,
       duration: const Duration(milliseconds: 400),
     );
+    if (widget.hasPin && widget.onBiometricTap != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          widget.onBiometricTap!();
+        }
+      });
+    }
   }
 
   @override
@@ -144,7 +153,7 @@ class _InabaSanctuaryLockedViewState extends State<InabaSanctuaryLockedView>
             ),
           ),
           content: Text(
-            'هل تريد إزالة رمز القفل الحالي لتعيين رمز جديد؟ ستبقى خواطرك المحفوظة محفوظة بأمان.',
+            'لحماية خصوصيتك ومنع أي شخص آخر من تغيير الرمز، سيُطلب منك تأكيد هويتك عبر بصمة الوجه أو الإصبع أو رمز هاتفك الشخصي قبل إعادة التعيين.',
             style: GoogleFonts.almarai(
               fontSize: 13.sp,
               color: context.colors.textSecondary,
@@ -298,7 +307,41 @@ class _InabaSanctuaryLockedViewState extends State<InabaSanctuaryLockedView>
               onClearPressed: _onClearPressed,
             ),
 
-            SizedBox(height: 16.h),
+            if (widget.hasPin && widget.onBiometricTap != null) ...[
+              SizedBox(height: 12.h),
+              OutlinedButton.icon(
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: colors.accentGold,
+                  side: BorderSide(
+                    color: colors.accentGold.withValues(alpha: 0.5),
+                    width: 1.r,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14.r),
+                  ),
+                  padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                ),
+                onPressed: () {
+                  HapticFeedback.lightImpact();
+                  widget.onBiometricTap!();
+                },
+                icon: Icon(
+                  Iconsax.finger_scan,
+                  size: 18.r,
+                  color: colors.accentGold,
+                ),
+                label: Text(
+                  'فتح بالبصمة أو رمز الهاتف',
+                  style: GoogleFonts.almarai(
+                    fontSize: 12.sp,
+                    fontWeight: FontWeight.bold,
+                    color: colors.accentGold,
+                  ),
+                ),
+              ),
+            ],
+
+            SizedBox(height: 12.h),
 
             // Reset PIN link if user set one
             if (widget.hasPin)

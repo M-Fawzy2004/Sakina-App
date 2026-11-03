@@ -141,7 +141,7 @@ class InabaPlansOverviewCard extends StatelessWidget {
               children: [
                 Expanded(
                   child: Text(
-                    '٣ خُطَطٍ مُتَكَامِلَة (٧ أيام • ٣٠ يوماً • طوارئ)',
+                    '${plans.length} خُطَطٍ مُتَكَامِلَة للتعافي وبناء الحصانة',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: GoogleFonts.almarai(

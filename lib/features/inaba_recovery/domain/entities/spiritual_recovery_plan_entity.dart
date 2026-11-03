@@ -80,6 +80,7 @@ class SpiritualRecoveryPlanEntity {
   });
 
   int get completedStepsCount => steps.where((s) => s.isCompleted).length;
+  int get totalStepsCount => steps.length;
 
   double get progress =>
       steps.isEmpty ? 0.0 : completedStepsCount / steps.length;

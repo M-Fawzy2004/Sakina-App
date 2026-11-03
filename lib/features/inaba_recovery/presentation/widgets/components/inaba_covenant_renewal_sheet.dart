@@ -87,31 +87,37 @@ class InabaCovenantRenewalSheet extends StatelessWidget {
                         ),
                       ),
                       child: Icon(
-                        Iconsax.refresh_2,
+                        Iconsax.refresh,
                         size: 22.r,
                         color: colors.accentGold,
                       ),
                     ),
                     SizedBox(width: 12.w),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'تَجْدِيدُ العَهْدِ وَالتَّوْبَةِ',
-                          style: AppTextStyles.titleMedium.copyWith(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 17.sp,
-                            color: colors.textPrimary,
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'تَجْدِيدُ العَهْدِ وَالتَّوْبَةِ',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: AppTextStyles.titleMedium.copyWith(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 17.sp,
+                              color: colors.textPrimary,
+                            ),
                           ),
-                        ),
-                        Text(
-                          'ابدأ من جديد.. فالله يغفر ويقبل ويفرح بعودتك',
-                          style: AppTextStyles.caption.copyWith(
-                            color: colors.textSecondary,
-                            fontSize: 11.sp,
+                          Text(
+                            'ابدأ من جديد.. فالله يغفر ويقبل ويفرح بعودتك',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: AppTextStyles.caption.copyWith(
+                              color: colors.textSecondary,
+                              fontSize: 11.sp,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ],
                 ),

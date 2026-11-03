@@ -122,81 +122,85 @@ class _InabaSanctuaryConfessionSheetState
 
                 // Top Header Row
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
-                      children: [
-                        Container(
-                          padding: EdgeInsets.all(8.r),
-                          decoration: BoxDecoration(
-                            color: colors.surfaceElevated,
-                            borderRadius: BorderRadius.circular(12.r),
-                            border: Border.all(
-                              color: colors.borderHairline,
-                              width: 1.r,
-                            ),
-                          ),
-                          child: Icon(
-                            isUnlocked ? Iconsax.lock_slash : Iconsax.lock,
-                            size: 20.r,
-                            color: colors.accentGold,
-                          ),
+                    Container(
+                      padding: EdgeInsets.all(8.r),
+                      decoration: BoxDecoration(
+                        color: colors.surfaceElevated,
+                        borderRadius: BorderRadius.circular(12.r),
+                        border: Border.all(
+                          color: colors.borderHairline,
+                          width: 1.r,
                         ),
-                        SizedBox(width: 12.w),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'مِحْرَابُ البَوْحِ',
-                              style:
-                                  AppTextStyles.titleMediumOf(context).copyWith(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 17.sp,
-                                color: colors.textPrimary,
-                              ),
-                            ),
-                            Text(
-                              'مساحتك الآمنة للتأمل والمحاسبة بينك وبين الله',
-                              style: AppTextStyles.captionOf(context).copyWith(
-                                color: colors.textSecondary,
-                                fontSize: 11.sp,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
+                      ),
+                      child: Icon(
+                        isUnlocked ? Iconsax.lock_slash : Iconsax.lock,
+                        size: 20.r,
+                        color: colors.accentGold,
+                      ),
                     ),
-                    if (isUnlocked)
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
+                    SizedBox(width: 10.w),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          IconButton(
-                            tooltip: 'إعادة تعيين رمز القفل',
-                            icon: Icon(
-                              Iconsax.key,
-                              size: 18.r,
-                              color: colors.textSecondary,
+                          Text(
+                            'مِحْرَابُ البَوْحِ',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style:
+                                AppTextStyles.titleMediumOf(context).copyWith(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16.sp,
+                              color: colors.textPrimary,
                             ),
-                            onPressed: () async {
-                              HapticFeedback.lightImpact();
-                              await cubit.removeMihrabPin();
-                              cubit.lockConfessionSanctuary();
-                            },
                           ),
-                          IconButton(
-                            tooltip: 'قفل المحراب',
-                            icon: Icon(
-                              Iconsax.lock,
-                              size: 20.r,
-                              color: colors.accentGold,
+                          Text(
+                            'مساحتك الآمنة للتأمل والمحاسبة بينك وبين الله',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: AppTextStyles.captionOf(context).copyWith(
+                              color: colors.textSecondary,
+                              fontSize: 11.sp,
                             ),
-                            onPressed: () {
-                              HapticFeedback.lightImpact();
-                              cubit.lockConfessionSanctuary();
-                            },
                           ),
                         ],
                       ),
+                    ),
+                    if (isUnlocked) ...[
+                      SizedBox(width: 6.w),
+                      IconButton(
+                        tooltip: 'إعادة تعيين رمز القفل',
+                        visualDensity: VisualDensity.compact,
+                        padding: EdgeInsets.all(6.r),
+                        constraints: const BoxConstraints(),
+                        icon: Icon(
+                          Iconsax.key,
+                          size: 18.r,
+                          color: colors.textSecondary,
+                        ),
+                        onPressed: () async {
+                          HapticFeedback.lightImpact();
+                          await cubit.resetMihrabPinWithDeviceAuth();
+                        },
+                      ),
+                      SizedBox(width: 6.w),
+                      IconButton(
+                        tooltip: 'قفل المحراب',
+                        visualDensity: VisualDensity.compact,
+                        padding: EdgeInsets.all(6.r),
+                        constraints: const BoxConstraints(),
+                        icon: Icon(
+                          Iconsax.lock,
+                          size: 20.r,
+                          color: colors.accentGold,
+                        ),
+                        onPressed: () {
+                          HapticFeedback.lightImpact();
+                          cubit.lockConfessionSanctuary();
+                        },
+                      ),
+                    ],
                   ],
                 ),
                 SizedBox(height: 16.h),
@@ -263,7 +267,8 @@ class _InabaSanctuaryConfessionSheetState
                           hasPin: state.hasMihrabPin,
                           onVerifyPin: cubit.verifyMihrabPin,
                           onSetPin: cubit.setMihrabPin,
-                          onResetPin: cubit.removeMihrabPin,
+                          onResetPin: cubit.resetMihrabPinWithDeviceAuth,
+                          onBiometricTap: cubit.authenticateWithDevice,
                         ),
                 ),
               ],

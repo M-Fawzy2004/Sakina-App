@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:sakina_app/core/theme/app_theme.dart';
+import 'package:sakina_app/features/inaba_recovery/presentation/cubit/inaba_cubit.dart';
 import 'package:sakina_app/features/inaba_recovery/presentation/widgets/components/inaba_plans_overview_card.dart';
+import 'package:sakina_app/features/inaba_recovery/presentation/widgets/components/inaba_recovery_plans_sheet.dart';
 import 'package:sakina_app/features/inaba_recovery/presentation/widgets/components/inaba_sanctuary_locked_view.dart';
 import 'package:sakina_app/features/inaba_recovery/data/datasources/static/inaba_recovery_plans_seed_data.dart';
+
+class MockInabaCubit extends Mock implements InabaCubit {}
 
 void main() {
   Widget createTestWidget(Widget child) {
@@ -47,6 +52,33 @@ void main() {
 
       await tester.tap(find.text('استعراض'));
       expect(tapped, isTrue);
+    });
+
+    testWidgets('InabaRecoveryPlansSheet renders plans list with CTA and badges',
+        (tester) async {
+      final mockCubit = MockInabaCubit();
+      final plans = InabaRecoveryPlansSeedData.defaultPlans;
+
+      await tester.pumpWidget(
+        ScreenUtilInit(
+          designSize: const Size(390, 844),
+          builder: (context, _) => MaterialApp(
+            theme: AppTheme.darkLuxury,
+            home: Scaffold(
+              body: InabaRecoveryPlansSheet(
+                plans: plans,
+                cubit: mockCubit,
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('خُطَطُ الإِنَابَةِ وَالتَّعَافِي المَنْهَجِيَّة'),
+          findsOneWidget);
+      expect(find.text(plans[0].title), findsOneWidget);
+      expect(find.text('ابدأ الآن'), findsWidgets);
     });
 
     testWidgets('InabaSanctuaryLockedView renders numeric keypad and enters digits',

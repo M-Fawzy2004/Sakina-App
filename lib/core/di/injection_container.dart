@@ -36,6 +36,8 @@ import 'package:sakina_app/features/sunnah_books/domain/usecases/get_sunnah_book
 import 'package:sakina_app/features/sunnah_books/domain/usecases/search_hadiths_usecase.dart';
 import 'package:sakina_app/features/sunnah_books/presentation/cubit/book_reader_cubit.dart';
 import 'package:sakina_app/features/sunnah_books/presentation/cubit/sunnah_books_cubit.dart';
+import 'package:local_auth/local_auth.dart';
+import 'package:sakina_app/core/services/security/biometric_auth_service.dart';
 import 'package:sakina_app/features/inaba_recovery/data/datasources/inaba_local_data_source.dart';
 import 'package:sakina_app/features/inaba_recovery/data/datasources/inaba_recovery_plans_local_data_source.dart';
 import 'package:sakina_app/features/inaba_recovery/domain/services/mihrab_pin_service.dart';
@@ -297,6 +299,10 @@ void _initFeatureModules() {
   sl.registerLazySingleton<InabaRecoveryPlansLocalDataSource>(
     () => InabaRecoveryPlansLocalDataSourceImpl(sl()),
   );
+  sl.registerLazySingleton<LocalAuthentication>(() => LocalAuthentication());
+  sl.registerLazySingleton<BiometricAuthService>(
+    () => BiometricAuthServiceImpl(sl()),
+  );
   sl.registerFactory<InabaCubit>(
     () => InabaCubit(
       getInabaOverviewUseCase: sl(),
@@ -315,6 +321,7 @@ void _initFeatureModules() {
       logSpiritualVictoryUseCase: sl(),
       mihrabPinService: sl(),
       recoveryPlansLocalDataSource: sl(),
+      biometricAuthService: sl(),
     ),
   );
 

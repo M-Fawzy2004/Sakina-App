@@ -23,7 +23,7 @@ abstract final class InabaRecoveryPlansSeedData {
               recommendedDhikr: '«سيد الاستغفار: اللهم أنت ربي لا إله إلا أنت خلقتني وأنا عبدك...»',
               scripturalEvidence:
                   '«ما من رجل يذنب ذنباً ثم يقوم فيتطهر ثم يصلي ثم يستغفر الله إلا غفر الله له» [أبو داود والترمذي]',
-              isCompleted: true,
+              isCompleted: false,
             ),
             RecoveryPlanDayStepEntity(
               dayNumber: 2,
@@ -33,7 +33,7 @@ abstract final class InabaRecoveryPlansSeedData {
               recommendedDhikr: '«لا حول ولا قوة إلا بالله العلي العظيم (١٠٠ مرة)»',
               scripturalEvidence:
                   '«ومن يتق الله يجعل له مخرجا ويرزقه من حيث لا يحتسب» [الطلاق]',
-              isCompleted: true,
+              isCompleted: false,
             ),
             RecoveryPlanDayStepEntity(
               dayNumber: 3,
@@ -108,7 +108,7 @@ abstract final class InabaRecoveryPlansSeedData {
               recommendedDhikr: '«لا إله إلا أنت سبحانك إني كنت من الظالمين (١٠٠ مرة)»',
               scripturalEvidence:
                   '«والذين جاهدوا فينا لنهدينهم سبلنا وإن الله لمع المحسنين» [العنكبوت]',
-              isCompleted: true,
+              isCompleted: false,
             ),
             RecoveryPlanDayStepEntity(
               dayNumber: 2,
@@ -134,7 +134,87 @@ abstract final class InabaRecoveryPlansSeedData {
         ),
 
         // ---------------------------------------------------------------------
-        // 3. SOS Emergency Protocol (بروتوكول الطوارئ والنجاة الفورية)
+        // 3. 14-Day Habit Re-wiring Plan (خطة الـ 14 يوماً)
+        // ---------------------------------------------------------------------
+        const SpiritualRecoveryPlanEntity(
+          id: 'plan_14_days',
+          title: 'خطة الـ ١٤ يوماً: ترويض النفس وكسر قيود العادة',
+          badge: 'لبناء العادات • ١٤ يوماً',
+          durationText: '١٤ يَوْماً',
+          description:
+              'مسار عملي متوسط المدى لتفكيك المحفزات، ملء أوقات الفراغ، وبناء الحصن اليومي من الأذكار والصلوات الخمس في أوقاتها.',
+          iconKey: 'repeat',
+          steps: [
+            RecoveryPlanDayStepEntity(
+              dayNumber: 1,
+              title: 'الأسبوع الأول: الصيام ومجاهدة الشهوات',
+              practicalAction:
+                  'صم يومي الاثنين والخميس أو صم يوماً تطوعاً؛ فالصيام وقاية وكسر لحدة الشهوة وتدريب لإرادة النفس.',
+              recommendedDhikr: '«اللهم إني أعوذ بك من شر سمعي وبصري ولساني وقلبي ومنيي»',
+              scripturalEvidence:
+                  '«يا معشر الشباب من استطاع منكم الباءة فليتزوج فإنه أغض للبصر وأحصن للفرج، ومن لم يستطع فعليه بالصوم فإنه له وجاء» [متفق عليه]',
+              isCompleted: false,
+            ),
+            RecoveryPlanDayStepEntity(
+              dayNumber: 2,
+              title: 'الأسبوع الثاني: عمارة المسجد وتذوق القرآن',
+              practicalAction:
+                  'احرص على أداء الصلوات في المسجد مع الجماعة، والجلوس بعد الصلاة لقراءة وجهين من القرآن بتدبر وخشوع.',
+              recommendedDhikr: '«اللهم اجعل القرآن ربيع قلبي ونور صدري وجلاء حزني»',
+              scripturalEvidence:
+                  '«في بيوت أذن الله أن ترفع ويذكر فيها اسمه يسبح له فيها بالغدو والآصال رجال لا تلهيهم تجارة ولا بيع عن ذكر الله» [النور]',
+              isCompleted: false,
+            ),
+          ],
+        ),
+
+        // ---------------------------------------------------------------------
+        // 4. 40-Day Heart Cleansing Plan (خطة الـ 40 يوماً)
+        // ---------------------------------------------------------------------
+        const SpiritualRecoveryPlanEntity(
+          id: 'plan_40_days',
+          title: 'خطة الـ ٤٠ يوماً: صفاء السريرة ورسوخ الاستقامة',
+          badge: 'للمجاهدة الكبرى • ٤٠ يوماً',
+          durationText: '٤٠ يَوْماً',
+          description:
+              'خطة الأربعين يوماً المباركة لبلوغ درجة نقاء القلب، وتذوق حلاوة القرب من الله، والتحول إلى عبد رباني ثابت الجنان.',
+          iconKey: 'moon',
+          steps: [
+            RecoveryPlanDayStepEntity(
+              dayNumber: 1,
+              title: 'العشر الأوائل: ترويض النفس وقطع علائق المعصية',
+              practicalAction:
+                  'التركيز على حراسة الخواطر وحفظ الجوارح عن النظر الحرام ومصاحبة الصالحين.',
+              recommendedDhikr: '«يا مقلب القلوب ثبت قلبي على دينك»',
+              scripturalEvidence:
+                  '«قل للمؤمنين يغضوا من أبصارهم ويحفظوا فروجهم ذلك أزكى لهم» [النور]',
+              isCompleted: false,
+            ),
+            RecoveryPlanDayStepEntity(
+              dayNumber: 2,
+              title: 'العشرون التالية: الأنس بالطاعات ولذة المناجاة',
+              practicalAction:
+                  'قيام الليل ولو بركعتين خفيفتين وتدبر سورة البقرة وتفريغ الصدر في المحراب.',
+              recommendedDhikr: '«لا إله إلا الله وحده لا شريك له، له الملك وله الحمد وهو على كل شيء قدير»',
+              scripturalEvidence:
+                  '«تتجافى جنوبهم عن المضاجع يدعون ربهم خوفاً وطمعاً» [السجدة]',
+              isCompleted: false,
+            ),
+            RecoveryPlanDayStepEntity(
+              dayNumber: 3,
+              title: 'الأيام الأخيرة: تمام الأربعين ورسوخ الهوية الإيمانية',
+              practicalAction:
+                  'تجديد العهد التام، وإخراج صدقة شكر كبرى، ومساندة من يحتاج النصح والإعانة في درب التوبة.',
+              recommendedDhikr: '«الحمد لله الذي هدانا لهذا وما كنا لنهتدي لولا أن هدانا الله»',
+              scripturalEvidence:
+                  '«إن الذين قالوا ربنا الله ثم استقاموا تتنزل عليهم الملائكة ألا تخافوا ولا تحزنوا» [فصلت]',
+              isCompleted: false,
+            ),
+          ],
+        ),
+
+        // ---------------------------------------------------------------------
+        // 5. SOS Emergency Protocol (بروتوكول الطوارئ والنجاة الفورية)
         // ---------------------------------------------------------------------
         const SpiritualRecoveryPlanEntity(
           id: 'plan_sos_urgent',

@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sakina_app/core/services/security/biometric_auth_service.dart';
 import 'package:sakina_app/core/usecases/usecase.dart';
 import 'package:sakina_app/features/inaba_recovery/data/datasources/inaba_recovery_plans_local_data_source.dart';
 import 'package:sakina_app/features/inaba_recovery/domain/services/mihrab_pin_service.dart';
@@ -35,6 +36,7 @@ class InabaCubit extends Cubit<InabaState> {
   final LogSpiritualVictoryUseCase logSpiritualVictoryUseCase;
   final MihrabPinService? mihrabPinService;
   final InabaRecoveryPlansLocalDataSource? recoveryPlansLocalDataSource;
+  final BiometricAuthService? biometricAuthService;
 
   InabaCubit({
     required this.getInabaOverviewUseCase,
@@ -53,6 +55,7 @@ class InabaCubit extends Cubit<InabaState> {
     required this.logSpiritualVictoryUseCase,
     this.mihrabPinService,
     this.recoveryPlansLocalDataSource,
+    this.biometricAuthService,
   }) : super(const InabaState());
 
   Future<void> loadInabaData() async {
@@ -62,35 +65,24 @@ class InabaCubit extends Cubit<InabaState> {
     final goodDeedsRes = await getGoodDeedsUseCase(const NoParams());
     final hopeDosesRes = await getDailyHopeDosesUseCase(const NoParams());
     final levelsRes = await getSpiritualLevelsUseCase(const NoParams());
-    final reflectionsRes =
-        await getSpiritualReflectionsUseCase(const NoParams());
+    final reflectionsRes = await getSpiritualReflectionsUseCase(const NoParams());
     final stepsRes = await getRepentanceStepsUseCase(const NoParams());
-
     final plans = await recoveryPlansLocalDataSource?.getRecoveryPlans() ?? [];
     final hasPin = mihrabPinService?.hasPin() ?? false;
 
     overviewRes.fold(
-      (failure) => emit(
-        state.copyWith(
-          status: InabaStatus.error,
-          errorMessage: failure.message,
-        ),
-      ),
-      (overview) {
-        emit(
-          state.copyWith(
-            status: InabaStatus.loaded,
-            overview: overview,
-            goodDeeds: goodDeedsRes.getOrElse((_) => []),
-            hopeDoses: hopeDosesRes.getOrElse((_) => []),
-            spiritualLevels: levelsRes.getOrElse((_) => []),
-            reflections: reflectionsRes.getOrElse((_) => []),
-            repentanceSteps: stepsRes.getOrElse((_) => []),
-            recoveryPlans: plans,
-            hasMihrabPin: hasPin,
-          ),
-        );
-      },
+      (failure) => emit(state.copyWith(status: InabaStatus.error, errorMessage: failure.message)),
+      (overview) => emit(state.copyWith(
+        status: InabaStatus.loaded,
+        overview: overview,
+        goodDeeds: goodDeedsRes.getOrElse((_) => []),
+        hopeDoses: hopeDosesRes.getOrElse((_) => []),
+        spiritualLevels: levelsRes.getOrElse((_) => []),
+        reflections: reflectionsRes.getOrElse((_) => []),
+        repentanceSteps: stepsRes.getOrElse((_) => []),
+        recoveryPlans: plans,
+        hasMihrabPin: hasPin,
+      )),
     );
   }
 
@@ -99,23 +91,13 @@ class InabaCubit extends Cubit<InabaState> {
     res.fold(
       (failure) => emit(state.copyWith(errorMessage: failure.message)),
       (updatedDeed) async {
-        final updatedList = state.goodDeeds.map((d) {
-          return d.id == id ? updatedDeed : d;
-        }).toList();
-
-        // Refresh overview
+        final updatedList = state.goodDeeds.map((d) => d.id == id ? updatedDeed : d).toList();
         final overviewRes = await getInabaOverviewUseCase(const NoParams());
-        final newOverview = overviewRes.getOrElse((_) => state.overview!);
-
-        emit(
-          state.copyWith(
-            goodDeeds: updatedList,
-            overview: newOverview,
-            toastFeedback: updatedDeed.isCompletedToday
-                ? 'تقبل الله عملك الصالح، وزادك إيماناً'
-                : null,
-          ),
-        );
+        emit(state.copyWith(
+          goodDeeds: updatedList,
+          overview: overviewRes.getOrElse((_) => state.overview!),
+          toastFeedback: updatedDeed.isCompletedToday ? 'تقبل الله عملك الصالح، وزادك إيماناً' : null,
+        ));
       },
     );
   }
@@ -271,34 +253,61 @@ class InabaCubit extends Cubit<InabaState> {
     return success;
   }
 
+  Future<bool> authenticateWithDevice() async {
+    if (biometricAuthService == null) return false;
+    final success = await biometricAuthService!.authenticate(
+      localizedReason: 'تأكيد هويتك لفتح محراب البوح',
+    );
+    if (success) {
+      unlockConfessionSanctuary();
+    }
+    return success;
+  }
+
+  Future<bool> resetMihrabPinWithDeviceAuth() async {
+    if (biometricAuthService == null) {
+      final res = await removeMihrabPin();
+      lockConfessionSanctuary();
+      return res;
+    }
+    final canAuth = await biometricAuthService!.canAuthenticate();
+    if (canAuth) {
+      final success = await biometricAuthService!.authenticate(
+        localizedReason:
+            'يرجى تأكيد هويتك عبر بصمة الوجه أو الإصبع أو رمز الهاتف لإعادة تعيين رمز المحراب',
+      );
+      if (!success) {
+        emit(
+          state.copyWith(
+            toastFeedback: 'تعذر التحقق من الهوية! لم يتم تغيير الرمز.',
+          ),
+        );
+        return false;
+      }
+    }
+    final res = await removeMihrabPin();
+    lockConfessionSanctuary();
+    return res;
+  }
+
   Future<void> saveReflection({
     required String title,
     required String content,
     required String moodTag,
   }) async {
     if (content.trim().isEmpty) return;
-
     final res = await saveSpiritualReflectionUseCase(
-      SaveSpiritualReflectionParams(
-        title: title,
-        content: content,
-        moodTag: moodTag,
-      ),
+      SaveSpiritualReflectionParams(title: title, content: content, moodTag: moodTag),
     );
     res.fold(
       (failure) => emit(state.copyWith(errorMessage: failure.message)),
       (newReflection) async {
-        final updatedList = [newReflection, ...state.reflections];
         final overviewRes = await getInabaOverviewUseCase(const NoParams());
-        final newOverview = overviewRes.getOrElse((_) => state.overview!);
-
-        emit(
-          state.copyWith(
-            reflections: updatedList,
-            overview: newOverview,
-            toastFeedback: 'حُفظت مناجاتك بأمان في محرابك الخاص',
-          ),
-        );
+        emit(state.copyWith(
+          reflections: [newReflection, ...state.reflections],
+          overview: overviewRes.getOrElse((_) => state.overview!),
+          toastFeedback: 'حُفظت مناجاتك بأمان في محرابك الخاص',
+        ));
       },
     );
   }
@@ -308,17 +317,12 @@ class InabaCubit extends Cubit<InabaState> {
     res.fold(
       (failure) => emit(state.copyWith(errorMessage: failure.message)),
       (_) async {
-        final updatedList = state.reflections.where((r) => r.id != id).toList();
         final overviewRes = await getInabaOverviewUseCase(const NoParams());
-        final newOverview = overviewRes.getOrElse((_) => state.overview!);
-
-        emit(
-          state.copyWith(
-            reflections: updatedList,
-            overview: newOverview,
-            toastFeedback: 'تم محو الخاطرة بسلام',
-          ),
-        );
+        emit(state.copyWith(
+          reflections: state.reflections.where((r) => r.id != id).toList(),
+          overview: overviewRes.getOrElse((_) => state.overview!),
+          toastFeedback: 'تم محو الخاطرة بسلام',
+        ));
       },
     );
   }
@@ -328,10 +332,7 @@ class InabaCubit extends Cubit<InabaState> {
     res.fold(
       (failure) => emit(state.copyWith(errorMessage: failure.message)),
       (updatedStep) {
-        final updatedList = state.repentanceSteps.map((s) {
-          return s.id == id ? updatedStep : s;
-        }).toList();
-
+        final updatedList = state.repentanceSteps.map((s) => s.id == id ? updatedStep : s).toList();
         emit(state.copyWith(repentanceSteps: updatedList));
       },
     );
@@ -341,26 +342,17 @@ class InabaCubit extends Cubit<InabaState> {
     emit(state.copyWith(status: InabaStatus.loading));
     final res = await renewCovenantUseCase(const NoParams());
     res.fold(
-      (failure) => emit(
-        state.copyWith(
-          status: InabaStatus.error,
-          errorMessage: failure.message,
-        ),
-      ),
+      (failure) => emit(state.copyWith(status: InabaStatus.error, errorMessage: failure.message)),
       (newOverview) async {
         final stepsRes = await getRepentanceStepsUseCase(const NoParams());
         final levelsRes = await getSpiritualLevelsUseCase(const NoParams());
-
-        emit(
-          state.copyWith(
-            status: InabaStatus.loaded,
-            overview: newOverview,
-            repentanceSteps: stepsRes.getOrElse((_) => []),
-            spiritualLevels: levelsRes.getOrElse((_) => []),
-            toastFeedback:
-                'مبارك عهدك الجديد مع الله.. { إِنَّ اللَّهَ يُحِبُّ التَّوَّابِينَ }',
-          ),
-        );
+        emit(state.copyWith(
+          status: InabaStatus.loaded,
+          overview: newOverview,
+          repentanceSteps: stepsRes.getOrElse((_) => []),
+          spiritualLevels: levelsRes.getOrElse((_) => []),
+          toastFeedback: 'مبارك عهدك الجديد مع الله.. { إِنَّ اللَّهَ يُحِبُّ التَّوَّابِينَ }',
+        ));
       },
     );
   }

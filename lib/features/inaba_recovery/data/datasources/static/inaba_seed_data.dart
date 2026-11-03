@@ -8,14 +8,14 @@ import 'package:sakina_app/features/inaba_recovery/data/models/spiritual_reflect
 /// Seed data for Inaba Recovery offline-first local storage.
 abstract final class InabaSeedData {
   static InabaOverviewModel get defaultOverview => InabaOverviewModel(
-        streakDays: 14,
-        bestStreakDays: 21,
-        streakProgress: 0.70,
-        totalGoodDeedsCompleted: 42,
-        totalReflectionsCount: 3,
-        currentSpiritualLevelTitle: 'الالتزام',
-        recoveryPathStatus: 'حتى الآن في طريق النقاء',
-        lastTawbahDate: DateTime.now().subtract(const Duration(days: 14)),
+        streakDays: 0,
+        bestStreakDays: 0,
+        streakProgress: 0.0,
+        totalGoodDeedsCompleted: 0,
+        totalReflectionsCount: 0,
+        currentSpiritualLevelTitle: 'البِدَايَةُ',
+        recoveryPathStatus: 'ابدأ عهد النقاء والسكينة الآن',
+        lastTawbahDate: DateTime.now(),
       );
 
   static String resolveLevelTitle(int days) {
@@ -31,8 +31,8 @@ abstract final class InabaSeedData {
           title: 'صدقة سرية ولو بالقليل',
           category: 'إحسان مالي',
           rewardDescription: '«صدقة السر تطفئ غضب الرب»',
-          completionCount: 18,
-          isCompletedToday: true,
+          completionCount: 0,
+          isCompletedToday: false,
           iconKey: 'heart',
         ),
         GoodDeedModel(
@@ -40,7 +40,7 @@ abstract final class InabaSeedData {
           title: 'صلاة ركعتين في جوف الليل',
           category: 'عبادة بدنية',
           rewardDescription: '«ركعتان في جوف الليل خير من الدنيا وما فيها»',
-          completionCount: 9,
+          completionCount: 0,
           isCompletedToday: false,
           iconKey: 'moon',
         ),
@@ -49,8 +49,8 @@ abstract final class InabaSeedData {
           title: 'بر الوالدين ودعوة صالحة',
           category: 'صلة رحم',
           rewardDescription: '«رضا الرب في رضا الوالد»',
-          completionCount: 14,
-          isCompletedToday: true,
+          completionCount: 0,
+          isCompletedToday: false,
           iconKey: 'people',
         ),
         GoodDeedModel(
@@ -58,7 +58,7 @@ abstract final class InabaSeedData {
           title: 'استغفار 100 مرة بيقين',
           category: 'ذكر ولسان',
           rewardDescription: '«من لزم الاستغفار جعل الله له من كل هم فرجا»',
-          completionCount: 26,
+          completionCount: 0,
           isCompletedToday: false,
           iconKey: 'tasbih',
         ),
@@ -67,7 +67,7 @@ abstract final class InabaSeedData {
           title: 'قراءة ورد أو جزء من القرآن',
           category: 'كتاب الله',
           rewardDescription: '«القرآن شافع مشفع وماحل مصدق»',
-          completionCount: 11,
+          completionCount: 0,
           isCompletedToday: false,
           iconKey: 'book',
         ),
@@ -76,7 +76,7 @@ abstract final class InabaSeedData {
           title: 'مساعدة محتاج أو إدخال سرور',
           category: 'إغاثة وخير',
           rewardDescription: '«أحب الناس إلى الله أنفعهم للناس»',
-          completionCount: 8,
+          completionCount: 0,
           isCompletedToday: false,
           iconKey: 'hands',
         ),
@@ -174,32 +174,7 @@ abstract final class InabaSeedData {
         ),
       ];
 
-  static List<SpiritualReflectionModel> get reflections => [
-        SpiritualReflectionModel(
-          id: 'ref_1',
-          title: 'لحظة صدق واعتراف بالضعف',
-          content:
-              'اللهم إني ظلمت نفسي ظلماً كثيراً، ولا يغفر الذنوب إلا أنت، فاغفر لي مغفرة من عندك وارحمني إنك أنت الغفور الرحيم. يا رب ثبت قلبي على طاعتك ونقّ سريرتي.',
-          createdAt: DateTime.now().subtract(const Duration(days: 2)),
-          moodTag: 'ندم ورجاء',
-        ),
-        SpiritualReflectionModel(
-          id: 'ref_2',
-          title: 'حمد لله على نعمة الستر والإفاقة',
-          content:
-              'الحمد لله الذي أمهلني ولم يعاجلني بالعقوبة، وستر قبيحي وأظهر جميل، وأيقظ في قلبي لذة العودة والاستغفار. عازم بحولك وقوتك أن أجعل اليوم أفضل من الأمس.',
-          createdAt: DateTime.now().subtract(const Duration(days: 6)),
-          moodTag: 'شكر واطمئنان',
-        ),
-        SpiritualReflectionModel(
-          id: 'ref_3',
-          title: 'مجاهدة الوسواس والخواطر الرديئة',
-          content:
-              'علمت أن مجاهدة النفس في ذات الله جهاد مبرور، وكلما ثقلت علي نفسي لجأت إلى الصلاة والذكر والدعاء. رب أعني ولا تعن علي، وانصرني ولا تنصر علي.',
-          createdAt: DateTime.now().subtract(const Duration(days: 11)),
-          moodTag: 'مجاهدة النفس',
-        ),
-      ];
+  static List<SpiritualReflectionModel> get reflections => [];
 
   static List<RepentanceStepModel> get repentanceSteps => const [
         RepentanceStepModel(
@@ -208,14 +183,14 @@ abstract final class InabaSeedData {
           subtitle: 'الوضوء السابغ والوقوف الصادق بين يدي الله',
           evidence:
               '«ما من عبد يذنب ذنبا ثم يتطهر فيحسن الطهور، ثم يقوم فيصلي ركعتين، ثم يستغفر الله إلا غفر الله له»',
-          isCompleted: true,
+          isCompleted: false,
         ),
         RepentanceStepModel(
           id: 'step_deep_remorse',
           title: 'الاستغفار بصدق والندم القلبي',
           subtitle: 'انكسار القلب بين يدي الغفور الرحيم',
           evidence: '«الندم توبة» • رواه ابن ماجه وأحمد',
-          isCompleted: true,
+          isCompleted: false,
         ),
         RepentanceStepModel(
           id: 'step_firm_resolve',
@@ -223,7 +198,7 @@ abstract final class InabaSeedData {
           subtitle: 'قطع الصلة بأسباب المعصية ومواطن الغفلة',
           evidence:
               '«والذين إذا فعلوا فاحشة أو ظلموا أنفسهم ذكروا الله فاستغفروا لذنوبهم»',
-          isCompleted: true,
+          isCompleted: false,
         ),
         RepentanceStepModel(
           id: 'step_return_rights',
@@ -238,7 +213,7 @@ abstract final class InabaSeedData {
           title: 'إتباع السيئة بحسنة تمحوها فوراً',
           subtitle: 'صدقة، صلة، ذكر، أو إعانة محتاج',
           evidence: '«وأتبع السيئة الحسنة تمحها، وخالق الناس بخلق حسن»',
-          isCompleted: true,
+          isCompleted: false,
         ),
       ];
 
@@ -247,11 +222,11 @@ abstract final class InabaSeedData {
       SpiritualLevelModel(
         levelIndex: 1,
         title: 'البِدَايَةُ',
-        minDays: 1,
+        minDays: 0,
         maxDays: 7,
         description: 'خطوة العزم الأولى، صدق التوجه، وكسر حواجز الغفلة.',
-        isUnlocked: days >= 1,
-        isCurrent: days >= 1 && days <= 7,
+        isUnlocked: true,
+        isCurrent: days <= 7,
       ),
       SpiritualLevelModel(
         levelIndex: 2,

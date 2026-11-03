@@ -77,23 +77,29 @@ class InabaRecoveryPlansSheet extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  children: [
-                    Icon(
-                      Iconsax.shield_tick,
-                      size: 20.r,
-                      color: colors.accentGold,
-                    ),
-                    SizedBox(width: 8.w),
-                    Text(
-                      'خُطَطُ الإِنَابَةِ وَالتَّعَافِي المَنْهَجِيَّة',
-                      style: GoogleFonts.almarai(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15.sp,
-                        color: colors.textPrimary,
+                Expanded(
+                  child: Row(
+                    children: [
+                      Icon(
+                        Iconsax.shield_tick,
+                        size: 20.r,
+                        color: colors.accentGold,
                       ),
-                    ),
-                  ],
+                      SizedBox(width: 8.w),
+                      Flexible(
+                        child: Text(
+                          'خُطَطُ الإِنَابَةِ وَالتَّعَافِي المَنْهَجِيَّة',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.almarai(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15.sp,
+                            color: colors.textPrimary,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
                 IconButton(
                   icon: Icon(
@@ -150,68 +156,117 @@ class _PlanCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
+    final isDone = plan.isFullyCompleted;
+    final percent = (plan.progress * 100).toInt();
 
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(16.r),
+      borderRadius: BorderRadius.circular(18.r),
       child: Container(
-        padding: EdgeInsets.all(14.r),
+        padding: EdgeInsets.all(16.r),
         decoration: BoxDecoration(
           color: colors.surfaceElevated.withValues(alpha: 0.5),
-          borderRadius: BorderRadius.circular(16.r),
+          borderRadius: BorderRadius.circular(18.r),
           border: Border.all(
-            color: plan.isFullyCompleted
+            color: isDone
                 ? colors.accentEmerald.withValues(alpha: 0.6)
-                : colors.borderHairline.withValues(alpha: 0.7),
+                : (percent > 0
+                    ? colors.accentGold.withValues(alpha: 0.45)
+                    : colors.borderHairline.withValues(alpha: 0.7)),
             width: 1.r,
           ),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Top Ribbon: Badge & Duration
+            // Row 1: Badges & Duration
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 3.h),
-                  decoration: BoxDecoration(
-                    color: colors.accentGold.withValues(alpha: 0.14),
-                    borderRadius: BorderRadius.circular(8.r),
-                  ),
-                  child: Text(
-                    plan.badge,
-                    style: GoogleFonts.almarai(
-                      fontSize: 10.5.sp,
-                      fontWeight: FontWeight.w700,
-                      color: colors.accentGold,
+                Flexible(
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
+                    decoration: BoxDecoration(
+                      color: colors.accentGold.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(8.r),
+                      border: Border.all(
+                        color: colors.accentGold.withValues(alpha: 0.25),
+                        width: 0.8.r,
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Iconsax.shield_tick,
+                          size: 13.r,
+                          color: colors.accentGold,
+                        ),
+                        SizedBox(width: 5.w),
+                        Flexible(
+                          child: Text(
+                            plan.badge,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.almarai(
+                              fontSize: 10.5.sp,
+                              fontWeight: FontWeight.w700,
+                              color: colors.accentGold,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
-                Text(
-                  plan.durationText,
-                  style: GoogleFonts.almarai(
-                    fontSize: 11.sp,
-                    fontWeight: FontWeight.w700,
-                    color: colors.accentEmerald,
+                SizedBox(width: 8.w),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 9.w, vertical: 4.h),
+                  decoration: BoxDecoration(
+                    color: colors.cardSurface,
+                    borderRadius: BorderRadius.circular(8.r),
+                    border: Border.all(
+                      color: colors.borderHairline,
+                      width: 0.8.r,
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Iconsax.clock,
+                        size: 12.r,
+                        color: colors.accentEmerald,
+                      ),
+                      SizedBox(width: 4.w),
+                      Text(
+                        plan.durationText,
+                        style: GoogleFonts.almarai(
+                          fontSize: 10.5.sp,
+                          fontWeight: FontWeight.w700,
+                          color: colors.accentEmerald,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
             ),
 
-            SizedBox(height: 8.h),
+            SizedBox(height: 10.h),
 
-            // Title
+            // Plan Title
             Text(
               plan.title,
               style: GoogleFonts.almarai(
-                fontSize: 13.5.sp,
-                fontWeight: FontWeight.w700,
+                fontSize: 14.sp,
+                fontWeight: FontWeight.bold,
                 color: colors.textPrimary,
+                height: 1.35,
               ),
             ),
 
-            SizedBox(height: 4.h),
+            SizedBox(height: 6.h),
 
             // Description
             Text(
@@ -221,45 +276,108 @@ class _PlanCard extends StatelessWidget {
               style: GoogleFonts.almarai(
                 fontSize: 11.5.sp,
                 color: colors.textSecondary,
-                height: 1.4,
+                height: 1.5,
               ),
             ),
 
-            SizedBox(height: 10.h),
+            SizedBox(height: 12.h),
 
-            // Progress & Action Row
+            // Progress Header Row: Steps & Percentage
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Expanded(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(4.r),
-                    child: LinearProgressIndicator(
-                      value: plan.progress,
-                      minHeight: 4.h,
-                      backgroundColor:
-                          colors.borderHairline.withValues(alpha: 0.3),
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        plan.isFullyCompleted
-                            ? colors.accentEmerald
-                            : colors.accentGold,
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(width: 12.w),
                 Text(
-                  '${(plan.progress * 100).toInt()}%',
+                  'الإنجاز: ${plan.completedStepsCount} من ${plan.totalStepsCount} خطوة',
                   style: GoogleFonts.almarai(
                     fontSize: 11.sp,
-                    fontWeight: FontWeight.w700,
+                    fontWeight: FontWeight.w600,
                     color: colors.textSecondary,
                   ),
                 ),
-                SizedBox(width: 8.w),
-                Icon(
-                  Iconsax.arrow_left_2,
-                  size: 15.r,
-                  color: colors.accentGold,
+                Text(
+                  '$percent%',
+                  style: GoogleFonts.almarai(
+                    fontSize: 11.5.sp,
+                    fontWeight: FontWeight.w800,
+                    color: isDone ? colors.accentEmerald : colors.accentGold,
+                  ),
+                ),
+              ],
+            ),
+
+            SizedBox(height: 6.h),
+
+            // Full Width Progress Bar
+            ClipRRect(
+              borderRadius: BorderRadius.circular(4.r),
+              child: LinearProgressIndicator(
+                value: plan.progress,
+                minHeight: 5.h,
+                backgroundColor: colors.borderHairline.withValues(alpha: 0.35),
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  isDone ? colors.accentEmerald : colors.accentGold,
+                ),
+              ),
+            ),
+
+            SizedBox(height: 12.h),
+
+            // Bottom Action Row: Status & CTA
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      isDone
+                          ? Iconsax.tick_circle
+                          : (percent > 0 ? Iconsax.status : Iconsax.play_circle),
+                      size: 14.r,
+                      color: isDone
+                          ? colors.accentEmerald
+                          : (percent > 0
+                              ? colors.accentGold
+                              : colors.textSecondary),
+                    ),
+                    SizedBox(width: 5.w),
+                    Text(
+                      isDone
+                          ? 'اكتمل المسار بنجاح'
+                          : (percent > 0 ? 'قيد التطبيق' : 'مسار متاح'),
+                      style: GoogleFonts.almarai(
+                        fontSize: 11.sp,
+                        fontWeight: FontWeight.w600,
+                        color: isDone
+                            ? colors.accentEmerald
+                            : (percent > 0
+                                ? colors.accentGold
+                                : colors.textSecondary),
+                      ),
+                    ),
+                  ],
+                ),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      isDone
+                          ? 'استعراض المسار'
+                          : (percent > 0 ? 'متابعة الخطوات' : 'ابدأ الآن'),
+                      style: GoogleFonts.almarai(
+                        fontSize: 11.5.sp,
+                        fontWeight: FontWeight.bold,
+                        color:
+                            isDone ? colors.accentEmerald : colors.accentGold,
+                      ),
+                    ),
+                    SizedBox(width: 4.w),
+                    Icon(
+                      Iconsax.arrow_left_2,
+                      size: 13.r,
+                      color: isDone ? colors.accentEmerald : colors.accentGold,
+                    ),
+                  ],
                 ),
               ],
             ),

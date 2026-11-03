@@ -166,7 +166,7 @@ class InabaStreakProgressCard extends StatelessWidget {
                 child: SizedBox(
                   height: 7.h,
                   child: LinearProgressIndicator(
-                    value: progress.clamp(0.05, 1.0),
+                    value: progress.clamp(0.0, 1.0),
                     backgroundColor: colors.surfaceElevated,
                     valueColor: AlwaysStoppedAnimation<Color>(colors.accentGold),
                   ),

@@ -94,7 +94,7 @@ class InabaPortalsGrid extends StatelessWidget {
             InabaPortalCard(
               title: 'تَجْدِيدُ العَهْدِ وَالتَّوْبَةِ',
               subtitle: 'ابدأ من جديد.. فالله يقبل التوبة ويفرح بعودتك',
-              icon: Iconsax.refresh_2,
+              icon: Iconsax.refresh,
               badgeText: 'خطوة بخطوة',
               onTap: onCovenantTap,
             ),

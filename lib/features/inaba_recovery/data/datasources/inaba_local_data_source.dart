@@ -34,11 +34,11 @@ abstract interface class InabaLocalDataSource {
 class InabaLocalDataSourceImpl implements InabaLocalDataSource {
   final PreferencesService _prefs;
 
-  static const String _keyOverview = 'sakina_inaba_overview_v1';
-  static const String _keyGoodDeeds = 'sakina_inaba_good_deeds_v1';
-  static const String _keyReflections = 'sakina_inaba_reflections_v1';
-  static const String _keyHopeDoses = 'sakina_inaba_hope_doses_v1';
-  static const String _keyRepentanceSteps = 'sakina_inaba_repentance_steps_v1';
+  static const String _keyOverview = 'sakina_inaba_overview_v2';
+  static const String _keyGoodDeeds = 'sakina_inaba_good_deeds_v2';
+  static const String _keyReflections = 'sakina_inaba_reflections_v2';
+  static const String _keyHopeDoses = 'sakina_inaba_hope_doses_v2';
+  static const String _keyRepentanceSteps = 'sakina_inaba_repentance_steps_v2';
 
   InabaLocalDataSourceImpl(this._prefs);
 

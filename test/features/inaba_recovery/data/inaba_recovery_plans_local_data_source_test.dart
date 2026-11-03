@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:sakina_app/core/services/storage/preferences_service.dart';
@@ -10,7 +9,7 @@ void main() {
   late MockPreferencesService mockPrefs;
   late InabaRecoveryPlansLocalDataSource dataSource;
 
-  const plansKey = 'sakina_inaba_recovery_plans_v1';
+  const plansKey = 'sakina_inaba_recovery_plans_v2';
 
   setUp(() {
     mockPrefs = MockPreferencesService();
@@ -24,10 +23,12 @@ void main() {
           .thenAnswer((_) async => true);
 
       final plans = await dataSource.getRecoveryPlans();
-      expect(plans.length, 3);
+      expect(plans.length, 5);
       expect(plans[0].id, 'plan_7_days');
       expect(plans[1].id, 'plan_30_days');
-      expect(plans[2].id, 'plan_sos_urgent');
+      expect(plans[2].id, 'plan_14_days');
+      expect(plans[3].id, 'plan_40_days');
+      expect(plans[4].id, 'plan_sos_urgent');
     });
 
     test('togglePlanDayStep updates step completion and persists to preferences',

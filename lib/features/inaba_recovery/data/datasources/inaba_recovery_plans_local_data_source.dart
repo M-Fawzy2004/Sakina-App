@@ -17,7 +17,7 @@ class InabaRecoveryPlansLocalDataSourceImpl
     implements InabaRecoveryPlansLocalDataSource {
   final PreferencesService _prefs;
 
-  static const String _keyPlans = 'sakina_inaba_recovery_plans_v1';
+  static const String _keyPlans = 'sakina_inaba_recovery_plans_v2';
 
   const InabaRecoveryPlansLocalDataSourceImpl(this._prefs);
 
