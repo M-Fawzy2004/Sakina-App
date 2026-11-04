@@ -181,4 +181,24 @@ class InabaRepositoryImpl implements InabaRepository {
       return Left(CacheFailure(message: 'تعذر تسجيل النصر الروحي: $e'));
     }
   }
+
+  @override
+  Future<Either<Failure, InabaOverviewEntity>> activateRecoveryPath() async {
+    try {
+      final overview = await localDataSource.activateRecoveryPath();
+      return Right(overview);
+    } catch (e) {
+      return Left(CacheFailure(message: 'تعذر بدء مسار الإنابة: $e'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, InabaOverviewEntity>> advanceActiveDay() async {
+    try {
+      final overview = await localDataSource.advanceActiveDay();
+      return Right(overview);
+    } catch (e) {
+      return Left(CacheFailure(message: 'تعذر الانتقال لليوم التالي: $e'));
+    }
+  }
 }

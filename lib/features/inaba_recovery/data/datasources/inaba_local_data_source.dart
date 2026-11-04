@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:sakina_app/core/services/storage/preferences_service.dart';
 import 'package:sakina_app/features/inaba_recovery/data/datasources/static/inaba_seed_data.dart';
 import 'package:sakina_app/features/inaba_recovery/data/models/daily_hope_dose_model.dart';
@@ -29,6 +28,8 @@ abstract interface class InabaLocalDataSource {
   Future<RepentanceStepModel> toggleRepentanceStep(String id);
   Future<InabaOverviewModel> renewCovenant();
   Future<InabaOverviewModel> logSpiritualVictory();
+  Future<InabaOverviewModel> activateRecoveryPath();
+  Future<InabaOverviewModel> advanceActiveDay();
 }
 
 class InabaLocalDataSourceImpl implements InabaLocalDataSource {
@@ -47,11 +48,8 @@ class InabaLocalDataSourceImpl implements InabaLocalDataSource {
     final raw = _prefs.getString(_keyOverview);
     if (raw != null && raw.isNotEmpty) {
       try {
-        final map = jsonDecode(raw) as Map<String, dynamic>;
-        return InabaOverviewModel.fromJson(map);
-      } catch (_) {
-        // Fallback to default
-      }
+        return InabaOverviewModel.fromJson(jsonDecode(raw) as Map<String, dynamic>);
+      } catch (_) {}
     }
     final defaultOverview = InabaSeedData.defaultOverview;
     await _saveOverview(defaultOverview);
@@ -68,12 +66,8 @@ class InabaLocalDataSourceImpl implements InabaLocalDataSource {
     if (raw != null && raw.isNotEmpty) {
       try {
         final list = jsonDecode(raw) as List<dynamic>;
-        return list
-            .map((item) => GoodDeedModel.fromJson(item as Map<String, dynamic>))
-            .toList();
-      } catch (_) {
-        // Fallback to seeds
-      }
+        return list.map((item) => GoodDeedModel.fromJson(item as Map<String, dynamic>)).toList();
+      } catch (_) {}
     }
     final seeds = InabaSeedData.goodDeeds;
     await _saveGoodDeeds(seeds);
@@ -81,26 +75,21 @@ class InabaLocalDataSourceImpl implements InabaLocalDataSource {
   }
 
   Future<void> _saveGoodDeeds(List<GoodDeedModel> list) async {
-    final raw = jsonEncode(list.map((e) => e.toJson()).toList());
-    await _prefs.setString(_keyGoodDeeds, raw);
+    await _prefs.setString(_keyGoodDeeds, jsonEncode(list.map((e) => e.toJson()).toList()));
   }
 
   @override
   Future<GoodDeedModel> toggleGoodDeed(String id) async {
     final deeds = await getGoodDeeds();
     final index = deeds.indexWhere((d) => d.id == id);
-    if (index == -1) {
-      throw Exception('Good deed not found: $id');
-    }
+    if (index == -1) throw Exception('Good deed not found: $id');
     final current = deeds[index];
     final updated = GoodDeedModel(
       id: current.id,
       title: current.title,
       category: current.category,
       rewardDescription: current.rewardDescription,
-      completionCount: current.isCompletedToday
-          ? current.completionCount - 1
-          : current.completionCount + 1,
+      completionCount: current.isCompletedToday ? current.completionCount - 1 : current.completionCount + 1,
       isCompletedToday: !current.isCompletedToday,
       iconKey: current.iconKey,
     );
@@ -109,18 +98,7 @@ class InabaLocalDataSourceImpl implements InabaLocalDataSource {
 
     final completedCount = deeds.where((d) => d.isCompletedToday).length;
     final overview = await getInabaOverview();
-    final updatedOverview = InabaOverviewModel(
-      streakDays: overview.streakDays,
-      bestStreakDays: overview.bestStreakDays,
-      streakProgress: overview.streakProgress,
-      totalGoodDeedsCompleted: completedCount,
-      totalReflectionsCount: overview.totalReflectionsCount,
-      currentSpiritualLevelTitle: overview.currentSpiritualLevelTitle,
-      recoveryPathStatus: overview.recoveryPathStatus,
-      lastTawbahDate: overview.lastTawbahDate,
-    );
-    await _saveOverview(updatedOverview);
-
+    await _saveOverview(InabaOverviewModel.fromEntity(overview.copyWith(totalGoodDeedsCompleted: completedCount)));
     return updated;
   }
 
@@ -138,6 +116,10 @@ class InabaLocalDataSourceImpl implements InabaLocalDataSource {
     );
     deeds.add(newDeed);
     await _saveGoodDeeds(deeds);
+
+    final completedCount = deeds.where((d) => d.isCompletedToday).length;
+    final overview = await getInabaOverview();
+    await _saveOverview(InabaOverviewModel.fromEntity(overview.copyWith(totalGoodDeedsCompleted: completedCount)));
     return newDeed;
   }
 
@@ -147,15 +129,8 @@ class InabaLocalDataSourceImpl implements InabaLocalDataSource {
     if (raw != null && raw.isNotEmpty) {
       try {
         final list = jsonDecode(raw) as List<dynamic>;
-        return list
-            .map(
-              (item) =>
-                  DailyHopeDoseModel.fromJson(item as Map<String, dynamic>),
-            )
-            .toList();
-      } catch (_) {
-        // Fallback to seeds
-      }
+        return list.map((item) => DailyHopeDoseModel.fromJson(item as Map<String, dynamic>)).toList();
+      } catch (_) {}
     }
     final seeds = InabaSeedData.hopeDoses;
     await _saveHopeDoses(seeds);
@@ -163,17 +138,14 @@ class InabaLocalDataSourceImpl implements InabaLocalDataSource {
   }
 
   Future<void> _saveHopeDoses(List<DailyHopeDoseModel> list) async {
-    final raw = jsonEncode(list.map((e) => e.toJson()).toList());
-    await _prefs.setString(_keyHopeDoses, raw);
+    await _prefs.setString(_keyHopeDoses, jsonEncode(list.map((e) => e.toJson()).toList()));
   }
 
   @override
   Future<DailyHopeDoseModel> toggleSaveHopeDose(String id) async {
     final doses = await getHopeDoses();
     final index = doses.indexWhere((d) => d.id == id);
-    if (index == -1) {
-      throw Exception('Hope dose not found: $id');
-    }
+    if (index == -1) throw Exception('Hope dose not found: $id');
     final current = doses[index];
     final updated = DailyHopeDoseModel(
       id: current.id,
@@ -199,15 +171,8 @@ class InabaLocalDataSourceImpl implements InabaLocalDataSource {
     if (raw != null && raw.isNotEmpty) {
       try {
         final list = jsonDecode(raw) as List<dynamic>;
-        return list
-            .map(
-              (item) =>
-                  SpiritualReflectionModel.fromJson(item as Map<String, dynamic>),
-            )
-            .toList();
-      } catch (_) {
-        // Fallback to seeds
-      }
+        return list.map((item) => SpiritualReflectionModel.fromJson(item as Map<String, dynamic>)).toList();
+      } catch (_) {}
     }
     final seeds = InabaSeedData.reflections;
     await _saveReflections(seeds);
@@ -215,8 +180,7 @@ class InabaLocalDataSourceImpl implements InabaLocalDataSource {
   }
 
   Future<void> _saveReflections(List<SpiritualReflectionModel> list) async {
-    final raw = jsonEncode(list.map((e) => e.toJson()).toList());
-    await _prefs.setString(_keyReflections, raw);
+    await _prefs.setString(_keyReflections, jsonEncode(list.map((e) => e.toJson()).toList()));
   }
 
   @override
@@ -237,18 +201,7 @@ class InabaLocalDataSourceImpl implements InabaLocalDataSource {
     await _saveReflections(reflections);
 
     final overview = await getInabaOverview();
-    final updatedOverview = InabaOverviewModel(
-      streakDays: overview.streakDays,
-      bestStreakDays: overview.bestStreakDays,
-      streakProgress: overview.streakProgress,
-      totalGoodDeedsCompleted: overview.totalGoodDeedsCompleted,
-      totalReflectionsCount: reflections.length,
-      currentSpiritualLevelTitle: overview.currentSpiritualLevelTitle,
-      recoveryPathStatus: overview.recoveryPathStatus,
-      lastTawbahDate: overview.lastTawbahDate,
-    );
-    await _saveOverview(updatedOverview);
-
+    await _saveOverview(InabaOverviewModel.fromEntity(overview.copyWith(totalReflectionsCount: reflections.length)));
     return newReflection;
   }
 
@@ -259,34 +212,14 @@ class InabaLocalDataSourceImpl implements InabaLocalDataSource {
     await _saveReflections(reflections);
 
     final overview = await getInabaOverview();
-    final updatedOverview = InabaOverviewModel(
-      streakDays: overview.streakDays,
-      bestStreakDays: overview.bestStreakDays,
-      streakProgress: overview.streakProgress,
-      totalGoodDeedsCompleted: overview.totalGoodDeedsCompleted,
-      totalReflectionsCount: reflections.length,
-      currentSpiritualLevelTitle: overview.currentSpiritualLevelTitle,
-      recoveryPathStatus: overview.recoveryPathStatus,
-      lastTawbahDate: overview.lastTawbahDate,
-    );
-    await _saveOverview(updatedOverview);
+    await _saveOverview(InabaOverviewModel.fromEntity(overview.copyWith(totalReflectionsCount: reflections.length)));
   }
 
   @override
   Future<void> clearAllReflections() async {
     await _saveReflections([]);
     final overview = await getInabaOverview();
-    final updatedOverview = InabaOverviewModel(
-      streakDays: overview.streakDays,
-      bestStreakDays: overview.bestStreakDays,
-      streakProgress: overview.streakProgress,
-      totalGoodDeedsCompleted: overview.totalGoodDeedsCompleted,
-      totalReflectionsCount: 0,
-      currentSpiritualLevelTitle: overview.currentSpiritualLevelTitle,
-      recoveryPathStatus: overview.recoveryPathStatus,
-      lastTawbahDate: overview.lastTawbahDate,
-    );
-    await _saveOverview(updatedOverview);
+    await _saveOverview(InabaOverviewModel.fromEntity(overview.copyWith(totalReflectionsCount: 0)));
   }
 
   @override
@@ -295,15 +228,8 @@ class InabaLocalDataSourceImpl implements InabaLocalDataSource {
     if (raw != null && raw.isNotEmpty) {
       try {
         final list = jsonDecode(raw) as List<dynamic>;
-        return list
-            .map(
-              (item) =>
-                  RepentanceStepModel.fromJson(item as Map<String, dynamic>),
-            )
-            .toList();
-      } catch (_) {
-        // Fallback
-      }
+        return list.map((item) => RepentanceStepModel.fromJson(item as Map<String, dynamic>)).toList();
+      } catch (_) {}
     }
     final seeds = InabaSeedData.repentanceSteps;
     await _saveRepentanceSteps(seeds);
@@ -311,17 +237,14 @@ class InabaLocalDataSourceImpl implements InabaLocalDataSource {
   }
 
   Future<void> _saveRepentanceSteps(List<RepentanceStepModel> list) async {
-    final raw = jsonEncode(list.map((e) => e.toJson()).toList());
-    await _prefs.setString(_keyRepentanceSteps, raw);
+    await _prefs.setString(_keyRepentanceSteps, jsonEncode(list.map((e) => e.toJson()).toList()));
   }
 
   @override
   Future<RepentanceStepModel> toggleRepentanceStep(String id) async {
     final steps = await getRepentanceSteps();
     final index = steps.indexWhere((s) => s.id == id);
-    if (index == -1) {
-      throw Exception('Repentance step not found: $id');
-    }
+    if (index == -1) throw Exception('Repentance step not found: $id');
     final current = steps[index];
     final updated = RepentanceStepModel(
       id: current.id,
@@ -338,17 +261,13 @@ class InabaLocalDataSourceImpl implements InabaLocalDataSource {
   @override
   Future<InabaOverviewModel> renewCovenant() async {
     final steps = await getRepentanceSteps();
-    final resetSteps = steps
-        .map(
-          (s) => RepentanceStepModel(
-            id: s.id,
-            title: s.title,
-            subtitle: s.subtitle,
-            evidence: s.evidence,
-            isCompleted: false,
-          ),
-        )
-        .toList();
+    final resetSteps = steps.map((s) => RepentanceStepModel(
+      id: s.id,
+      title: s.title,
+      subtitle: s.subtitle,
+      evidence: s.evidence,
+      isCompleted: false,
+    )).toList();
     await _saveRepentanceSteps(resetSteps);
 
     final currentOverview = await getInabaOverview();
@@ -356,15 +275,54 @@ class InabaLocalDataSourceImpl implements InabaLocalDataSource {
         ? currentOverview.streakDays
         : currentOverview.bestStreakDays;
 
-    final updated = InabaOverviewModel(
-      streakDays: 1,
-      bestStreakDays: best,
-      streakProgress: 0.15,
-      totalGoodDeedsCompleted: currentOverview.totalGoodDeedsCompleted,
-      totalReflectionsCount: currentOverview.totalReflectionsCount,
-      currentSpiritualLevelTitle: 'البداية',
-      recoveryPathStatus: 'عهد جديد مع الله، وبداية نقية',
-      lastTawbahDate: DateTime.now(),
+    final updated = InabaOverviewModel.fromEntity(
+      currentOverview.copyWith(
+        streakDays: 0,
+        bestStreakDays: best,
+        streakProgress: 0.05,
+        currentSpiritualLevelTitle: 'البداية',
+        recoveryPathStatus: 'عهد جديد مع الله، وبداية نقية',
+        lastTawbahDate: DateTime.now(),
+        isPathActivated: true,
+        currentActiveDay: 1,
+      ),
+    );
+    await _saveOverview(updated);
+    return updated;
+  }
+
+  @override
+  Future<InabaOverviewModel> activateRecoveryPath() async {
+    final currentOverview = await getInabaOverview();
+    final updated = InabaOverviewModel.fromEntity(
+      currentOverview.copyWith(
+        isPathActivated: true,
+        streakDays: 0,
+        streakProgress: 0.05,
+        currentActiveDay: 1,
+        recoveryPathStatus: 'اليوم الأول: يقظة القلب وبداية التطهر',
+        lastTawbahDate: DateTime.now(),
+      ),
+    );
+    await _saveOverview(updated);
+    return updated;
+  }
+
+  @override
+  Future<InabaOverviewModel> advanceActiveDay() async {
+    final currentOverview = await getInabaOverview();
+    final nextDay = currentOverview.currentActiveDay + 1;
+    final updatedDays = currentOverview.streakDays + 1;
+    final best = updatedDays > currentOverview.bestStreakDays ? updatedDays : currentOverview.bestStreakDays;
+
+    final updated = InabaOverviewModel.fromEntity(
+      currentOverview.copyWith(
+        streakDays: updatedDays,
+        bestStreakDays: best,
+        currentActiveDay: nextDay,
+        streakProgress: ((updatedDays % 30) / 30.0).clamp(0.05, 1.0),
+        recoveryPathStatus: 'اليوم $nextDay في طريق النقاء والثبات',
+      ),
     );
     await _saveOverview(updated);
     return updated;
@@ -374,20 +332,18 @@ class InabaLocalDataSourceImpl implements InabaLocalDataSource {
   Future<InabaOverviewModel> logSpiritualVictory() async {
     final currentOverview = await getInabaOverview();
     final updatedDays = currentOverview.streakDays + 1;
-    final best = updatedDays > currentOverview.bestStreakDays
-        ? updatedDays
-        : currentOverview.bestStreakDays;
-
+    final best = updatedDays > currentOverview.bestStreakDays ? updatedDays : currentOverview.bestStreakDays;
     final progress = (updatedDays % 30) / 30.0;
-    final updated = InabaOverviewModel(
-      streakDays: updatedDays,
-      bestStreakDays: best,
-      streakProgress: progress == 0 ? 1.0 : progress,
-      totalGoodDeedsCompleted: currentOverview.totalGoodDeedsCompleted + 1,
-      totalReflectionsCount: currentOverview.totalReflectionsCount,
-      currentSpiritualLevelTitle: InabaSeedData.resolveLevelTitle(updatedDays),
-      recoveryPathStatus: 'انتصار روحي جديد، وثبات على العهد',
-      lastTawbahDate: currentOverview.lastTawbahDate,
+
+    final updated = InabaOverviewModel.fromEntity(
+      currentOverview.copyWith(
+        streakDays: updatedDays,
+        bestStreakDays: best,
+        streakProgress: progress == 0 ? 1.0 : progress,
+        totalGoodDeedsCompleted: currentOverview.totalGoodDeedsCompleted + 1,
+        currentSpiritualLevelTitle: InabaSeedData.resolveLevelTitle(updatedDays),
+        recoveryPathStatus: 'انتصار روحي جديد، وثبات على العهد',
+      ),
     );
     await _saveOverview(updated);
     return updated;

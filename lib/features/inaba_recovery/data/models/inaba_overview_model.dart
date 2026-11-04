@@ -10,22 +10,26 @@ class InabaOverviewModel extends InabaOverviewEntity {
     required super.currentSpiritualLevelTitle,
     required super.recoveryPathStatus,
     required super.lastTawbahDate,
+    super.isPathActivated = false,
+    super.currentActiveDay = 1,
   });
 
   factory InabaOverviewModel.fromJson(Map<String, dynamic> json) {
     return InabaOverviewModel(
-      streakDays: json['streak_days'] as int? ?? 14,
-      bestStreakDays: json['best_streak_days'] as int? ?? 21,
-      streakProgress: (json['streak_progress'] as num?)?.toDouble() ?? 0.70,
-      totalGoodDeedsCompleted: json['total_good_deeds'] as int? ?? 42,
-      totalReflectionsCount: json['total_reflections'] as int? ?? 7,
+      streakDays: json['streak_days'] as int? ?? 0,
+      bestStreakDays: json['best_streak_days'] as int? ?? 0,
+      streakProgress: (json['streak_progress'] as num?)?.toDouble() ?? 0.0,
+      totalGoodDeedsCompleted: json['total_good_deeds'] as int? ?? 0,
+      totalReflectionsCount: json['total_reflections'] as int? ?? 0,
       currentSpiritualLevelTitle:
-          json['current_level_title'] as String? ?? 'الالتزام',
+          json['current_level_title'] as String? ?? 'البِدَايَةُ',
       recoveryPathStatus:
-          json['recovery_path_status'] as String? ?? 'حتى الآن في طريق النقاء',
+          json['recovery_path_status'] as String? ?? 'ابدأ عهد النقاء والسكينة الآن',
       lastTawbahDate: json['last_tawbah_date'] != null
           ? DateTime.parse(json['last_tawbah_date'] as String)
-          : DateTime.now().subtract(const Duration(days: 14)),
+          : DateTime.now(),
+      isPathActivated: json['is_path_activated'] as bool? ?? false,
+      currentActiveDay: json['current_active_day'] as int? ?? 1,
     );
   }
 
@@ -39,6 +43,8 @@ class InabaOverviewModel extends InabaOverviewEntity {
       'current_level_title': currentSpiritualLevelTitle,
       'recovery_path_status': recoveryPathStatus,
       'last_tawbah_date': lastTawbahDate.toIso8601String(),
+      'is_path_activated': isPathActivated,
+      'current_active_day': currentActiveDay,
     };
   }
 
@@ -52,6 +58,8 @@ class InabaOverviewModel extends InabaOverviewEntity {
       currentSpiritualLevelTitle: entity.currentSpiritualLevelTitle,
       recoveryPathStatus: entity.recoveryPathStatus,
       lastTawbahDate: entity.lastTawbahDate,
+      isPathActivated: entity.isPathActivated,
+      currentActiveDay: entity.currentActiveDay,
     );
   }
 }

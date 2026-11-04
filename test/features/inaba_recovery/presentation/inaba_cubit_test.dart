@@ -3,7 +3,9 @@ import 'package:fpdart/fpdart.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:sakina_app/core/usecases/usecase.dart';
 import 'package:sakina_app/features/inaba_recovery/domain/entities/inaba_overview_entity.dart';
+import 'package:sakina_app/features/inaba_recovery/domain/usecases/activate_recovery_path_usecase.dart';
 import 'package:sakina_app/features/inaba_recovery/domain/usecases/add_custom_good_deed_usecase.dart';
+import 'package:sakina_app/features/inaba_recovery/domain/usecases/advance_active_day_usecase.dart';
 import 'package:sakina_app/features/inaba_recovery/domain/usecases/delete_spiritual_reflection_usecase.dart';
 import 'package:sakina_app/features/inaba_recovery/domain/usecases/get_daily_hope_doses_usecase.dart';
 import 'package:sakina_app/features/inaba_recovery/domain/usecases/get_good_deeds_usecase.dart';
@@ -60,6 +62,12 @@ class MockRenewCovenantUseCase extends Mock implements RenewCovenantUseCase {}
 class MockLogSpiritualVictoryUseCase extends Mock
     implements LogSpiritualVictoryUseCase {}
 
+class MockActivateRecoveryPathUseCase extends Mock
+    implements ActivateRecoveryPathUseCase {}
+
+class MockAdvanceActiveDayUseCase extends Mock
+    implements AdvanceActiveDayUseCase {}
+
 void main() {
   late InabaCubit cubit;
   late MockGetInabaOverviewUseCase mockGetInabaOverview;
@@ -76,6 +84,8 @@ void main() {
   late MockToggleRepentanceStepUseCase mockToggleRepentanceStep;
   late MockRenewCovenantUseCase mockRenewCovenant;
   late MockLogSpiritualVictoryUseCase mockLogSpiritualVictory;
+  late MockActivateRecoveryPathUseCase mockActivateRecoveryPath;
+  late MockAdvanceActiveDayUseCase mockAdvanceActiveDay;
 
   final testOverview = InabaOverviewEntity(
     streakDays: 14,
@@ -103,6 +113,8 @@ void main() {
     mockToggleRepentanceStep = MockToggleRepentanceStepUseCase();
     mockRenewCovenant = MockRenewCovenantUseCase();
     mockLogSpiritualVictory = MockLogSpiritualVictoryUseCase();
+    mockActivateRecoveryPath = MockActivateRecoveryPathUseCase();
+    mockAdvanceActiveDay = MockAdvanceActiveDayUseCase();
 
     cubit = InabaCubit(
       getInabaOverviewUseCase: mockGetInabaOverview,
@@ -119,6 +131,8 @@ void main() {
       toggleRepentanceStepUseCase: mockToggleRepentanceStep,
       renewCovenantUseCase: mockRenewCovenant,
       logSpiritualVictoryUseCase: mockLogSpiritualVictory,
+      activateRecoveryPathUseCase: mockActivateRecoveryPath,
+      advanceActiveDayUseCase: mockAdvanceActiveDay,
     );
   });
 
@@ -160,6 +174,29 @@ void main() {
       expect(cubit.state.isConfessionUnlocked, true);
       cubit.lockConfessionSanctuary();
       expect(cubit.state.isConfessionUnlocked, false);
+    });
+
+    test('activateRecoveryPath updates overview and sets path activated',
+        () async {
+      final activatedOverview = testOverview.copyWith(isPathActivated: true);
+      when(() => mockActivateRecoveryPath(const NoParams()))
+          .thenAnswer((_) async => Right(activatedOverview));
+
+      await cubit.activateRecoveryPath();
+
+      expect(cubit.state.overview?.isPathActivated, true);
+      expect(cubit.state.toastFeedback, contains('عقد العزم'));
+    });
+
+    test('advanceActiveDay increments active day in overview', () async {
+      final advancedOverview = testOverview.copyWith(currentActiveDay: 2);
+      when(() => mockAdvanceActiveDay(const NoParams()))
+          .thenAnswer((_) async => Right(advancedOverview));
+
+      await cubit.advanceActiveDay();
+
+      expect(cubit.state.overview?.currentActiveDay, 2);
+      expect(cubit.state.toastFeedback, contains('ثبّتك الله'));
     });
   });
 }

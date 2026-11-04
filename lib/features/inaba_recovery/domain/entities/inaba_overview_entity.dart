@@ -10,6 +10,8 @@ class InabaOverviewEntity extends Equatable {
   final String currentSpiritualLevelTitle;
   final String recoveryPathStatus;
   final DateTime lastTawbahDate;
+  final bool isPathActivated;
+  final int currentActiveDay;
 
   const InabaOverviewEntity({
     required this.streakDays,
@@ -20,6 +22,8 @@ class InabaOverviewEntity extends Equatable {
     required this.currentSpiritualLevelTitle,
     required this.recoveryPathStatus,
     required this.lastTawbahDate,
+    this.isPathActivated = false,
+    this.currentActiveDay = 1,
   });
 
   InabaOverviewEntity copyWith({
@@ -31,6 +35,8 @@ class InabaOverviewEntity extends Equatable {
     String? currentSpiritualLevelTitle,
     String? recoveryPathStatus,
     DateTime? lastTawbahDate,
+    bool? isPathActivated,
+    int? currentActiveDay,
   }) {
     return InabaOverviewEntity(
       streakDays: streakDays ?? this.streakDays,
@@ -44,6 +50,8 @@ class InabaOverviewEntity extends Equatable {
           currentSpiritualLevelTitle ?? this.currentSpiritualLevelTitle,
       recoveryPathStatus: recoveryPathStatus ?? this.recoveryPathStatus,
       lastTawbahDate: lastTawbahDate ?? this.lastTawbahDate,
+      isPathActivated: isPathActivated ?? this.isPathActivated,
+      currentActiveDay: currentActiveDay ?? this.currentActiveDay,
     );
   }
 
@@ -57,6 +65,7 @@ class InabaOverviewEntity extends Equatable {
         currentSpiritualLevelTitle,
         recoveryPathStatus,
         lastTawbahDate,
+        isPathActivated,
+        currentActiveDay,
       ];
 }
-

@@ -28,7 +28,7 @@ class InabaRecoveryPlansSheet extends StatelessWidget {
       context: context,
       isScrollControlled: true,
       useRootNavigator: true,
-      backgroundColor: Colors.transparent,
+      backgroundColor: context.colors.cardSurface.withValues(alpha: 0),
       elevation: 0,
       builder: (_) => InabaRecoveryPlansSheet(plans: plans, cubit: cubit),
     );
@@ -129,7 +129,7 @@ class InabaRecoveryPlansSheet extends StatelessWidget {
                       Navigator.of(context).pop();
                       InabaPlanDetailSheet.show(
                         context,
-                        plan: plan,
+                        planId: plan.id,
                         cubit: cubit,
                       );
                     },

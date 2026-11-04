@@ -16,6 +16,8 @@ abstract final class InabaSeedData {
         currentSpiritualLevelTitle: 'البِدَايَةُ',
         recoveryPathStatus: 'ابدأ عهد النقاء والسكينة الآن',
         lastTawbahDate: DateTime.now(),
+        isPathActivated: false,
+        currentActiveDay: 1,
       );
 
   static String resolveLevelTitle(int days) {

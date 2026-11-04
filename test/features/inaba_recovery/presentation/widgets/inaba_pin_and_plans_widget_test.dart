@@ -8,6 +8,8 @@ import 'package:sakina_app/features/inaba_recovery/presentation/widgets/componen
 import 'package:sakina_app/features/inaba_recovery/presentation/widgets/components/inaba_recovery_plans_sheet.dart';
 import 'package:sakina_app/features/inaba_recovery/presentation/widgets/components/inaba_sanctuary_locked_view.dart';
 import 'package:sakina_app/features/inaba_recovery/data/datasources/static/inaba_recovery_plans_seed_data.dart';
+import 'package:sakina_app/features/inaba_recovery/presentation/widgets/components/inaba_active_daily_step_card.dart';
+import 'package:sakina_app/features/inaba_recovery/presentation/widgets/components/inaba_covenant_activation_card.dart';
 
 class MockInabaCubit extends Mock implements InabaCubit {}
 
@@ -117,6 +119,55 @@ void main() {
       await tester.pump();
 
       expect(verifiedPin, '1234');
+    });
+
+    testWidgets('InabaCovenantActivationCard renders pledge button and triggers callback',
+        (tester) async {
+      bool activated = false;
+
+      await tester.pumpWidget(
+        createTestWidget(
+          InabaCovenantActivationCard(
+            onActivate: () => activated = true,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('عَقْدُ العَزْمِ وَبِدَايَةُ المَسَار'), findsOneWidget);
+      expect(find.text('اعْقِدِ العَزْمَ وَابْدَأِ المَسَارَ الآن'), findsOneWidget);
+
+      await tester.tap(find.text('اعْقِدِ العَزْمَ وَابْدَأِ المَسَارَ الآن'));
+      expect(activated, isTrue);
+    });
+
+    testWidgets('InabaActiveDailyStepCard renders active step action and completion button',
+        (tester) async {
+      bool completed = false;
+      bool viewed = false;
+      final plan = InabaRecoveryPlansSeedData.defaultPlans.first;
+
+      await tester.pumpWidget(
+        createTestWidget(
+          InabaActiveDailyStepCard(
+            currentDay: 1,
+            plan: plan,
+            onCompleteStep: () => completed = true,
+            onViewFullPlan: () => viewed = true,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.textContaining('اليوم 1 من'), findsOneWidget);
+      expect(find.text(plan.steps.first.title), findsOneWidget);
+      expect(find.text('إتمام خطوة اليوم'), findsOneWidget);
+
+      await tester.tap(find.text('إتمام خطوة اليوم'));
+      expect(completed, isTrue);
+
+      await tester.tap(find.text('الخطة كاملة'));
+      expect(viewed, isTrue);
     });
   });
 }

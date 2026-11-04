@@ -43,7 +43,9 @@ import 'package:sakina_app/features/inaba_recovery/data/datasources/inaba_recove
 import 'package:sakina_app/features/inaba_recovery/domain/services/mihrab_pin_service.dart';
 import 'package:sakina_app/features/inaba_recovery/data/repositories/inaba_repository_impl.dart';
 import 'package:sakina_app/features/inaba_recovery/domain/repositories/inaba_repository.dart';
+import 'package:sakina_app/features/inaba_recovery/domain/usecases/activate_recovery_path_usecase.dart';
 import 'package:sakina_app/features/inaba_recovery/domain/usecases/add_custom_good_deed_usecase.dart';
+import 'package:sakina_app/features/inaba_recovery/domain/usecases/advance_active_day_usecase.dart';
 import 'package:sakina_app/features/inaba_recovery/domain/usecases/delete_spiritual_reflection_usecase.dart';
 import 'package:sakina_app/features/inaba_recovery/domain/usecases/get_daily_hope_doses_usecase.dart';
 import 'package:sakina_app/features/inaba_recovery/domain/usecases/get_good_deeds_usecase.dart';
@@ -251,48 +253,22 @@ void _initFeatureModules() {
   sl.registerLazySingleton<InabaRepository>(
     () => InabaRepositoryImpl(localDataSource: sl()),
   );
-  sl.registerLazySingleton<GetInabaOverviewUseCase>(
-    () => GetInabaOverviewUseCase(sl()),
-  );
-  sl.registerLazySingleton<GetGoodDeedsUseCase>(
-    () => GetGoodDeedsUseCase(sl()),
-  );
-  sl.registerLazySingleton<ToggleGoodDeedUseCase>(
-    () => ToggleGoodDeedUseCase(sl()),
-  );
-  sl.registerLazySingleton<AddCustomGoodDeedUseCase>(
-    () => AddCustomGoodDeedUseCase(sl()),
-  );
-  sl.registerLazySingleton<GetDailyHopeDosesUseCase>(
-    () => GetDailyHopeDosesUseCase(sl()),
-  );
-  sl.registerLazySingleton<ToggleSaveHopeDoseUseCase>(
-    () => ToggleSaveHopeDoseUseCase(sl()),
-  );
-  sl.registerLazySingleton<GetSpiritualLevelsUseCase>(
-    () => GetSpiritualLevelsUseCase(sl()),
-  );
-  sl.registerLazySingleton<GetSpiritualReflectionsUseCase>(
-    () => GetSpiritualReflectionsUseCase(sl()),
-  );
-  sl.registerLazySingleton<SaveSpiritualReflectionUseCase>(
-    () => SaveSpiritualReflectionUseCase(sl()),
-  );
-  sl.registerLazySingleton<DeleteSpiritualReflectionUseCase>(
-    () => DeleteSpiritualReflectionUseCase(sl()),
-  );
-  sl.registerLazySingleton<GetRepentanceStepsUseCase>(
-    () => GetRepentanceStepsUseCase(sl()),
-  );
-  sl.registerLazySingleton<ToggleRepentanceStepUseCase>(
-    () => ToggleRepentanceStepUseCase(sl()),
-  );
-  sl.registerLazySingleton<RenewCovenantUseCase>(
-    () => RenewCovenantUseCase(sl()),
-  );
-  sl.registerLazySingleton<LogSpiritualVictoryUseCase>(
-    () => LogSpiritualVictoryUseCase(sl()),
-  );
+  sl.registerLazySingleton<GetInabaOverviewUseCase>(() => GetInabaOverviewUseCase(sl()));
+  sl.registerLazySingleton<GetGoodDeedsUseCase>(() => GetGoodDeedsUseCase(sl()));
+  sl.registerLazySingleton<ToggleGoodDeedUseCase>(() => ToggleGoodDeedUseCase(sl()));
+  sl.registerLazySingleton<AddCustomGoodDeedUseCase>(() => AddCustomGoodDeedUseCase(sl()));
+  sl.registerLazySingleton<GetDailyHopeDosesUseCase>(() => GetDailyHopeDosesUseCase(sl()));
+  sl.registerLazySingleton<ToggleSaveHopeDoseUseCase>(() => ToggleSaveHopeDoseUseCase(sl()));
+  sl.registerLazySingleton<GetSpiritualLevelsUseCase>(() => GetSpiritualLevelsUseCase(sl()));
+  sl.registerLazySingleton<GetSpiritualReflectionsUseCase>(() => GetSpiritualReflectionsUseCase(sl()));
+  sl.registerLazySingleton<SaveSpiritualReflectionUseCase>(() => SaveSpiritualReflectionUseCase(sl()));
+  sl.registerLazySingleton<DeleteSpiritualReflectionUseCase>(() => DeleteSpiritualReflectionUseCase(sl()));
+  sl.registerLazySingleton<GetRepentanceStepsUseCase>(() => GetRepentanceStepsUseCase(sl()));
+  sl.registerLazySingleton<ToggleRepentanceStepUseCase>(() => ToggleRepentanceStepUseCase(sl()));
+  sl.registerLazySingleton<RenewCovenantUseCase>(() => RenewCovenantUseCase(sl()));
+  sl.registerLazySingleton<LogSpiritualVictoryUseCase>(() => LogSpiritualVictoryUseCase(sl()));
+  sl.registerLazySingleton<ActivateRecoveryPathUseCase>(() => ActivateRecoveryPathUseCase(sl()));
+  sl.registerLazySingleton<AdvanceActiveDayUseCase>(() => AdvanceActiveDayUseCase(sl()));
   sl.registerLazySingleton<MihrabPinService>(
     () => MihrabPinServiceImpl(sl()),
   );
@@ -319,6 +295,8 @@ void _initFeatureModules() {
       toggleRepentanceStepUseCase: sl(),
       renewCovenantUseCase: sl(),
       logSpiritualVictoryUseCase: sl(),
+      activateRecoveryPathUseCase: sl(),
+      advanceActiveDayUseCase: sl(),
       mihrabPinService: sl(),
       recoveryPlansLocalDataSource: sl(),
       biometricAuthService: sl(),

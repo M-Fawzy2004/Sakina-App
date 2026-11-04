@@ -2,8 +2,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sakina_app/core/services/security/biometric_auth_service.dart';
 import 'package:sakina_app/core/usecases/usecase.dart';
 import 'package:sakina_app/features/inaba_recovery/data/datasources/inaba_recovery_plans_local_data_source.dart';
+import 'package:sakina_app/features/inaba_recovery/domain/entities/inaba_overview_entity.dart';
 import 'package:sakina_app/features/inaba_recovery/domain/services/mihrab_pin_service.dart';
+import 'package:sakina_app/features/inaba_recovery/domain/usecases/activate_recovery_path_usecase.dart';
 import 'package:sakina_app/features/inaba_recovery/domain/usecases/add_custom_good_deed_usecase.dart';
+import 'package:sakina_app/features/inaba_recovery/domain/usecases/advance_active_day_usecase.dart';
 import 'package:sakina_app/features/inaba_recovery/domain/usecases/delete_spiritual_reflection_usecase.dart';
 import 'package:sakina_app/features/inaba_recovery/domain/usecases/get_daily_hope_doses_usecase.dart';
 import 'package:sakina_app/features/inaba_recovery/domain/usecases/get_good_deeds_usecase.dart';
@@ -34,6 +37,8 @@ class InabaCubit extends Cubit<InabaState> {
   final ToggleRepentanceStepUseCase toggleRepentanceStepUseCase;
   final RenewCovenantUseCase renewCovenantUseCase;
   final LogSpiritualVictoryUseCase logSpiritualVictoryUseCase;
+  final ActivateRecoveryPathUseCase activateRecoveryPathUseCase;
+  final AdvanceActiveDayUseCase advanceActiveDayUseCase;
   final MihrabPinService? mihrabPinService;
   final InabaRecoveryPlansLocalDataSource? recoveryPlansLocalDataSource;
   final BiometricAuthService? biometricAuthService;
@@ -53,6 +58,8 @@ class InabaCubit extends Cubit<InabaState> {
     required this.toggleRepentanceStepUseCase,
     required this.renewCovenantUseCase,
     required this.logSpiritualVictoryUseCase,
+    required this.activateRecoveryPathUseCase,
+    required this.advanceActiveDayUseCase,
     this.mihrabPinService,
     this.recoveryPlansLocalDataSource,
     this.biometricAuthService,
@@ -60,7 +67,6 @@ class InabaCubit extends Cubit<InabaState> {
 
   Future<void> loadInabaData() async {
     emit(state.copyWith(status: InabaStatus.loading));
-
     final overviewRes = await getInabaOverviewUseCase(const NoParams());
     final goodDeedsRes = await getGoodDeedsUseCase(const NoParams());
     final hopeDosesRes = await getDailyHopeDosesUseCase(const NoParams());
@@ -86,6 +92,28 @@ class InabaCubit extends Cubit<InabaState> {
     );
   }
 
+  Future<void> activateRecoveryPath() async {
+    final res = await activateRecoveryPathUseCase(const NoParams());
+    res.fold(
+      (failure) => emit(state.copyWith(errorMessage: failure.message)),
+      (newOverview) => emit(state.copyWith(
+        overview: newOverview,
+        toastFeedback: 'تم عقد العزم وبدء مسار الإنابة والتطهر المبارك',
+      )),
+    );
+  }
+
+  Future<void> advanceActiveDay() async {
+    final res = await advanceActiveDayUseCase(const NoParams());
+    res.fold(
+      (failure) => emit(state.copyWith(errorMessage: failure.message)),
+      (newOverview) => emit(state.copyWith(
+        overview: newOverview,
+        toastFeedback: 'ثبّتك الله وبلّغك منازل الطائعين',
+      )),
+    );
+  }
+
   Future<void> toggleGoodDeed(String id) async {
     final res = await toggleGoodDeedUseCase(id);
     res.fold(
@@ -104,21 +132,15 @@ class InabaCubit extends Cubit<InabaState> {
 
   Future<void> addCustomGoodDeed(String title, String category) async {
     if (title.trim().isEmpty) return;
-
     final res = await addCustomGoodDeedUseCase(
       AddCustomGoodDeedParams(title: title.trim(), category: category.trim()),
     );
     res.fold(
       (failure) => emit(state.copyWith(errorMessage: failure.message)),
-      (newDeed) {
-        final updatedList = [newDeed, ...state.goodDeeds];
-        emit(
-          state.copyWith(
-            goodDeeds: updatedList,
-            toastFeedback: 'تمت إضافة العمل الصالح لقائمتك المباركة',
-          ),
-        );
-      },
+      (newDeed) => emit(state.copyWith(
+        goodDeeds: [newDeed, ...state.goodDeeds],
+        toastFeedback: 'تمت إضافة العمل الصالح لقائمتك المباركة',
+      )),
     );
   }
 
@@ -130,63 +152,51 @@ class InabaCubit extends Cubit<InabaState> {
 
   void prevHopeDose() {
     if (state.hopeDoses.isEmpty) return;
-    final prevIndex =
-        (state.currentHopeDoseIndex - 1 + state.hopeDoses.length) %
-            state.hopeDoses.length;
+    final prevIndex = (state.currentHopeDoseIndex - 1 + state.hopeDoses.length) % state.hopeDoses.length;
     emit(state.copyWith(currentHopeDoseIndex: prevIndex));
   }
 
   Future<void> toggleSaveCurrentHopeDose() async {
     final active = state.activeHopeDose;
     if (active == null) return;
-
     final res = await toggleSaveHopeDoseUseCase(active.id);
     res.fold(
       (failure) => emit(state.copyWith(errorMessage: failure.message)),
       (updatedDose) {
-        final updatedList = state.hopeDoses.map((d) {
-          return d.id == active.id ? updatedDose : d;
-        }).toList();
-
-        emit(
-          state.copyWith(
-            hopeDoses: updatedList,
-            toastFeedback: updatedDose.isSaved
-                ? 'تم حفظ بطاقة الرجاء في محفوظاتك'
-                : 'تمت إزالة البطاقة من المحفوظات',
-          ),
-        );
+        final updatedList = state.hopeDoses.map((d) => d.id == active.id ? updatedDose : d).toList();
+        emit(state.copyWith(
+          hopeDoses: updatedList,
+          toastFeedback: updatedDose.isSaved ? 'تم حفظ بطاقة الرجاء في محفوظاتك' : 'تمت إزالة البطاقة من المحفوظات',
+        ));
       },
     );
   }
 
-  void unlockConfessionSanctuary() {
-    emit(state.copyWith(isConfessionUnlocked: true));
-  }
-
-  void lockConfessionSanctuary() {
-    emit(state.copyWith(isConfessionUnlocked: false));
-  }
+  void unlockConfessionSanctuary() => emit(state.copyWith(isConfessionUnlocked: true));
+  void lockConfessionSanctuary() => emit(state.copyWith(isConfessionUnlocked: false));
 
   // --- Recovery Plans Management ---
   Future<void> togglePlanStep(String planId, int dayNumber) async {
     if (recoveryPlansLocalDataSource == null) return;
     try {
-      final updatedPlan = await recoveryPlansLocalDataSource!
-          .togglePlanDayStep(planId: planId, dayNumber: dayNumber);
-      final updatedPlans = state.recoveryPlans
-          .map((p) => p.id == planId ? updatedPlan : p)
-          .toList();
-      final step =
-          updatedPlan.steps.firstWhere((s) => s.dayNumber == dayNumber);
-      emit(
-        state.copyWith(
-          recoveryPlans: updatedPlans,
-          toastFeedback: step.isCompleted
-              ? 'تم إنجاز خطوة اليوم بنجاح، ثبّتك الله'
-              : 'تم تعديل حالة الخطوة',
-        ),
+      final updatedPlan = await recoveryPlansLocalDataSource!.togglePlanDayStep(
+        planId: planId,
+        dayNumber: dayNumber,
       );
+      final updatedPlans = state.recoveryPlans.map((p) => p.id == planId ? updatedPlan : p).toList();
+      final step = updatedPlan.steps.firstWhere((s) => s.dayNumber == dayNumber);
+
+      InabaOverviewEntity? updatedOverview = state.overview;
+      if (step.isCompleted && state.overview != null && state.overview!.currentActiveDay == dayNumber) {
+        final advRes = await advanceActiveDayUseCase(const NoParams());
+        advRes.fold((_) {}, (ov) => updatedOverview = ov);
+      }
+
+      emit(state.copyWith(
+        recoveryPlans: updatedPlans,
+        overview: updatedOverview,
+        toastFeedback: step.isCompleted ? 'تم إنجاز خطوة اليوم بنجاح، ثبّتك الله' : 'تم تعديل حالة الخطوة',
+      ));
     } catch (e) {
       emit(state.copyWith(errorMessage: e.toString()));
     }
@@ -197,12 +207,10 @@ class InabaCubit extends Cubit<InabaState> {
     try {
       await recoveryPlansLocalDataSource!.resetPlan(planId);
       final plans = await recoveryPlansLocalDataSource!.getRecoveryPlans();
-      emit(
-        state.copyWith(
-          recoveryPlans: plans,
-          toastFeedback: 'تمت إعادة ضبط الخطة لبدء مسار جديد',
-        ),
-      );
+      emit(state.copyWith(
+        recoveryPlans: plans,
+        toastFeedback: 'تمت إعادة ضبط الخطة لبدء مسار جديد',
+      ));
     } catch (e) {
       emit(state.copyWith(errorMessage: e.toString()));
     }
@@ -215,9 +223,7 @@ class InabaCubit extends Cubit<InabaState> {
       return true;
     }
     final isValid = mihrabPinService!.verifyPin(pin);
-    if (isValid) {
-      unlockConfessionSanctuary();
-    }
+    if (isValid) unlockConfessionSanctuary();
     return isValid;
   }
 
@@ -228,13 +234,11 @@ class InabaCubit extends Cubit<InabaState> {
     }
     final success = await mihrabPinService!.setPin(pin);
     if (success) {
-      emit(
-        state.copyWith(
-          hasMihrabPin: true,
-          isConfessionUnlocked: true,
-          toastFeedback: 'تم تفعيل رمز القفل لمحرابك بنجاح',
-        ),
-      );
+      emit(state.copyWith(
+        hasMihrabPin: true,
+        isConfessionUnlocked: true,
+        toastFeedback: 'تم تفعيل رمز القفل لمحرابك بنجاح',
+      ));
     }
     return success;
   }
@@ -243,12 +247,7 @@ class InabaCubit extends Cubit<InabaState> {
     if (mihrabPinService == null) return true;
     final success = await mihrabPinService!.removePin();
     if (success) {
-      emit(
-        state.copyWith(
-          hasMihrabPin: false,
-          toastFeedback: 'تمت إزالة رمز قفل المحراب',
-        ),
-      );
+      emit(state.copyWith(hasMihrabPin: false, toastFeedback: 'تمت إزالة رمز قفل المحراب'));
     }
     return success;
   }
@@ -258,9 +257,7 @@ class InabaCubit extends Cubit<InabaState> {
     final success = await biometricAuthService!.authenticate(
       localizedReason: 'تأكيد هويتك لفتح محراب البوح',
     );
-    if (success) {
-      unlockConfessionSanctuary();
-    }
+    if (success) unlockConfessionSanctuary();
     return success;
   }
 
@@ -273,15 +270,10 @@ class InabaCubit extends Cubit<InabaState> {
     final canAuth = await biometricAuthService!.canAuthenticate();
     if (canAuth) {
       final success = await biometricAuthService!.authenticate(
-        localizedReason:
-            'يرجى تأكيد هويتك عبر بصمة الوجه أو الإصبع أو رمز الهاتف لإعادة تعيين رمز المحراب',
+        localizedReason: 'يرجى تأكيد هويتك عبر بصمة الوجه أو الإصبع أو رمز الهاتف لإعادة تعيين رمز المحراب',
       );
       if (!success) {
-        emit(
-          state.copyWith(
-            toastFeedback: 'تعذر التحقق من الهوية! لم يتم تغيير الرمز.',
-          ),
-        );
+        emit(state.copyWith(toastFeedback: 'تعذر التحقق من الهوية! لم يتم تغيير الرمز.'));
         return false;
       }
     }
@@ -331,10 +323,9 @@ class InabaCubit extends Cubit<InabaState> {
     final res = await toggleRepentanceStepUseCase(id);
     res.fold(
       (failure) => emit(state.copyWith(errorMessage: failure.message)),
-      (updatedStep) {
-        final updatedList = state.repentanceSteps.map((s) => s.id == id ? updatedStep : s).toList();
-        emit(state.copyWith(repentanceSteps: updatedList));
-      },
+      (updatedStep) => emit(state.copyWith(
+        repentanceSteps: state.repentanceSteps.map((s) => s.id == id ? updatedStep : s).toList(),
+      )),
     );
   }
 
@@ -363,19 +354,14 @@ class InabaCubit extends Cubit<InabaState> {
       (failure) => emit(state.copyWith(errorMessage: failure.message)),
       (newOverview) async {
         final levelsRes = await getSpiritualLevelsUseCase(const NoParams());
-
-        emit(
-          state.copyWith(
-            overview: newOverview,
-            spiritualLevels: levelsRes.getOrElse((_) => []),
-            toastFeedback: 'الحمد لله الذي بنعمته تتم الصالحات.. نصر وثبات!',
-          ),
-        );
+        emit(state.copyWith(
+          overview: newOverview,
+          spiritualLevels: levelsRes.getOrElse((_) => []),
+          toastFeedback: 'الحمد لله الذي بنعمته تتم الصالحات.. نصر وثبات!',
+        ));
       },
     );
   }
 
-  void clearToastFeedback() {
-    emit(state.copyWith(toastFeedback: null));
-  }
+  void clearToastFeedback() => emit(state.copyWith(toastFeedback: null));
 }

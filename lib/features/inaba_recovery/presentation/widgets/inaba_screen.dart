@@ -7,11 +7,14 @@ import 'package:sakina_app/core/theme/app_text_styles.dart';
 import 'package:sakina_app/core/utils/app_top_snack_bar.dart';
 import 'package:sakina_app/features/inaba_recovery/presentation/cubit/inaba_cubit.dart';
 import 'package:sakina_app/features/inaba_recovery/presentation/cubit/inaba_state.dart';
+import 'package:sakina_app/features/inaba_recovery/presentation/widgets/components/inaba_active_daily_step_card.dart';
+import 'package:sakina_app/features/inaba_recovery/presentation/widgets/components/inaba_covenant_activation_card.dart';
 import 'package:sakina_app/features/inaba_recovery/presentation/widgets/components/inaba_covenant_renewal_sheet.dart';
 import 'package:sakina_app/features/inaba_recovery/presentation/widgets/components/inaba_daily_hope_sheet.dart';
 import 'package:sakina_app/features/inaba_recovery/presentation/widgets/components/inaba_emergency_haven_card.dart';
 import 'package:sakina_app/features/inaba_recovery/presentation/widgets/components/inaba_emergency_rescue_sheet.dart';
 import 'package:sakina_app/features/inaba_recovery/presentation/widgets/components/inaba_good_deeds_sheet.dart';
+import 'package:sakina_app/features/inaba_recovery/presentation/widgets/components/inaba_plan_detail_sheet.dart';
 import 'package:sakina_app/features/inaba_recovery/presentation/widgets/components/inaba_plans_overview_card.dart';
 import 'package:sakina_app/features/inaba_recovery/presentation/widgets/components/inaba_portals_grid.dart';
 import 'package:sakina_app/features/inaba_recovery/presentation/widgets/components/inaba_quranic_hope_card.dart';
@@ -53,8 +56,6 @@ class _InabaScreenView extends StatelessWidget {
         }
       },
       builder: (context, state) {
-        final overview = state.overview;
-
         return Scaffold(
           backgroundColor: colors.background,
           body: SafeArea(
@@ -86,39 +87,12 @@ class _InabaScreenView extends StatelessWidget {
                 // 3. Sacred Quranic Hope Verse
                 const SliverToBoxAdapter(child: InabaQuranicHopeCard()),
 
-                // 4. Streak & Purity Progress Card
-                if (overview != null)
-                  SliverToBoxAdapter(
-                    child: InabaStreakProgressCard(
-                      streakDays: overview.streakDays,
-                      progress: overview.streakProgress,
-                      levelTitle: overview.currentSpiritualLevelTitle,
-                      statusText: overview.recoveryPathStatus,
-                      onTreeTap: () {
-                        InabaTreeOfLightSheet.show(
-                          context,
-                          cubit: context.read<InabaCubit>(),
-                        );
-                      },
-                    ),
-                  ),
+                // 4. Sequential Recovery Journey Section (Activation or Active Journey)
+                SliverToBoxAdapter(
+                  child: _InabaJourneySection(state: state),
+                ),
 
-                // 5. Practical Spiritual Recovery Roadmap Card
-                if (state.recoveryPlans.isNotEmpty)
-                  SliverToBoxAdapter(
-                    child: InabaPlansOverviewCard(
-                      plans: state.recoveryPlans,
-                      onTap: () {
-                        InabaRecoveryPlansSheet.show(
-                          context,
-                          plans: state.recoveryPlans,
-                          cubit: context.read<InabaCubit>(),
-                        );
-                      },
-                    ),
-                  ),
-
-                // 6. Inaba Portals
+                // 5. Inaba Portals
                 SliverToBoxAdapter(
                   child: InabaPortalsGrid(
                     onPlansTap: () {
@@ -218,6 +192,85 @@ class _InabaScreenView extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _InabaJourneySection extends StatelessWidget {
+  final InabaState state;
+
+  const _InabaJourneySection({required this.state});
+
+  @override
+  Widget build(BuildContext context) {
+    final overview = state.overview;
+    if (overview == null) return const SizedBox.shrink();
+
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 400),
+      switchInCurve: Curves.easeOutCubic,
+      switchOutCurve: Curves.easeInCubic,
+      transitionBuilder: (child, animation) {
+        return FadeTransition(
+          opacity: animation,
+          child: ScaleTransition(
+            scale: Tween<double>(begin: 0.95, end: 1.0).animate(animation),
+            child: child,
+          ),
+        );
+      },
+      child: !overview.isPathActivated
+          ? InabaCovenantActivationCard(
+              key: const ValueKey('activation_card'),
+              onActivate: () => context.read<InabaCubit>().activateRecoveryPath(),
+            )
+          : Column(
+              key: const ValueKey('active_journey'),
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                InabaStreakProgressCard(
+                  streakDays: overview.streakDays,
+                  progress: overview.streakProgress,
+                  levelTitle: overview.currentSpiritualLevelTitle,
+                  statusText: overview.recoveryPathStatus,
+                  onTreeTap: () {
+                    InabaTreeOfLightSheet.show(
+                      context,
+                      cubit: context.read<InabaCubit>(),
+                    );
+                  },
+                ),
+                if (state.recoveryPlans.isNotEmpty) ...[
+                  InabaActiveDailyStepCard(
+                    currentDay: overview.currentActiveDay,
+                    plan: state.recoveryPlans.first,
+                    onCompleteStep: () {
+                      context.read<InabaCubit>().togglePlanStep(
+                            state.recoveryPlans.first.id,
+                            overview.currentActiveDay,
+                          );
+                    },
+                    onViewFullPlan: () {
+                      InabaPlanDetailSheet.show(
+                        context,
+                        planId: state.recoveryPlans.first.id,
+                        cubit: context.read<InabaCubit>(),
+                      );
+                    },
+                  ),
+                  InabaPlansOverviewCard(
+                    plans: state.recoveryPlans,
+                    onTap: () {
+                      InabaRecoveryPlansSheet.show(
+                        context,
+                        plans: state.recoveryPlans,
+                        cubit: context.read<InabaCubit>(),
+                      );
+                    },
+                  ),
+                ],
+              ],
+            ),
     );
   }
 }

@@ -5,6 +5,8 @@ import 'package:sakina_app/core/errors/failures.dart';
 import 'package:sakina_app/core/usecases/usecase.dart';
 import 'package:sakina_app/features/inaba_recovery/domain/entities/inaba_overview_entity.dart';
 import 'package:sakina_app/features/inaba_recovery/domain/repositories/inaba_repository.dart';
+import 'package:sakina_app/features/inaba_recovery/domain/usecases/activate_recovery_path_usecase.dart';
+import 'package:sakina_app/features/inaba_recovery/domain/usecases/advance_active_day_usecase.dart';
 import 'package:sakina_app/features/inaba_recovery/domain/usecases/get_inaba_overview_usecase.dart';
 import 'package:sakina_app/features/inaba_recovery/domain/usecases/log_spiritual_victory_usecase.dart';
 import 'package:sakina_app/features/inaba_recovery/domain/usecases/renew_covenant_usecase.dart';
@@ -16,6 +18,8 @@ void main() {
   late GetInabaOverviewUseCase getInabaOverviewUseCase;
   late RenewCovenantUseCase renewCovenantUseCase;
   late LogSpiritualVictoryUseCase logSpiritualVictoryUseCase;
+  late ActivateRecoveryPathUseCase activateRecoveryPathUseCase;
+  late AdvanceActiveDayUseCase advanceActiveDayUseCase;
 
   final testOverview = InabaOverviewEntity(
     streakDays: 14,
@@ -33,6 +37,8 @@ void main() {
     getInabaOverviewUseCase = GetInabaOverviewUseCase(mockRepository);
     renewCovenantUseCase = RenewCovenantUseCase(mockRepository);
     logSpiritualVictoryUseCase = LogSpiritualVictoryUseCase(mockRepository);
+    activateRecoveryPathUseCase = ActivateRecoveryPathUseCase(mockRepository);
+    advanceActiveDayUseCase = AdvanceActiveDayUseCase(mockRepository);
   });
 
   group('Inaba Domain UseCases', () {
@@ -81,6 +87,30 @@ void main() {
 
       expect(result, Right(victoryOverview));
       verify(() => mockRepository.logSpiritualVictory()).called(1);
+    });
+
+    test('ActivateRecoveryPathUseCase delegates to repository.activateRecoveryPath',
+        () async {
+      final activatedOverview = testOverview.copyWith(isPathActivated: true);
+      when(() => mockRepository.activateRecoveryPath())
+          .thenAnswer((_) async => Right(activatedOverview));
+
+      final result = await activateRecoveryPathUseCase(const NoParams());
+
+      expect(result, Right(activatedOverview));
+      verify(() => mockRepository.activateRecoveryPath()).called(1);
+    });
+
+    test('AdvanceActiveDayUseCase delegates to repository.advanceActiveDay',
+        () async {
+      final advancedOverview = testOverview.copyWith(currentActiveDay: 2);
+      when(() => mockRepository.advanceActiveDay())
+          .thenAnswer((_) async => Right(advancedOverview));
+
+      final result = await advanceActiveDayUseCase(const NoParams());
+
+      expect(result, Right(advancedOverview));
+      verify(() => mockRepository.advanceActiveDay()).called(1);
     });
   });
 }

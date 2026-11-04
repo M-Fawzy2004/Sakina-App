@@ -31,4 +31,6 @@ abstract interface class InabaRepository {
   Future<Either<Failure, RepentanceStepEntity>> toggleRepentanceStep(String id);
   Future<Either<Failure, InabaOverviewEntity>> renewCovenant();
   Future<Either<Failure, InabaOverviewEntity>> logSpiritualVictory();
+  Future<Either<Failure, InabaOverviewEntity>> activateRecoveryPath();
+  Future<Either<Failure, InabaOverviewEntity>> advanceActiveDay();
 }
