@@ -69,5 +69,7 @@ void main() async {
     AppLogger.error('Failed to initialize dependencies', e, stack, 'INIT');
   }
 
-  runApp(DevicePreview(enabled: true, builder: (context) => const SakinaApp()));
+  runApp(
+    DevicePreview(enabled: false, builder: (context) => const SakinaApp()),
+  );
 }
