@@ -4,6 +4,7 @@ import 'package:iconsax/iconsax.dart';
 import 'package:sakina_app/core/theme/app_spacing.dart';
 import 'package:sakina_app/core/theme/app_text_styles.dart';
 import 'package:sakina_app/core/utils/haptic_service.dart';
+import 'package:sakina_app/core/widgets/sakina_luxury_switch.dart';
 import 'package:sakina_app/features/quran_reading/domain/entities/quran_reader_preferences.dart';
 import 'package:sakina_app/features/quran_reading/presentation/widgets/components/settings/reader_settings_shared.dart';
 
@@ -146,12 +147,14 @@ class _PreferenceSwitchTile extends StatelessWidget {
                   ],
                 ),
               ),
-              Switch.adaptive(
+              SakinaLuxurySwitch(
                 value: value,
-                activeThumbColor: accentColor,
-                activeTrackColor: accentColor.withValues(alpha: 0.45),
-                inactiveThumbColor: activeTheme.secondaryTextColor,
+                activeTrackColor: accentColor,
+                activeThumbColor: activeTheme.cardColor,
                 inactiveTrackColor: activeTheme.cardColor,
+                inactiveThumbColor: activeTheme.secondaryTextColor,
+                inactiveBorderColor: activeTheme.borderColor.withValues(alpha: 0.4),
+                activeBorderColor: accentColor.withValues(alpha: 0.8),
                 onChanged: onChanged,
               ),
             ],
