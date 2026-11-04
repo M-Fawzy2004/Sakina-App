@@ -72,3 +72,4 @@ abstract final class SettingsPersistenceManager {
     await prefs.remove(keyStealthNotifications);
   }
 }
+

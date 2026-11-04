@@ -90,3 +90,4 @@ abstract final class QuranReaderPreferencesStorage {
     await prefs.remove(keyKeepAwake);
   }
 }
+

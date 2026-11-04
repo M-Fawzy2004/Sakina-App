@@ -63,6 +63,11 @@ void main() {
     }
     GetIt.I.registerSingleton<PreferencesService>(mockPreferencesService);
 
+    if (GetIt.I.isRegistered<QuranCubit>()) {
+      GetIt.I.unregister<QuranCubit>();
+    }
+    GetIt.I.registerSingleton<QuranCubit>(mockQuranCubit);
+
     when(() => mockSetThemeModeUseCase(any()))
         .thenAnswer((_) async => const Right(null));
     when(() => mockSettingsRepository.setPrimaryAccentColor(any()))
@@ -81,6 +86,9 @@ void main() {
     cubit.close();
     if (GetIt.I.isRegistered<PreferencesService>()) {
       GetIt.I.unregister<PreferencesService>();
+    }
+    if (GetIt.I.isRegistered<QuranCubit>()) {
+      GetIt.I.unregister<QuranCubit>();
     }
   });
 

@@ -103,8 +103,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final prefs = sl<PreferencesService>();
     await prefs.setString(SettingsPersistenceManager.keyReciterId, id);
     await prefs.setString(SettingsPersistenceManager.keyReciterName, name);
-    if (mounted) {
-      context.read<QuranCubit>().setReciter(id);
+    if (sl.isRegistered<QuranCubit>()) {
+      sl<QuranCubit>().setReciter(id);
     }
   }
 
