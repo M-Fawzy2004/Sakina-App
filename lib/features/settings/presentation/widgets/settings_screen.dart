@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sakina_app/core/di/injection_container.dart';
+import 'package:sakina_app/core/services/notifications/local_notification_service.dart';
 import 'package:sakina_app/core/services/storage/preferences_service.dart';
 import 'package:sakina_app/core/theme/app_colors_scheme.dart';
 import 'package:sakina_app/core/utils/app_top_snack_bar.dart';
@@ -85,14 +86,42 @@ class _SettingsScreenState extends State<SettingsScreen> {
     String key,
     bool val,
     void Function(bool) setter,
-    String toastMessage,
-  ) async {
+    String toastMessage, [
+    Future<void> Function()? onAfterUpdate,
+  ]) async {
     HapticService.selectionClick();
     setState(() => setter(val));
     await sl<PreferencesService>().setBool(key, val);
+    if (onAfterUpdate != null) await onAfterUpdate();
     if (mounted) {
       AppTopSnackBar.showSuccess(context: context, message: toastMessage);
     }
+  }
+
+  Future<void> _scheduleNotification(
+    Future<void> Function(LocalNotificationService s) action,
+    bool enabled,
+  ) async {
+    if (!sl.isRegistered<LocalNotificationService>()) return;
+    final s = sl<LocalNotificationService>();
+    if (enabled) await s.requestPermissions();
+    await action(s);
+  }
+
+  void _updateNotifPref(
+    String key,
+    bool val,
+    void Function(bool) setter,
+    String label,
+    Future<void> Function(LocalNotificationService s) action,
+  ) {
+    _updateBoolPref(
+      key,
+      val,
+      setter,
+      val ? 'تم تفعيل $label' : 'تم إيقاف $label',
+      () => _scheduleNotification(action, val),
+    );
   }
 
   Future<void> _handleReciterChanged(String id, String name) async {
@@ -239,46 +268,34 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         dailyQuranReminder: _dailyQuranReminder,
                         dailyHopeReminder: _dailyHopeReminder,
                         nightPrayerReminder: _nightPrayerReminder,
-                        onMorningEveningChanged: (val) {
-                          _updateBoolPref(
-                            SettingsPersistenceManager.keyMorningEveningAzkar,
-                            val,
-                            (v) => _morningEveningAzkar = v,
-                            val
-                                ? 'تم تفعيل تذكيرات أذكار الصباح والمساء 🌿'
-                                : 'تم إيقاف تذكيرات أذكار الصباح والمساء',
-                          );
-                        },
-                        onDailyQuranChanged: (val) {
-                          _updateBoolPref(
-                            SettingsPersistenceManager.keyDailyQuranReminder,
-                            val,
-                            (v) => _dailyQuranReminder = v,
-                            val
-                                ? 'تم تفعيل تنبيه الورد القرآني اليومي 📖'
-                                : 'تم إيقاف تنبيه الورد القرآني',
-                          );
-                        },
-                        onDailyHopeChanged: (val) {
-                          _updateBoolPref(
-                            SettingsPersistenceManager.keyDailyHopeReminder,
-                            val,
-                            (v) => _dailyHopeReminder = v,
-                            val
-                                ? 'تم تفعيل جرعة الأمل اليومية ✨'
-                                : 'تم إيقاف جرعة الأمل اليومية',
-                          );
-                        },
-                        onNightPrayerChanged: (val) {
-                          _updateBoolPref(
-                            SettingsPersistenceManager.keyNightPrayerReminder,
-                            val,
-                            (v) => _nightPrayerReminder = v,
-                            val
-                                ? 'تم تفعيل تذكير قيام الليل والأسحار 🌙'
-                                : 'تم إيقاف تذكير قيام الليل',
-                          );
-                        },
+                        onMorningEveningChanged: (val) => _updateNotifPref(
+                          SettingsPersistenceManager.keyMorningEveningAzkar,
+                          val,
+                          (v) => _morningEveningAzkar = v,
+                          'تذكيرات أذكار الصباح والمساء',
+                          (s) => s.scheduleMorningEveningAzkar(enabled: val),
+                        ),
+                        onDailyQuranChanged: (val) => _updateNotifPref(
+                          SettingsPersistenceManager.keyDailyQuranReminder,
+                          val,
+                          (v) => _dailyQuranReminder = v,
+                          'تنبيه الورد القرآني اليومي',
+                          (s) => s.scheduleDailyQuranReminder(enabled: val),
+                        ),
+                        onDailyHopeChanged: (val) => _updateNotifPref(
+                          SettingsPersistenceManager.keyDailyHopeReminder,
+                          val,
+                          (v) => _dailyHopeReminder = v,
+                          'جرعة الأمل اليومية',
+                          (s) => s.scheduleDailyHopeReminder(enabled: val),
+                        ),
+                        onNightPrayerChanged: (val) => _updateNotifPref(
+                          SettingsPersistenceManager.keyNightPrayerReminder,
+                          val,
+                          (v) => _nightPrayerReminder = v,
+                          'تذكير قيام الليل والأسحار',
+                          (s) => s.scheduleNightPrayerReminder(enabled: val),
+                        ),
                       ),
                     ),
                   ),
@@ -298,7 +315,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             val,
                             (v) => _inabaBiometricLock = v,
                             val
-                                ? 'تم تفعيل حماية قسم الإنابة بـ PIN / البصمة 🛡️'
+                                ? 'تم تفعيل حماية قسم الإنابة بـ PIN / البصمة'
                                 : 'تم تعطيل قفل قسم الإنابة',
                           );
                         },
@@ -308,7 +325,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             val,
                             (v) => _stealthNotifications = v,
                             val
-                                ? 'تم تفعيل الوضع السري لإشعارات الإنابة 🔒'
+                                ? 'تم تفعيل الوضع السري لإشعارات الإنابة'
                                 : 'تم إيقاف الوضع السري للإشعارات',
                           );
                         },
@@ -324,9 +341,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       padding: EdgeInsets.symmetric(horizontal: 16.w),
                       child: SettingsStorageSection(
                         cacheSizeText: _cacheSizeText,
-                        onCacheCleared: (newSize) {
-                          setState(() => _cacheSizeText = newSize);
-                        },
+                        onCacheCleared: (newSize) =>
+                            setState(() => _cacheSizeText = newSize),
                       ),
                     ),
                   ),
@@ -375,7 +391,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       setState(() => _loadPersistedSettings());
       AppTopSnackBar.showSuccess(
         context: context,
-        message: 'تمت استعادة الإعدادات الافتراضية بنجاح 🌿',
+        message: 'تمت استعادة الإعدادات الافتراضية بنجاح',
       );
     }
   }
