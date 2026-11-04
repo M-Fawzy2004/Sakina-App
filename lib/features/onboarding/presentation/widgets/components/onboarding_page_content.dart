@@ -18,23 +18,56 @@ class OnboardingPageContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        // 1. Full-Width & Extended Height Static Image (No animation, pure native resolution)
-        ClipRect(
-          child: SizedBox(
-            width: double.infinity,
+        // 1. Luxury Floating Arched Artwork Card
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 20.w),
+          child: Container(
             height: imageHeight,
-            child: Image.asset(
-              item.imageAsset,
-              fit: BoxFit.cover,
-              width: double.infinity,
-              height: imageHeight,
-              alignment: Alignment.topCenter,
-              filterQuality: FilterQuality.high,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: AppColors.obsidianCore,
+              borderRadius: BorderRadius.circular(28.r),
+              border: Border.all(
+                color: AppColors.goldBorderStroke,
+                width: 1.2.r,
+              ),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(26.8.r),
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  Image.asset(
+                    item.imageAsset,
+                    fit: BoxFit.cover,
+                    alignment: Alignment.center,
+                    filterQuality: FilterQuality.high,
+                  ),
+                  Positioned(
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    height: 50.h,
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.bottomCenter,
+                          end: Alignment.topCenter,
+                          colors: [
+                            AppColors.obsidianCore.withValues(alpha: 0.60),
+                            Colors.transparent,
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
 
-        // 2. Centered Sacred Typography (Dynamically fills remaining space)
+        // 2. Centered Sacred Typography
         Expanded(
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 22.w),
@@ -45,7 +78,7 @@ class OnboardingPageContent extends StatelessWidget {
                   item.title,
                   textAlign: TextAlign.center,
                   style: GoogleFonts.cairo(
-                    fontSize: 28.sp,
+                    fontSize: 24.sp,
                     fontWeight: FontWeight.w800,
                     color: AppColors.champagneGold,
                     height: 1.3,
@@ -57,9 +90,9 @@ class OnboardingPageContent extends StatelessWidget {
                   item.subtitle,
                   textAlign: TextAlign.center,
                   style: GoogleFonts.cairo(
-                    fontSize: 14.5.sp,
+                    fontSize: 14.sp,
                     fontWeight: FontWeight.w500,
-                    color: AppColors.pureChalk.withValues(alpha: 0.90),
+                    color: AppColors.pureChalk.withValues(alpha: 0.88),
                     height: 1.6,
                   ),
                 ),

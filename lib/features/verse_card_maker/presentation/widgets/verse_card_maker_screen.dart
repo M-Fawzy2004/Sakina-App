@@ -383,18 +383,23 @@ class _VerseCardMakerScreenState extends State<VerseCardMakerScreen> {
                         onPickCustomImage: _pickCustomImage,
                         onPickCustomVideo: _pickCustomVideo,
                       ),
-                      SizedBox(height: 20.h),
-                      VerseCardActionsRow(
-                        isExporting: _isExporting,
-                        isVideoMode: isVideoMode,
-                        onSavePrimary: _handleSavePrimary,
-                        onSaveImageSecondary:
-                            isVideoMode ? _handleSaveImageSecondary : null,
-                        onShareCard: _handleShareCard,
-                        onCopyText: _handleCopyText,
-                      ),
                     ],
                   ),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.only(
+                  top: 10.h,
+                  bottom: bottomPadding > 0 ? bottomPadding + 8.h : 18.h,
+                ),
+                child: VerseCardActionsRow(
+                  isExporting: _isExporting,
+                  isVideoMode: isVideoMode,
+                  onSavePrimary: _handleSavePrimary,
+                  onSaveImageSecondary:
+                      isVideoMode ? _handleSaveImageSecondary : null,
+                  onShareCard: _handleShareCard,
+                  onCopyText: _handleCopyText,
                 ),
               ),
             ],

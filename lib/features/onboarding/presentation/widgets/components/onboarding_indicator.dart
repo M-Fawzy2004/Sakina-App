@@ -29,18 +29,11 @@ class OnboardingIndicator extends StatelessWidget {
             color: isActive ? AppColors.champagneGold : AppColors.carbonSlate,
             borderRadius: BorderRadius.circular(10.r),
             border: Border.all(
-              color: isActive ? AppColors.paleRadiance : AppColors.goldBorderStroke,
+              color: isActive
+                  ? AppColors.paleRadiance
+                  : AppColors.goldBorderStroke,
               width: 1.r,
             ),
-            boxShadow: isActive
-                ? const [
-                    BoxShadow(
-                      color: AppColors.goldGlowSoft,
-                      blurRadius: 10,
-                      spreadRadius: 1,
-                    ),
-                  ]
-                : null,
           ),
         );
       }),
