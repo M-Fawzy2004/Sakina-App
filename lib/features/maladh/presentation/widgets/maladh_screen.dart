@@ -45,14 +45,10 @@ class _MaladhView extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: colors.background,
-      body: Align(
-        alignment: Alignment.topCenter,
-        child: ConstrainedBox(
-          constraints: BoxConstraints(maxWidth: 680.w),
-          child: RefreshIndicator(
-            color: AppColors.champagneGold,
-            backgroundColor: AppColors.carbonSlate,
-            onRefresh: () => context.read<MaladhCubit>().refreshSanctuaryData(),
+      body: RefreshIndicator(
+        color: AppColors.champagneGold,
+        backgroundColor: AppColors.carbonSlate,
+        onRefresh: () => context.read<MaladhCubit>().refreshSanctuaryData(),
             child: BlocBuilder<MaladhCubit, MaladhState>(
               builder: (context, state) {
                 return switch (state) {
@@ -166,9 +162,7 @@ class _MaladhView extends StatelessWidget {
               },
             ),
           ),
-        ),
-      ),
-    );
+        );
   }
 }
 
