@@ -6,20 +6,23 @@ import 'package:iconsax/iconsax.dart';
 import 'package:sakina_app/core/theme/app_colors_scheme.dart';
 import 'package:sakina_app/core/utils/app_top_snack_bar.dart';
 import 'package:sakina_app/core/utils/haptic_service.dart';
-import 'package:sakina_app/features/settings/domain/entities/app_accent_color.dart';
 import 'package:sakina_app/features/settings/presentation/cubit/settings_cubit.dart';
 import 'package:sakina_app/features/settings/presentation/cubit/settings_state.dart';
-import 'package:sakina_app/features/settings/presentation/widgets/components/settings_appearance_gateway_hero.dart';
+import 'package:sakina_app/features/settings/presentation/widgets/components/sections/settings_appearance_section.dart';
+import 'package:sakina_app/features/settings/presentation/widgets/components/sections/settings_audio_recitations_section.dart';
+import 'package:sakina_app/features/settings/presentation/widgets/components/sections/settings_notifications_section.dart';
+import 'package:sakina_app/features/settings/presentation/widgets/components/sections/settings_quran_reading_section.dart';
+import 'package:sakina_app/features/settings/presentation/widgets/components/sections/settings_security_section.dart';
+import 'package:sakina_app/features/settings/presentation/widgets/components/sections/settings_storage_section.dart';
+import 'package:sakina_app/features/settings/presentation/widgets/components/settings_about_sanctuary_card.dart';
 import 'package:sakina_app/features/settings/presentation/widgets/components/settings_brand_header.dart';
 import 'package:sakina_app/features/settings/presentation/widgets/components/settings_reset_card.dart';
-import 'package:sakina_app/features/settings/presentation/widgets/components/settings_section_card.dart';
-import 'package:sakina_app/features/settings/presentation/widgets/components/settings_switch_tile.dart';
-import 'package:sakina_app/features/settings/presentation/widgets/components/settings_tile_item.dart';
-import 'package:sakina_app/features/settings/presentation/widgets/theme_selector_screen.dart';
+import 'package:sakina_app/features/settings/presentation/widgets/components/settings_sanctuary_card.dart';
 
-/// Redesigned Al-I'dadat (Settings & Preferences) Sanctuary Screen.
-/// Elevated spiritual UI with a dedicated Theme & Accent Customization gateway,
-/// comprehensive reading and audio preferences, and one-tap reset to defaults.
+/// Al-I'dadat (Settings & Preferences) Sanctuary Screen.
+/// Clean, modular, comprehensive settings without drop shadows.
+/// Replaces the top hero billboard with a spiritual sanctuary overview card,
+/// presenting theme customization as an ordinary, elegant option row.
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
 
@@ -28,8 +31,29 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
+  // Quran & Display Settings
+  double _quranFontSize = 26.0;
+  String _readingStyle = 'كُرُوتُ الآيَاتِ المُنْفَرِدَةِ مَعَ إِضَاءَةِ التِّلَاوَةِ';
+  bool _keepScreenAwake = true;
+
+  // Audio Recitations Settings
+  String _selectedReciter = 'الشَّيْخُ مِشَارِي رَاشِد العَفَاسِي';
+  String _audioQuality = 'جَوْدَةٌ عَالِيَةٌ (HQ 128 kbps) — نَقَاءُ اسْتُودْيُو';
+  bool _autoPlayNext = true;
+  String _sleepTimer = 'مُعَطَّلٌ حَالِيًّا';
+
+  // Notifications & Dhikr
   bool _morningEveningAzkar = true;
   bool _dailyQuranReminder = true;
+  bool _dailyHopeReminder = true;
+  bool _nightPrayerReminder = false;
+
+  // Security & Inaba
+  bool _inabaBiometricLock = true;
+  bool _stealthNotifications = false;
+
+  // Storage Cache
+  String _cacheSizeText = '١٨.٤ م.ب';
 
   @override
   Widget build(BuildContext context) {
@@ -43,8 +67,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
         child: BlocBuilder<SettingsCubit, SettingsState>(
           builder: (context, state) {
             final cubit = context.read<SettingsCubit>();
-            final currentAccent =
-                AppAccentColor.fromColor(state.primaryAccentColor);
 
             return Directionality(
               textDirection: TextDirection.rtl,
@@ -56,19 +78,27 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     child: SettingsBrandHeader(),
                   ),
 
-                  SliverToBoxAdapter(child: SizedBox(height: 12.h)),
+                  SliverToBoxAdapter(child: SizedBox(height: 10.h)),
 
-                  // 2. High-Impact Theme & Appearance Hero Gateway
+                  // 2. Serene Spiritual Sanctuary Overview Card (Replacing Hero)
                   SliverToBoxAdapter(
                     child: Padding(
                       padding: EdgeInsets.symmetric(horizontal: 16.w),
-                      child: SettingsAppearanceGatewayHero(
-                        themeTitle: state.appThemeMode.title,
-                        accentTitle: currentAccent.title,
-                        accentColor: state.primaryAccentColor,
-                        onTap: () {
-                          HapticService.selectionClick();
-                          ThemeSelectorScreen.open(context);
+                      child: const SettingsSanctuaryCard(),
+                    ),
+                  ),
+
+                  SliverToBoxAdapter(child: SizedBox(height: 16.h)),
+
+                  // 3. Appearance & Themes (Theme as a Standard Option Tile)
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16.w),
+                      child: SettingsAppearanceSection(
+                        state: state,
+                        quranFontSize: _quranFontSize,
+                        onFontSizeChanged: (newSize) {
+                          setState(() => _quranFontSize = newSize);
                         },
                       ),
                     ),
@@ -76,140 +106,132 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
                   SliverToBoxAdapter(child: SizedBox(height: 16.h)),
 
-                  // 3. Quran Reading & Mushaf Preferences
+                  // 4. Quran Reading Sanctuary Preferences
                   SliverToBoxAdapter(
                     child: Padding(
                       padding: EdgeInsets.symmetric(horizontal: 16.w),
-                      child: SettingsSectionCard(
-                        title: 'تَفْضِيلَاتُ المَصْحَفِ وَالقِرَاءَةِ',
-                        icon: Iconsax.book_1,
-                        children: [
-                          SettingsTileItem(
-                            icon: Iconsax.textalign_justifycenter,
-                            title: 'حَجْمُ خَطِّ الآيَاتِ القُرْآنِيَّةِ',
-                            subtitle: 'مُتَوَسِّط (26sp) — مُرِيحٌ لِلْعَيْنِ',
-                            onTap: () {
-                              HapticService.selectionClick();
-                              AppTopSnackBar.show(
-                                context: context,
-                                message:
-                                    'يمكنك تغيير حجم الخط مباشرة من شريط أدوات القارئ',
-                              );
-                            },
-                          ),
-                          Divider(
-                            color: colors.borderHairline.withValues(alpha: 0.5),
-                            height: 1.h,
-                          ),
-                          SettingsTileItem(
-                            icon: Iconsax.document_text,
-                            title: 'نَمَطُ العَرْضِ وَالتَّقْلِيبِ',
-                            subtitle:
-                                'كُرُوتٌ مُتَّصِلَةٌ مَعَ فِيزْيَاءِ التَّقْلِيبِ ثُلَاثِيَّةِ الأَبْعَادِ',
-                            onTap: () {
-                              HapticService.selectionClick();
-                            },
-                          ),
-                          Divider(
-                            color: colors.borderHairline.withValues(alpha: 0.5),
-                            height: 1.h,
-                          ),
-                          SettingsTileItem(
-                            icon: Iconsax.scroll,
-                            title: 'الرَّسْمُ العُثْمَانِيُّ المَصْحَفِيُّ',
-                            subtitle: 'حَفْصٌ عَنْ عَاصِمٍ (مُصْحَفُ المَدِينَةِ المُنَوَّرَةِ)',
-                            onTap: () {},
-                          ),
-                        ],
+                      child: SettingsQuranReadingSection(
+                        readingStyle: _readingStyle,
+                        keepScreenAwake: _keepScreenAwake,
+                        onReadingStyleChanged: (newStyle) {
+                          setState(() => _readingStyle = newStyle);
+                        },
+                        onKeepScreenAwakeChanged: (val) {
+                          HapticService.selectionClick();
+                          setState(() => _keepScreenAwake = val);
+                        },
                       ),
                     ),
                   ),
 
                   SliverToBoxAdapter(child: SizedBox(height: 16.h)),
 
-                  // 4. Audio Recitations Preferences
+                  // 5. Audio Recitations Sanctuary
                   SliverToBoxAdapter(
                     child: Padding(
                       padding: EdgeInsets.symmetric(horizontal: 16.w),
-                      child: SettingsSectionCard(
-                        title: 'الصَّوْتِيَّاتُ وَالتِّلَاوَةُ',
-                        icon: Iconsax.music,
-                        children: [
-                          SettingsTileItem(
-                            icon: Iconsax.user_tag,
-                            title: 'القَارِئُ الاِفْتِرَاضِيُّ لِلتِّلَاوَةِ',
-                            subtitle: 'الشَّيْخُ مِشَارِي رَاشِد العَفَاسِي (مُجَوَّدٌ)',
-                            onTap: () {
-                              HapticService.selectionClick();
-                            },
-                          ),
-                          Divider(
-                            color: colors.borderHairline.withValues(alpha: 0.5),
-                            height: 1.h,
-                          ),
-                          SettingsTileItem(
-                            icon: Iconsax.forward_10_seconds,
-                            title: 'سُرْعَةُ التَّشْغِيلِ الاِفْتِرَاضِيَّةُ',
-                            subtitle: '1.0x (طَبِيعِيٌّ)',
-                            onTap: () {},
-                          ),
-                          Divider(
-                            color: colors.borderHairline.withValues(alpha: 0.5),
-                            height: 1.h,
-                          ),
-                          SettingsTileItem(
-                            icon: Iconsax.timer_1,
-                            title: 'مُؤَقِّتُ النَّوْمِ التِّلْقَائِيُّ',
-                            subtitle: 'مُعَطَّلٌ حَالِيًّا',
-                            onTap: () {},
-                          ),
-                        ],
+                      child: SettingsAudioRecitationsSection(
+                        selectedReciter: _selectedReciter,
+                        audioQuality: _audioQuality,
+                        autoPlayNext: _autoPlayNext,
+                        sleepTimer: _sleepTimer,
+                        onReciterChanged: (reciter) {
+                          setState(() => _selectedReciter = reciter);
+                        },
+                        onAudioQualityChanged: (quality) {
+                          setState(() => _audioQuality = quality);
+                        },
+                        onAutoPlayNextChanged: (val) {
+                          HapticService.selectionClick();
+                          setState(() => _autoPlayNext = val);
+                        },
+                        onSleepTimerChanged: (timer) {
+                          setState(() => _sleepTimer = timer);
+                        },
                       ),
                     ),
                   ),
 
                   SliverToBoxAdapter(child: SizedBox(height: 16.h)),
 
-                  // 5. Daily Dhikr & Reminders Section
+                  // 6. Daily Dhikr & Reminders
                   SliverToBoxAdapter(
                     child: Padding(
                       padding: EdgeInsets.symmetric(horizontal: 16.w),
-                      child: SettingsSectionCard(
-                        title: 'التَّذْكِيرَاتُ وَالوِرْدُ اليَوْمِيُّ',
-                        icon: Iconsax.notification,
-                        children: [
-                          SettingsSwitchTile(
-                            icon: Iconsax.sun_1,
-                            title: 'تَنْبِيهَاتُ أَذْكَارِ الصَّبَاحِ وَالمَسَاءِ',
-                            subtitle: 'تَذْكِيرٌ يَوْمِيٌّ مُنْتَظَمٌ لِحِفْظِ الأَوْقَاتِ',
-                            value: _morningEveningAzkar,
-                            onChanged: (val) {
-                              HapticService.selectionClick();
-                              setState(() => _morningEveningAzkar = val);
-                            },
-                          ),
-                          Divider(
-                            color: colors.borderHairline.withValues(alpha: 0.5),
-                            height: 1.h,
-                          ),
-                          SettingsSwitchTile(
-                            icon: Iconsax.calendar_tick,
-                            title: 'تَنْبِيهُ الوِرْدِ القُرْآنِيِّ اليَوْمِيِّ',
-                            subtitle: 'مُتَابَعَةُ القِرَاءَةِ وَتَحْقِيقُ خَتْمَةِ سَكِينَةَ',
-                            value: _dailyQuranReminder,
-                            onChanged: (val) {
-                              HapticService.selectionClick();
-                              setState(() => _dailyQuranReminder = val);
-                            },
-                          ),
-                        ],
+                      child: SettingsNotificationsSection(
+                        morningEveningAzkar: _morningEveningAzkar,
+                        dailyQuranReminder: _dailyQuranReminder,
+                        dailyHopeReminder: _dailyHopeReminder,
+                        nightPrayerReminder: _nightPrayerReminder,
+                        onMorningEveningChanged: (val) {
+                          HapticService.selectionClick();
+                          setState(() => _morningEveningAzkar = val);
+                        },
+                        onDailyQuranChanged: (val) {
+                          HapticService.selectionClick();
+                          setState(() => _dailyQuranReminder = val);
+                        },
+                        onDailyHopeChanged: (val) {
+                          HapticService.selectionClick();
+                          setState(() => _dailyHopeReminder = val);
+                        },
+                        onNightPrayerChanged: (val) {
+                          HapticService.selectionClick();
+                          setState(() => _nightPrayerReminder = val);
+                        },
                       ),
                     ),
                   ),
 
                   SliverToBoxAdapter(child: SizedBox(height: 16.h)),
 
-                  // 6. Reset to Default Section (Requested by User)
+                  // 7. Security & Inaba Privacy
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16.w),
+                      child: SettingsSecuritySection(
+                        inabaBiometricLock: _inabaBiometricLock,
+                        stealthNotifications: _stealthNotifications,
+                        onInabaBiometricLockChanged: (val) {
+                          HapticService.selectionClick();
+                          setState(() => _inabaBiometricLock = val);
+                        },
+                        onStealthNotificationsChanged: (val) {
+                          HapticService.selectionClick();
+                          setState(() => _stealthNotifications = val);
+                        },
+                      ),
+                    ),
+                  ),
+
+                  SliverToBoxAdapter(child: SizedBox(height: 16.h)),
+
+                  // 8. Storage & Cache Management
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16.w),
+                      child: SettingsStorageSection(
+                        cacheSizeText: _cacheSizeText,
+                        onCacheCleared: (newSize) {
+                          setState(() => _cacheSizeText = newSize);
+                        },
+                      ),
+                    ),
+                  ),
+
+                  SliverToBoxAdapter(child: SizedBox(height: 16.h)),
+
+                  // 9. About Sakina & Perpetual Charity (صدقة جارية)
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16.w),
+                      child: const SettingsAboutSanctuaryCard(),
+                    ),
+                  ),
+
+                  SliverToBoxAdapter(child: SizedBox(height: 16.h)),
+
+                  // 10. Reset to Defaults
                   SliverToBoxAdapter(
                     child: Padding(
                       padding: EdgeInsets.symmetric(horizontal: 16.w),
@@ -219,68 +241,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                   ),
 
-                  SliverToBoxAdapter(child: SizedBox(height: 16.h)),
-
-                  // 7. About Application Section
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16.w),
-                      child: SettingsSectionCard(
-                        title: 'عَنْ سَكِينَةَ',
-                        icon: Iconsax.info_circle,
-                        children: [
-                          SettingsTileItem(
-                            icon: Iconsax.verify,
-                            title: 'إِصْدَارُ التَّطْبِيقِ',
-                            subtitle: 'الإِصْدَارُ 1.0.0 — سَكِينَةٌ مَلَكِيَّةٌ',
-                            trailing: Container(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 10.w,
-                                vertical: 4.h,
-                              ),
-                              decoration: BoxDecoration(
-                                color: colors.accentGold.withValues(alpha: 0.12),
-                                borderRadius: BorderRadius.circular(10.r),
-                                border: Border.all(
-                                  color: colors.accentGold.withValues(alpha: 0.3),
-                                  width: 0.8.r,
-                                ),
-                              ),
-                              child: Text(
-                                'v1.0.0',
-                                style: GoogleFonts.cairo(
-                                  fontSize: 11.sp,
-                                  fontWeight: FontWeight.w700,
-                                  color: colors.accentGold,
-                                ),
-                              ),
-                            ),
-                          ),
-                          Divider(
-                            color: colors.borderHairline.withValues(alpha: 0.5),
-                            height: 1.h,
-                          ),
-                          Padding(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 16.w,
-                              vertical: 12.h,
-                            ),
-                            child: Text(
-                              'تطبيق سكينة هو صدقة جارية خالصة لوجه الله تعالى عن جميع المسلمين والمسلمات.',
-                              textAlign: TextAlign.center,
-                              style: GoogleFonts.cairo(
-                                fontSize: 11.5.sp,
-                                color: colors.textSecondary.withValues(alpha: 0.8),
-                                height: 1.5,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  // Bottom spacing for floating navigation bar
+                  // Bottom padding for floating navigation bar
                   SliverToBoxAdapter(
                     child: SizedBox(height: bottomPadding + 96.h),
                   ),
@@ -303,7 +264,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
           backgroundColor: colors.cardSurface,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20.r),
-            side: BorderSide(color: colors.borderHairline),
+            side: BorderSide(
+              color: colors.borderHairline.withValues(alpha: 0.8),
+              width: 1.r,
+            ),
           ),
           title: Row(
             children: [
@@ -346,6 +310,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10.r),
                 ),
+                elevation: 0,
               ),
               child: Text(
                 'استعادة الآن',
@@ -365,8 +330,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
       await cubit.resetToDefaults();
       if (!mounted) return;
       setState(() {
+        _quranFontSize = 26.0;
+        _readingStyle = 'كُرُوتُ الآيَاتِ المُنْفَرِدَةِ مَعَ إِضَاءَةِ التِّلَاوَةِ';
+        _keepScreenAwake = true;
+        _selectedReciter = 'الشَّيْخُ مِشَارِي رَاشِد العَفَاسِي';
+        _audioQuality = 'جَوْدَةٌ عَالِيَةٌ (HQ 128 kbps) — نَقَاءُ اسْتُودْيُو';
+        _autoPlayNext = true;
+        _sleepTimer = 'مُعَطَّلٌ حَالِيًّا';
         _morningEveningAzkar = true;
         _dailyQuranReminder = true;
+        _dailyHopeReminder = true;
+        _nightPrayerReminder = false;
+        _inabaBiometricLock = true;
+        _stealthNotifications = false;
+        _cacheSizeText = '١٨.٤ م.ب';
       });
       AppTopSnackBar.show(
         context: context,

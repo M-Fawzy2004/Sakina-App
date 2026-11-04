@@ -77,20 +77,33 @@ void main() {
 
       expect(find.text('سَكِينَةُ'), findsOneWidget);
       expect(find.text('الإِعْدَادَاتُ العَامَّةُ'), findsOneWidget);
+      expect(find.text('وَاحَةُ سَكِينَةَ المُبَارَكَةُ'), findsOneWidget);
       expect(find.text('المَظْهَرُ وَالثِّيمَاتُ وَالأَلْوَانُ'), findsOneWidget);
       expect(find.text('تَفْضِيلَاتُ المَصْحَفِ وَالقِرَاءَةِ'), findsOneWidget);
+
+      await tester.scrollUntilVisible(find.text('الصَّوْتِيَّاتُ وَالتِّلَاوَةُ'), 150.0);
+      await tester.pumpAndSettle();
       expect(find.text('الصَّوْتِيَّاتُ وَالتِّلَاوَةُ'), findsOneWidget);
 
-      // Scroll down to reveal remaining sections
-      await tester.scrollUntilVisible(
-        find.text('عَنْ سَكِينَةَ'),
-        300.0,
-      );
+      await tester.scrollUntilVisible(find.text('التَّذْكِيرَاتُ وَالوِرْدُ اليَوْمِيُّ'), 150.0);
       await tester.pumpAndSettle();
-
       expect(find.text('التَّذْكِيرَاتُ وَالوِرْدُ اليَوْمِيُّ'), findsOneWidget);
-      expect(find.text('اسْتِعَادَةُ الإِعْدَادَاتِ الاِفْتِرَاضِيَّةِ'), findsOneWidget);
+
+      await tester.scrollUntilVisible(find.text('الأَمَانُ وَخُصُوصِيَّةُ الإِنَابَةِ'), 150.0);
+      await tester.pumpAndSettle();
+      expect(find.text('الأَمَانُ وَخُصُوصِيَّةُ الإِنَابَةِ'), findsOneWidget);
+
+      await tester.scrollUntilVisible(find.text('التَّخْزِينُ وَالذَّاكِرَةُ المُؤَقَّتَةُ'), 150.0);
+      await tester.pumpAndSettle();
+      expect(find.text('التَّخْزِينُ وَالذَّاكِرَةُ المُؤَقَّتَةُ'), findsOneWidget);
+
+      await tester.scrollUntilVisible(find.text('عَنْ سَكِينَةَ'), 150.0);
+      await tester.pumpAndSettle();
       expect(find.text('عَنْ سَكِينَةَ'), findsOneWidget);
+
+      await tester.scrollUntilVisible(find.text('اسْتِعَادَةُ الإِعْدَادَاتِ الاِفْتِرَاضِيَّةِ'), 150.0);
+      await tester.pumpAndSettle();
+      expect(find.text('اسْتِعَادَةُ الإِعْدَادَاتِ الاِفْتِرَاضِيَّةِ'), findsOneWidget);
     });
   });
 
