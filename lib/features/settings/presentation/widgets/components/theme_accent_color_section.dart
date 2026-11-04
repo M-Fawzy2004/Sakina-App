@@ -5,7 +5,7 @@ import 'package:iconsax/iconsax.dart';
 import 'package:sakina_app/core/theme/app_colors_scheme.dart';
 import 'package:sakina_app/features/settings/domain/entities/app_accent_color.dart';
 
-/// Curated Jewel Palette for Primary Accent Color Selection.
+/// Curated Jewel Palette for Primary Accent Color Selection without shadows.
 class ThemeAccentColorSection extends StatelessWidget {
   final Color selectedColor;
   final ValueChanged<AppAccentColor> onColorSelected;
@@ -106,15 +106,6 @@ class ThemeAccentColorSection extends StatelessWidget {
                           color: isSelected ? Colors.white : Colors.transparent,
                           width: 2.2.r,
                         ),
-                        boxShadow: isSelected
-                            ? [
-                                BoxShadow(
-                                  color: accent.color.withValues(alpha: 0.55),
-                                  blurRadius: 10.r,
-                                  spreadRadius: 2.r,
-                                ),
-                              ]
-                            : null,
                       ),
                       child: isSelected
                           ? Icon(
@@ -148,4 +139,3 @@ class ThemeAccentColorSection extends StatelessWidget {
     );
   }
 }
-

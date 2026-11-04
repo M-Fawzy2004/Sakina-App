@@ -44,15 +44,6 @@ class ThemePreviewCardLarge extends StatelessWidget {
                     : colors.borderHairline.withValues(alpha: 0.65),
                 width: isSelected ? 2.r : 1.r,
               ),
-              boxShadow: isSelected
-                  ? [
-                      BoxShadow(
-                        color: colors.accentGold.withValues(alpha: 0.15),
-                        blurRadius: 12.r,
-                        spreadRadius: 1.r,
-                      ),
-                    ]
-                  : null,
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
