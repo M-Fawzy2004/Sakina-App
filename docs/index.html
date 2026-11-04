@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>سياسة الخصوصية | تطبيق سَكِينَة — Privacy Policy | Sakina App</title>
+  <meta name="description" content="سياسة الخصوصية الرسمية لتطبيق سكينة (Sakina) — متوافقة مع متطلبات متجر آبل App Store ومتجر جوجل بلاي Google Play.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Amiri:wght@700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-core: #080A0C;
+      --bg-surface: #0F1316;
+      --bg-elevated: #161B20;
+      --gold-primary: #D4AF37;
+      --gold-soft: #F3E5AB;
+      --gold-border: rgba(212, 175, 55, 0.25);
+      --gold-border-strong: rgba(212, 175, 55, 0.55);
+      --text-pure: #F8FAFC;
+      --text-muted: #94A3B8;
+      --text-dim: #64748B;
+      --emerald: #10B981;
+      --emerald-border: rgba(16, 185, 129, 0.3);
+      --border-hairline: rgba(148, 163, 184, 0.15);
+      --font-ar: 'Cairo', system-ui, -apple-system, sans-serif;
+      --font-en: 'Inter', system-ui, -apple-system, sans-serif;
+      --font-quran: 'Amiri', serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-core);
+      color: var(--text-pure);
+      font-family: var(--font-ar);
+      line-height: 1.75;
+      font-size: 15px;
+      -webkit-font-smoothing: antialiased;
+      padding-bottom: 60px;
+    }
+
+    body.lang-en {
+      direction: ltr;
+      font-family: var(--font-en);
+      text-align: left;
+    }
+
+    /* Container */
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* Top Navigation Bar */
+    header.top-bar {
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border-hairline);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+    }
+
+    .nav-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--gold-primary);
+      font-weight: 800;
+      font-size: 1.25rem;
+    }
+
+    .brand .crescent {
+      font-size: 1.4rem;
+    }
+
+    .lang-switcher {
+      display: flex;
+      gap: 6px;
+      background: var(--bg-elevated);
+      padding: 4px;
+      border-radius: 30px;
+      border: 1px solid var(--border-hairline);
+    }
+
+    .lang-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 5px 14px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 700;
+      font-family: inherit;
+      transition: all 0.2s ease;
+    }
+
+    .lang-btn.active {
+      background: var(--gold-primary);
+      color: var(--bg-core);
+    }
+
+    /* Hero Section */
+    .hero {
+      padding: 48px 0 32px;
+      text-align: center;
+      border-bottom: 1px solid var(--border-hairline);
+    }
+
+    .sanctuary-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      background: var(--bg-surface);
+      border: 1px solid var(--gold-border);
+      border-radius: 30px;
+      font-size: 12.5px;
+      color: var(--gold-soft);
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    .hero h1 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: var(--text-pure);
+      margin-bottom: 10px;
+      letter-spacing: -0.5px;
+    }
+
+    .hero p.subtitle {
+      color: var(--text-muted);
+      font-size: 1rem;
+      max-width: 680px;
+      margin: 0 auto 18px;
+    }
+
+    .meta-tags {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+      font-size: 12.5px;
+      color: var(--text-dim);
+    }
+
+    .meta-tag {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-hairline);
+      padding: 4px 12px;
+      border-radius: 8px;
+    }
+
+    /* Key Summary Box */
+    .summary-box {
+      background: var(--bg-surface);
+      border: 1px solid var(--gold-border);
+      border-radius: 16px;
+      padding: 24px;
+      margin: 32px 0 40px;
+    }
+
+    .summary-box h3 {
+      color: var(--gold-primary);
+      font-size: 1.15rem;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .summary-item {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-hairline);
+      border-radius: 12px;
+      padding: 14px 16px;
+    }
+
+    .summary-item .title {
+      font-weight: 700;
+      color: var(--text-pure);
+      font-size: 13.5px;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .summary-item .desc {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* Policy Content Sections */
+    .policy-content {
+      margin-top: 24px;
+    }
+
+    .section {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-hairline);
+      border-radius: 16px;
+      padding: 24px 28px;
+      margin-bottom: 24px;
+    }
+
+    .section h2 {
+      font-size: 1.35rem;
+      color: var(--gold-primary);
+      margin-bottom: 14px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border-hairline);
+    }
+
+    .section p {
+      color: var(--text-muted);
+      margin-bottom: 14px;
+      line-height: 1.8;
+    }
+
+    .section p strong {
+      color: var(--text-pure);
+    }
+
+    .section ul {
+      margin: 12px 24px 16px;
+      color: var(--text-muted);
+    }
+
+    .section ul li {
+      margin-bottom: 8px;
+      line-height: 1.7;
+    }
+
+    .section ul li strong {
+      color: var(--text-pure);
+    }
+
+    /* Table styling for Permissions */
+    .table-container {
+      overflow-x: auto;
+      margin: 18px 0;
+      border-radius: 12px;
+      border: 1px solid var(--border-hairline);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: right;
+      font-size: 13px;
+    }
+
+    body.lang-en table {
+      text-align: left;
+    }
+
+    th {
+      background: var(--bg-elevated);
+      color: var(--gold-primary);
+      padding: 12px 14px;
+      font-weight: 700;
+      border-bottom: 1px solid var(--border-hairline);
+    }
+
+    td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border-hairline);
+      color: var(--text-muted);
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:nth-child(even) td {
+      background: rgba(22, 27, 32, 0.4);
+    }
+
+    .tag-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      background: var(--bg-elevated);
+      color: var(--emerald);
+      border: 1px solid var(--emerald-border);
+    }
+
+    /* Waqf & Charity Banner */
+    .waqf-banner {
+      background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(16, 185, 129, 0.08));
+      border: 1px solid var(--gold-border-strong);
+      border-radius: 16px;
+      padding: 24px;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .waqf-banner h3 {
+      font-size: 1.25rem;
+      color: var(--gold-primary);
+      margin-bottom: 8px;
+      font-weight: 800;
+    }
+
+    .waqf-banner p {
+      color: var(--text-pure);
+      font-size: 14px;
+      line-height: 1.8;
+      max-width: 720px;
+      margin: 0 auto;
+    }
+
+    /* Footer */
+    footer {
+      margin-top: 48px;
+      text-align: center;
+      padding-top: 24px;
+      border-top: 1px solid var(--border-hairline);
+      color: var(--text-dim);
+      font-size: 13px;
+    }
+
+    footer a {
+      color: var(--gold-primary);
+      text-decoration: none;
+    }
+
+    /* Language Switch Visibility */
+    .content-ar {
+      display: block;
+    }
+    .content-en {
+      display: none;
+    }
+
+    body.lang-en .content-ar {
+      display: none;
+    }
+    body.lang-en .content-en {
+      display: block;
+    }
+
+    @media (max-width: 640px) {
+      .hero h1 {
+        font-size: 1.7rem;
+      }
+      .section {
+        padding: 18px 16px;
+      }
+    }
+  </style>
+</head>
+<body id="body">
+
+  <!-- Header -->
+  <header class="top-bar">
+    <div class="container nav-inner">
+      <a href="#" class="brand">
+        <span class="crescent">🌙</span>
+        <span class="content-ar">سَكِينَةُ</span>
+        <span class="content-en">SAKINA</span>
+      </a>
+
+      <!-- Language Switcher -->
+      <div class="lang-switcher">
+        <button id="btn-ar" class="lang-btn active" onclick="setLanguage('ar')">العربية</button>
+        <button id="btn-en" class="lang-btn" onclick="setLanguage('en')">English</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+
+    <!-- ARABIC CONTENT -->
+    <div class="content-ar">
+      <section class="hero">
+        <div class="sanctuary-badge">
+          <span>🌿</span> وَثِيقَةُ الأَمَانِ وَالشَّفَافِيَّةِ الرَّسْمِيَّةِ
+        </div>
+        <h1>سِيَاسَةُ الخُصُوصِيَّةِ</h1>
+        <p class="subtitle">
+          تطبيق «سَكِينَة» (Sakina) — ملاذ روحي إسلامي مخصص لتلاوة القرآن الكريم، الأذكار، والتعافي الروحاني. نلتزم بحماية خصوصيتك بنسبة 100% دون جمع أو بيع أي بيانات شخصية.
+        </p>
+        <div class="meta-tags">
+          <span class="meta-tag">📅 تاريخ السريان: نوفمبر 2026</span>
+          <span class="meta-tag">📱 الإصدار: 1.0.0</span>
+          <span class="meta-tag">🛡️ متوافق مع Apple App Store & Google Play</span>
+          <span class="meta-tag">🚫 خالٍ تماماً من الإعلانات 0%</span>
+        </div>
+      </section>
+
+      <!-- Waqf Banner -->
+      <div class="waqf-banner">
+        <h3>✨ وَقْفٌ وَصَدَقَةٌ جَارِيَةٌ لِوَجْهِ اللَّهِ تَعَالَى</h3>
+        <p>
+          تطبيق «سَكِينَة» هو وقف إسلامي غير ربحي وصدقة جارية عن صانعه ووالديه وعن سائر المسلمين والمسلمات. التطبيق مجاني بالكامل، لا يحتوي على إعلانات، لا يطلب أي اشتراكات مالية، ولا يتاجر إطلاقاً ببيانات مستخدميه.
+        </p>
+      </div>
+
+      <!-- Quick Summary -->
+      <div class="summary-box">
+        <h3>🔍 خُلَاصَةُ الخُصُوصِيَّةِ فِي نِقَاطٍ سَرِيعَةٍ</h3>
+        <div class="summary-grid">
+          <div class="summary-item">
+            <div class="title">🔒 بياناتك محفوظة محلياً فقط</div>
+            <div class="desc">علامات القراءة، الأذكار، وخطة الإنابة محفوظة بأمان داخل جهازك فقط (Offline-First) ولا تُرفع لأي خوادم خارجية.</div>
+          </div>
+          <div class="summary-item">
+            <div class="title">👁️ لا تتبع ولا جمع بيانات</div>
+            <div class="desc">لا نقوم بجمع اسمك، بريدك، موقعك، رقم هاتفك، أو أي معرف إعلاني لجهازك نهائياً.</div>
+          </div>
+          <div class="summary-item">
+            <div class="title">🔐 حماية بالبصمة على جهازك</div>
+            <div class="desc">بصمة الإصبع أو Face ID تُعالج بواسطة نظام التشغيل في جهازك فقط ولا يراها التطبيق أو يخزنها إطلاقاً.</div>
+          </div>
+          <div class="summary-item">
+            <div class="title">🗑️ تحكم ومسح فوري</div>
+            <div class="desc">يمكنك مسح كافة البيانات والكاش بضغطة زر واحدة من داخل التطبيق أو بمجرد إلغاء تثبيته.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Detailed Sections -->
+      <div class="policy-content">
+
+        <!-- Section 1 -->
+        <article class="section">
+          <h2>١. مُقَدِّمَةٌ وَنِطَاقُ التَّطْبِيقِ</h2>
+          <p>
+            توضح سياسة الخصوصية هذه الكيفية التي يتعامل بها تطبيق <strong>«سَكِينَة» (Sakina)</strong> مع خصوصية المستخدم ومعلومات الجهاز. يسري هذا الإشعار على مستخدمي التطبيق عبر متجر تطبيقات آبل (Apple App Store) ومتجر جوجل بلاي (Google Play Store).
+          </p>
+          <p>
+            باستخدامك لتطبيق سكينة، فإنك توافق على الممارسات الموضحة في هذه الوثيقة المبنية على أعلى معايير الشفافية واحترام الخصوصية الدولية (بما في ذلك لوائح GDPR و CCPA وقوانين حماية خصوصية الأطفال COPPA).
+          </p>
+        </article>
+
+        <!-- Section 2 -->
+        <article class="section">
+          <h2>٢. البَيَانَاتُ الَّتِي نَتَعَامَلُ مَعَهَا (وَالَّتِي لَا نَجْمَعُهَا)</h2>
+          <p><strong>أ. البيانات الشخصية التي لا نجمعها مطلقاً:</strong></p>
+          <ul>
+            <li>لا نطلب إنشاء حساب، ولا نطلب بريداً إلكترونياً أو اسماً أو كلمة مرور.</li>
+            <li>لا نجمع الموقع الجغرافي الدقيق (GPS).</li>
+            <li>لا نجمع سجل التصفح الخارجي أو قائمة جهات الاتصال أو الرسائل.</li>
+            <li>لا نجمع أي معلومات دفع أو بطاقات بنكية، فالتطبيق مجاني 100%.</li>
+          </ul>
+
+          <p><strong>ب. البيانات المحفوظة محلياً على جهاز المستخدم (On-Device Storage):</strong></p>
+          <ul>
+            <li><strong>تفضيلات القراءة والأذكار:</strong> آخر صفحة قُرئت في المصحف، الإشارات المرجعية، وعدد مرات التسبيح في حصن المسلم.</li>
+            <li><strong>قسم الإنابة والتعافي:</strong> رمز الـ PIN الخاص بك وتقدمك في خطط التعافي الروحاني، وجميعها مشفرة ومحفوظة في قاعدة بيانات محلية داخل مساحة التطبيق الآمنة على هاتفك (SQLite / SharedPreferences) ولا تغادر هاتفك أبداً.</li>
+          </ul>
+        </article>
+
+        <!-- Section 3 -->
+        <article class="section">
+          <h2>٣. الأُذُونَاتُ المَطْلُوبَةُ وَأَسْبَابُ اسْتِخْدَامِهَا</h2>
+          <p>
+            يطلب تطبيق سكينة أدنى حد ممكن من أذونات نظام التشغيل، وتُستخدم حصراً للغرض الديني والتقني المباشر المعلن:
+          </p>
+
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>الإذن (Permission)</th>
+                  <th>النظام</th>
+                  <th>سبب الاستخدام والغرض</th>
+                  <th>الحالة</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>الإشعارات (Notifications)</strong></td>
+                  <td>iOS / Android</td>
+                  <td>إرسال تنبيهات محلية مجدولة يطلبها المستخدم (أذكار الصباح والمساء، ورد القرآن، جرعة الأمل). لا تُستخدم إطلاقاً لأي غرض ترويجي.</td>
+                  <td><span class="tag-badge">اختياري للمستخدم</span></td>
+                </tr>
+                <tr>
+                  <td><strong>البصمة و Face ID</strong></td>
+                  <td>iOS / Android</td>
+                  <td>حماية قسم "الإنابة" برمز سري أو بصمة لضمان الخصوصية الشخصية. يتم التحقق عبر نظام الهاتف مباشرة ولا يستلم التطبيق بيانات البصمة.</td>
+                  <td><span class="tag-badge">محلي 100%</span></td>
+                </tr>
+                <tr>
+                  <td><strong>الصور والوسائط (Photos / Media)</strong></td>
+                  <td>iOS / Android</td>
+                  <td>حفظ بطاقات "جرعة أمل" والآيات القرآنية كصور داخل معرض صور هاتفك (Gallery) فقط عندما تضغط زر "حفظ الصورة".</td>
+                  <td><span class="tag-badge">بطلب المستخدم حصراً</span></td>
+                </tr>
+                <tr>
+                  <td><strong>الإنترنت (Internet Access)</strong></td>
+                  <td>iOS / Android</td>
+                  <td>بث التلاوات القرآنية الصوتية العذبة لقراء المصحف، وتنزيل كتب السنة النبوية لتعمل بدون إنترنت.</td>
+                  <td><span class="tag-badge">للبث والتنزيل فقط</span></td>
+                </tr>
+                <tr>
+                  <td><strong>تشغيل الصوت بالخلفية (Foreground Audio)</strong></td>
+                  <td>iOS / Android</td>
+                  <td>مواصلة الاستماع للتلاوة الشريفة عند قفل الشاشة أو استخدام تطبيق آخر مع ظهور مشغل الصوت الرسمي في مركز التحكم.</td>
+                  <td><span class="tag-badge">ميزة تشغيل</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </article>
+
+        <!-- Section 4 -->
+        <article class="section">
+          <h2>٤. خِدْمَاتُ الطَّرَفِ الثَّالِثِ (Third-Party Services)</h2>
+          <p>
+            تطبيق سكينة <strong>نظيف تماماً وخالٍ من مكتبات الإعلانات أو التجسس (No Ad SDKs / No Tracking Trackers)</strong>:
+          </p>
+          <ul>
+            <li><strong>خوادم التلاوات الصوتية:</strong> يتم جلب التلاوات من خوادم مفتوحة وموثوقة (مثل خوادم القرآن الكريم المعتمدة ومجمع الملك فهد). هذه الطلبات مشفرة ببروتوكول HTTPS ولا تتضمن أي معرفات شخصية للمستخدم.</li>
+            <li><strong>لا توجد حزم تحليلات تجارية:</strong> لا نستخدم Facebook SDK أو برامج التتبع الإعلاني المشابهة.</li>
+          </ul>
+        </article>
+
+        <!-- Section 5 -->
+        <article class="section">
+          <h2>٥. حِمَايَةُ خُصُوصِيَّةِ الأَطْفَالِ (Children's Privacy - COPPA)</h2>
+          <p>
+            تطبيق سكينة آمن لجميع أفراد الأسرة وللأطفال من كافة الأعمار، ومصنف رسمياً بتصنيف مناسب للجميع (Everyone / Rated 4+).
+          </p>
+          <p>
+            نحن لا نجمع أي بيانات من أي مستخدم، وبالتالي لا نجمع عن علم أو قصد أي معلومات تعريف شخصية من الأطفال دون سن 13 عاماً (أو دون سن 16 عاماً في الاتحاد الأوروبي)، امتثالاً لقانون حماية خصوصية الأطفال على الإنترنت (COPPA) وإرشادات عائلة جوجل وآبل.
+          </p>
+        </article>
+
+        <!-- Section 6 -->
+        <article class="section">
+          <h2>٦. أَمَانُ البَيَانَاتِ وَحِفْظُهَا (Data Security)</h2>
+          <p>
+            نطبق تدابير تقنية وأمنية مشددة لحماية سلامة بياناتك:
+          </p>
+          <ul>
+            <li>استخدام تقنيات بيئة العزل الآمنة (Sandboxed Storage) التي تفرضها أنظمة iOS و Android.</li>
+            <li>حماية الاتصالات الشبكية بتشفير معتمد (TLS / HTTPS) لمنع أي اعتراض للبيانات أثناء بث التلاوات.</li>
+            <li>الاعتماد على نظام التشفير العتادي للهاتف (Secure Enclave / TEE) عند تفعيل ميزة القفل بالبصمة.</li>
+          </ul>
+        </article>
+
+        <!-- Section 7 -->
+        <article class="section">
+          <h2>٧. حُقُوقُ المُسْتَخْدِمِ وَحَذْفُ البَيَانَاتِ (Data Retention & Deletion)</h2>
+          <p>
+            لك كامل السيادة على بياناتك المسجلة على جهازك:
+          </p>
+          <ul>
+            <li><strong>الحذف المباشر من الإعدادات:</strong> يمكنك في أي وقت فتح شاشة «الإعدادات» والضغط على «مسح الذاكرة المؤقتة» أو «استعادة الإعدادات الافتراضية» لتصفير ومسح كافة البيانات فوراً.</li>
+            <li><strong>إلغاء التثبيت:</strong> يؤدي حذف تطبيق سكينة من هاتفك إلى مسح كافة قواعد البيانات والإعدادات المحلية نهائياً من الذاكرة بشكل لا رجعة فيه.</li>
+          </ul>
+        </article>
+
+        <!-- Section 8 -->
+        <article class="section">
+          <h2>٨. التَّعْدِيلَاتُ عَلَى سِيَاسَةِ الخُصُوصِيَّةِ</h2>
+          <p>
+            قد نقوم بتحديث سياسة الخصوصية هذه من حين لآخر لمواكبة التحديثات البرمجية أو المتطلبات القانونية لمتجري Google Play و Apple App Store. يتم نشر أي تعديل على هذه الصفحة مع تحديث "تاريخ السريان" في الأعلى. يُنصح بمراجعة هذه الصفحة بشكل دوري للاطلاع على أي مستجدات.
+          </p>
+        </article>
+
+        <!-- Section 9 -->
+        <article class="section">
+          <h2>٩. التَّوَاصُلُ مَعَنَا (Contact Us)</h2>
+          <p>
+            إذا كان لديك أي سؤال أو استفسار أو اقتراح بخصوص سياسة الخصوصية هذه أو ممارسات الأمان في تطبيق سكينة، يسعدنا تواصلكم عبر البريد الإلكتروني المخصص للدعم الفني والتطوير:
+          </p>
+          <p>
+            📧 <strong>البريد الإلكتروني المعتمد:</strong> <a href="mailto:support@sakina.app" style="color: var(--gold-primary); text-decoration: underline;">support@sakina.app</a><br>
+            👤 <strong>المطور والمسؤول:</strong> محمد فوزي (Mohamed Fawzy) — مطور ومسؤول تطبيق سكينة.
+          </p>
+        </article>
+
+      </div>
+    </div>
+
+    <!-- ENGLISH CONTENT -->
+    <div class="content-en">
+      <section class="hero">
+        <div class="sanctuary-badge">
+          <span>🛡️</span> OFFICIAL SECURITY & PRIVACY DIRECTIVE
+        </div>
+        <h1>Privacy Policy</h1>
+        <p class="subtitle">
+          Sakina (سَكِينَة) — A Luxury Spiritual & Quranic Sanctuary for iOS and Android. We are 100% committed to protecting your privacy with zero data collection, zero sale of user data, and zero advertising.
+        </p>
+        <div class="meta-tags">
+          <span class="meta-tag">📅 Effective Date: November 2026</span>
+          <span class="meta-tag">📱 Version: 1.0.0</span>
+          <span class="meta-tag">🍎 Apple App Store & Google Play Compliant</span>
+          <span class="meta-tag">🚫 100% Ad-Free & Zero Trackers</span>
+        </div>
+      </section>
+
+      <!-- Waqf Banner -->
+      <div class="waqf-banner">
+        <h3>✨ NON-PROFIT WAQF & PERPETUAL CHARITY</h3>
+        <p>
+          Sakina is created as an Islamic Waqf and continuous voluntary charity (Sadaqah Jariyah). The application is completely free, does not contain advertisements, requires no subscriptions, and strictly rejects any commercial monetization of user data.
+        </p>
+      </div>
+
+      <!-- Quick Summary -->
+      <div class="summary-box">
+        <h3>🔍 Privacy at a Glance</h3>
+        <div class="summary-grid">
+          <div class="summary-item">
+            <div class="title">🔒 100% On-Device Storage</div>
+            <div class="desc">Your Quran bookmarks, recitation history, Athkar counters, and recovery plans are stored strictly on your local device (Offline-First).</div>
+          </div>
+          <div class="summary-item">
+            <div class="title">👁️ Zero Personal Data Collection</div>
+            <div class="desc">We do not collect names, email addresses, phone numbers, location data, or advertising identifiers.</div>
+          </div>
+          <div class="summary-item">
+            <div class="title">🔐 Native Hardware Biometrics</div>
+            <div class="desc">Biometric lock (Face ID / Fingerprint) is executed exclusively by your device operating system. Sakina never sees or stores biometric templates.</div>
+          </div>
+          <div class="summary-item">
+            <div class="title">🗑️ Absolute Deletion Control</div>
+            <div class="desc">You can reset or wipe all local data with a single tap in Settings or simply by uninstalling the application.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Detailed Sections -->
+      <div class="policy-content">
+
+        <!-- Section 1 -->
+        <article class="section">
+          <h2>1. Introduction & Scope</h2>
+          <p>
+            This Privacy Policy describes how <strong>Sakina ("we", "our", or "the App")</strong> handles user privacy, local data storage, and device permissions. This policy applies to all users of the Sakina mobile application across the Apple App Store and Google Play Store.
+          </p>
+          <p>
+            By installing or using Sakina, you acknowledge the terms outlined in this document, designed to meet the strict global privacy standards of the European General Data Protection Regulation (GDPR), the California Consumer Privacy Act (CCPA), the Children's Online Privacy Protection Act (COPPA), and Apple and Google Developer Program Policies.
+          </p>
+        </article>
+
+        <!-- Section 2 -->
+        <article class="section">
+          <h2>2. Information Collection & Usage</h2>
+          <p><strong>A. Personal Information We Do NOT Collect:</strong></p>
+          <ul>
+            <li>No user accounts, registrations, passwords, or emails are required or collected.</li>
+            <li>No precise or approximate geographic location (GPS) is tracked.</li>
+            <li>No device phone numbers, contacts, SMS messages, or financial information are accessed.</li>
+            <li>No Advertising Identifiers (IDFA / AAID) are tracked or monitored.</li>
+          </ul>
+
+          <p><strong>B. Information Stored Strictly On-Device (Local Storage):</strong></p>
+          <ul>
+            <li><strong>Reading Preferences & Athkar:</strong> Bookmarked Surahs, last read Ayah, font sizes, and Dhikr tally counts.</li>
+            <li><strong>Inaba Spiritual Recovery Module:</strong> User-configured PIN codes and personal milestone check-ins. All of these entries are securely persisted in local device sandboxed storage (SQLite / SharedPreferences) and never transmitted to external cloud servers.</li>
+          </ul>
+        </article>
+
+        <!-- Section 3 -->
+        <article class="section">
+          <h2>3. Device Permissions & Purpose of Use</h2>
+          <p>
+            Sakina requests only the minimal native operating system permissions necessary to deliver essential spiritual and technical features:
+          </p>
+
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Permission</th>
+                  <th>Platform</th>
+                  <th>Legitimate Purpose & Context</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Notifications</strong></td>
+                  <td>iOS & Android</td>
+                  <td>Delivers user-scheduled local reminders for morning/evening Athkar, daily Quran portion, and daily hope dose. Never utilized for promotional or marketing campaigns.</td>
+                  <td><span class="tag-badge">Optional</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Biometrics & Face ID</strong></td>
+                  <td>iOS & Android</td>
+                  <td>Secures the private "Inaba" sanctuary. Biometric authentication is handled strictly by the OS Secure Enclave / Hardware TEE; Sakina never receives or stores raw biometric data.</td>
+                  <td><span class="tag-badge">Local Only</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Photo Library / Storage</strong></td>
+                  <td>iOS & Android</td>
+                  <td>Enables saving customized Quranic verses and "Daily Hope" cards into your photo gallery, activated solely upon explicit user request.</td>
+                  <td><span class="tag-badge">User-Triggered</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Internet Access</strong></td>
+                  <td>iOS & Android</td>
+                  <td>Streams authentic Quranic audio recitations from reliable servers and downloads offline Hadith / Sunnah books.</td>
+                  <td><span class="tag-badge">Streaming Only</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Foreground Audio Service</strong></td>
+                  <td>iOS & Android</td>
+                  <td>Maintains continuous, gapless recitation playback when your device screen is locked or while multitasking, integrated with native media controls.</td>
+                  <td><span class="tag-badge">Media Playback</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </article>
+
+        <!-- Section 4 -->
+        <article class="section">
+          <h2>4. Third-Party Services & SDKs</h2>
+          <p>
+            Sakina is strictly free of advertising and user-tracking SDKs:
+          </p>
+          <ul>
+            <li><strong>Zero Commercial Ad Networks:</strong> No Google AdMob, Unity, AppLovin, or third-party advertising SDKs are embedded in the app.</li>
+            <li><strong>Zero Tracking Trackers:</strong> No Meta/Facebook Pixel, AppsFlyer, Adjust, or telemetry frameworks.</li>
+            <li><strong>Audio Content Delivery:</strong> Recitations are streamed via standard secure HTTPS requests to recognized public Quran CDNs (such as EveryAyah and approved King Fahd Quran Complex servers). These network requests convey standard HTTP technical payloads (IP address, user-agent) strictly necessary to serve the audio stream.</li>
+          </ul>
+        </article>
+
+        <!-- Section 5 -->
+        <article class="section">
+          <h2>5. Children's Privacy (COPPA & Family Policy Compliance)</h2>
+          <p>
+            Sakina is designed for audiences of all ages and is family-friendly (Rated 4+ on Apple App Store, Rated Everyone on Google Play).
+          </p>
+          <p>
+            Because Sakina does not collect personal information from any user, we do not knowingly solicit or collect personally identifiable information from children under the age of 13 (or under 16 in the European Union), fully adhering to the United States Children's Online Privacy Protection Act (COPPA) and international child privacy safeguards.
+          </p>
+        </article>
+
+        <!-- Section 6 -->
+        <article class="section">
+          <h2>6. Data Security Measures</h2>
+          <p>
+            We implement industry-standard security practices to preserve data integrity:
+          </p>
+          <ul>
+            <li><strong>App Sandboxing:</strong> All local files reside strictly within the operating system's isolated sandbox directory.</li>
+            <li><strong>Transport Layer Security:</strong> All external media fetching is enforced over HTTPS (TLS encryption).</li>
+            <li><strong>Hardware Enclave Protection:</strong> Biometric unlocks leverage hardware-backed authentication modules without exposure to application memory.</li>
+          </ul>
+        </article>
+
+        <!-- Section 7 -->
+        <article class="section">
+          <h2>7. Data Retention, Rights & Erasure</h2>
+          <p>
+            You possess full sovereignty over all application data on your device:
+          </p>
+          <ul>
+            <li><strong>In-App Clear Cache & Reset:</strong> Navigate to Settings at any time to clear cached audio/manuscript files or restore factory defaults with a single tap.</li>
+            <li><strong>Permanent Uninstallation:</strong> Uninstalling the Sakina app from your iOS or Android device permanently and irreversibly purges 100% of local application data, preferences, and database records from device storage.</li>
+          </ul>
+        </article>
+
+        <!-- Section 8 -->
+        <article class="section">
+          <h2>8. Updates to this Privacy Policy</h2>
+          <p>
+            We may periodically revise this Privacy Policy to reflect application updates or evolving legal requirements from the Apple App Store and Google Play Console. Any changes will be posted immediately on this page with an updated "Effective Date". We encourage users to review this page periodically.
+          </p>
+        </article>
+
+        <!-- Section 9 -->
+        <article class="section">
+          <h2>9. Contact & Inquiries</h2>
+          <p>
+            For any questions, legal inquiries, or support requests regarding this Privacy Policy, please reach out to us:
+          </p>
+          <p>
+            📧 <strong>Official Support Email:</strong> <a href="mailto:support@sakina.app" style="color: var(--gold-primary); text-decoration: underline;">support@sakina.app</a><br>
+            👤 <strong>Lead Developer & Controller:</strong> Mohamed Fawzy — Sakina Application Team.
+          </p>
+        </article>
+
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+      <p>
+        © <span id="year">2026</span> تطبيق سَكِينَة (Sakina App) — جَمِيعُ الحُقُوقِ مَحْفُوظَةٌ كَوَقْفٍ لِوَجْهِ اللَّهِ تَعَالَى.<br>
+        All rights reserved as a continuous spiritual trust.
+      </p>
+    </footer>
+
+  </div>
+
+  <script>
+    // Language Toggle Script
+    function setLanguage(lang) {
+      const body = document.getElementById('body');
+      const btnAr = document.getElementById('btn-ar');
+      const btnEn = document.getElementById('btn-en');
+
+      if (lang === 'en') {
+        body.classList.add('lang-en');
+        body.setAttribute('dir', 'ltr');
+        body.setAttribute('lang', 'en');
+        btnEn.classList.add('active');
+        btnAr.classList.remove('active');
+        localStorage.setItem('sakina_privacy_lang', 'en');
+      } else {
+        body.classList.remove('lang-en');
+        body.setAttribute('dir', 'rtl');
+        body.setAttribute('lang', 'ar');
+        btnAr.classList.add('active');
+        btnEn.classList.remove('active');
+        localStorage.setItem('sakina_privacy_lang', 'ar');
+      }
+    }
+
+    // Auto-detect or restore preferred language
+    document.addEventListener('DOMContentLoaded', () => {
+      const savedLang = localStorage.getItem('sakina_privacy_lang');
+      const browserLang = (navigator.language || navigator.userLanguage || '').toLowerCase();
+      
+      if (savedLang === 'en' || (!savedLang && !browserLang.startsWith('ar'))) {
+        setLanguage('en');
+      } else {
+        setLanguage('ar');
+      }
+
+      // Update copyright year dynamically
+      const yearEl = document.getElementById('year');
+      if (yearEl) {
+        yearEl.textContent = new Date().getFullYear();
+      }
+    });
+  </script>
+</body>
+</html>
