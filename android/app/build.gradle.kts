@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.sakina_app"
+    namespace = "com.sakina.app"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -16,7 +16,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.example.sakina_app"
+        applicationId = "com.sakina.app"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         multiDexEnabled = true

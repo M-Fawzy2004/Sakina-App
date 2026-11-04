@@ -1,5 +1,6 @@
-package com.example.sakina_app
+package com.sakina.app
 
 import io.flutter.embedding.android.FlutterFragmentActivity
 
 class MainActivity : FlutterFragmentActivity()
+
