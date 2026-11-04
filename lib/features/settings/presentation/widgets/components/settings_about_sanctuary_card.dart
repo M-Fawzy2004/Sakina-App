@@ -5,6 +5,7 @@ import 'package:iconsax/iconsax.dart';
 import 'package:sakina_app/core/theme/app_colors_scheme.dart';
 import 'package:sakina_app/core/utils/app_top_snack_bar.dart';
 import 'package:sakina_app/core/utils/haptic_service.dart';
+import 'package:sakina_app/features/settings/presentation/widgets/components/modals/settings_developer_contact_dialog.dart';
 import 'package:share_plus/share_plus.dart';
 
 /// Dignified About Sakina & Perpetual Charity (صدقة جارية) Card.
@@ -196,6 +197,19 @@ class SettingsAboutSanctuaryCard extends StatelessWidget {
             title: 'دَعْوَةٌ بِظَهْرِ الغَيْبِ لِصَانِعِ التَّطْبِيقِ',
             subtitle: 'تقبل الله منا ومنكم صالح الأعمال وجعلها في موازين الحسنات',
             onTap: () => _showAppreciation(context),
+          ),
+
+          Divider(
+            color: colors.borderHairline.withValues(alpha: 0.5),
+            height: 1.h,
+          ),
+
+          // Developer Contact Action Row
+          _ActionRow(
+            icon: Iconsax.user_tag,
+            title: 'تَوَاصَلْ مَعَ مُطَوِّرِ التَّطْبِيقِ',
+            subtitle: 'م. محمد فوزي • mohamedfawzydev27@gmail.com',
+            onTap: () => SettingsDeveloperContactDialog.show(context),
           ),
         ],
       ),
