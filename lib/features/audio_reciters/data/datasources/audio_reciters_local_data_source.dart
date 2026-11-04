@@ -1,4 +1,5 @@
 import 'package:sakina_app/core/errors/exceptions.dart';
+import 'package:sakina_app/core/utils/app_logger.dart';
 import 'package:sakina_app/core/utils/surah_metadata_utils.dart';
 import 'package:sakina_app/features/audio_reciters/data/models/recitation_track_model.dart';
 import 'package:sakina_app/features/audio_reciters/data/models/reciter_model.dart';
@@ -38,7 +39,8 @@ class AudioRecitersLocalDataSourceImpl implements AudioRecitersLocalDataSource {
 
       return result;
     } catch (e) {
-      throw CacheException(message: 'فشل تحميل قائمة القراء: $e');
+      AppLogger.error('Failed to getReciters', e);
+      throw const CacheException(message: 'تعذر تحميل قائمة القراء، يرجى المحاولة لاحقاً');
     }
   }
 
@@ -48,7 +50,8 @@ class AudioRecitersLocalDataSourceImpl implements AudioRecitersLocalDataSource {
       final featuredList = _reciters.where((r) => r.isFeatured).toList();
       return featuredList.isNotEmpty ? featuredList : _reciters.take(4).toList();
     } catch (e) {
-      throw CacheException(message: 'فشل استرجاع شيوخ التلاوة المميزين: $e');
+      AppLogger.error('Failed to getFeaturedReciters', e);
+      throw const CacheException(message: 'تعذر استرجاع القراء المميزين');
     }
   }
 
@@ -61,7 +64,8 @@ class AudioRecitersLocalDataSourceImpl implements AudioRecitersLocalDataSource {
       );
       return featured;
     } catch (e) {
-      throw CacheException(message: 'فشل استرجاع شيخ اليوم: $e');
+      AppLogger.error('Failed to getFeaturedReciter', e);
+      throw const CacheException(message: 'تعذر استرجاع القارئ المختار');
     }
   }
 
@@ -94,7 +98,8 @@ class AudioRecitersLocalDataSourceImpl implements AudioRecitersLocalDataSource {
         );
       });
     } catch (e) {
-      throw CacheException(message: 'فشل استرجاع تلاوات القارئ: $e');
+      AppLogger.error('Failed to getReciterTracks for $reciterId', e);
+      throw const CacheException(message: 'تعذر استرجاع تلاوات القارئ، يرجى المحاولة مجدداً');
     }
   }
 
@@ -127,7 +132,8 @@ class AudioRecitersLocalDataSourceImpl implements AudioRecitersLocalDataSource {
         riwayah: reciter.riwayah,
       );
     } catch (e) {
-      throw CacheException(message: 'فشل استرجاع المقطع الصوتي: $e');
+      AppLogger.error('Failed to getTrackById for $trackId', e);
+      throw const CacheException(message: 'تعذر استرجاع بيانات المقطع الصوتي');
     }
   }
 }

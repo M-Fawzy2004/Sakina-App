@@ -1,6 +1,7 @@
 import 'package:fpdart/fpdart.dart';
 import 'package:sakina_app/core/errors/exceptions.dart';
 import 'package:sakina_app/core/errors/failures.dart';
+import 'package:sakina_app/core/utils/app_logger.dart';
 import 'package:sakina_app/features/audio_reciters/data/datasources/audio_reciters_local_data_source.dart';
 import 'package:sakina_app/features/audio_reciters/domain/entities/recitation_track_entity.dart';
 import 'package:sakina_app/features/audio_reciters/domain/entities/reciter_entity.dart';
@@ -25,7 +26,8 @@ class AudioRecitersRepositoryImpl implements AudioRecitersRepository {
     } on CacheException catch (e) {
       return Left(CacheFailure(message: e.message));
     } catch (e) {
-      return Left(UnexpectedFailure(message: 'حدث خطأ غير متوقع أثناء استرجاع القراء: $e'));
+      AppLogger.error('AudioRecitersRepository: getReciters failed', e);
+      return const Left(UnexpectedFailure(message: 'حدث خطأ غير متوقع أثناء استرجاع القراء، يرجى المحاولة لاحقاً'));
     }
   }
 
@@ -37,7 +39,8 @@ class AudioRecitersRepositoryImpl implements AudioRecitersRepository {
     } on CacheException catch (e) {
       return Left(CacheFailure(message: e.message));
     } catch (e) {
-      return Left(UnexpectedFailure(message: 'حدث خطأ أثناء استرجاع القراء المميزين: $e'));
+      AppLogger.error('AudioRecitersRepository: getFeaturedReciters failed', e);
+      return const Left(UnexpectedFailure(message: 'حدث خطأ أثناء استرجاع القراء المميزين'));
     }
   }
 
@@ -49,7 +52,8 @@ class AudioRecitersRepositoryImpl implements AudioRecitersRepository {
     } on CacheException catch (e) {
       return Left(CacheFailure(message: e.message));
     } catch (e) {
-      return Left(UnexpectedFailure(message: 'حدث خطأ غير متوقع أثناء استرجاع شيخ اليوم: $e'));
+      AppLogger.error('AudioRecitersRepository: getFeaturedReciter failed', e);
+      return const Left(UnexpectedFailure(message: 'حدث خطأ أثناء استرجاع القارئ المختار'));
     }
   }
 
@@ -61,7 +65,8 @@ class AudioRecitersRepositoryImpl implements AudioRecitersRepository {
     } on CacheException catch (e) {
       return Left(CacheFailure(message: e.message));
     } catch (e) {
-      return Left(UnexpectedFailure(message: 'حدث خطأ أثناء استرجاع التلاوات: $e'));
+      AppLogger.error('AudioRecitersRepository: getReciterTracks failed', e);
+      return const Left(UnexpectedFailure(message: 'حدث خطأ أثناء استرجاع التلاوات، يرجى المحاولة مجدداً'));
     }
   }
 
@@ -73,7 +78,8 @@ class AudioRecitersRepositoryImpl implements AudioRecitersRepository {
     } on CacheException catch (e) {
       return Left(CacheFailure(message: e.message));
     } catch (e) {
-      return Left(UnexpectedFailure(message: 'حدث خطأ أثناء استرجاع بيانات التلاوة: $e'));
+      AppLogger.error('AudioRecitersRepository: getTrackById failed', e);
+      return const Left(UnexpectedFailure(message: 'حدث خطأ أثناء استرجاع بيانات التلاوة'));
     }
   }
 }

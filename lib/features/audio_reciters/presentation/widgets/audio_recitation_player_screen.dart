@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sakina_app/core/theme/app_colors.dart';
 import 'package:sakina_app/core/theme/app_colors_scheme.dart';
+import 'package:sakina_app/core/utils/app_top_snack_bar.dart';
 import 'package:sakina_app/core/utils/haptic_service.dart';
 import 'package:sakina_app/features/audio_reciters/domain/entities/recitation_track_entity.dart';
 import 'package:sakina_app/features/audio_reciters/presentation/cubit/audio_reciters_cubit.dart';
@@ -84,6 +85,13 @@ class _AudioRecitationPlayerScreenState
   Widget build(BuildContext context) {
     return BlocConsumer<AudioRecitersCubit, AudioRecitersState>(
       listener: (context, state) {
+        if (state.errorMessage != null && state.errorMessage!.isNotEmpty) {
+          AppTopSnackBar.showError(
+            context: context,
+            message: state.errorMessage!,
+          );
+          context.read<AudioRecitersCubit>().clearErrorMessage();
+        }
         if (state.isPlaying) {
           if (!_rotationController.isAnimating) {
             _rotationController.repeat();

@@ -176,5 +176,26 @@ void main() {
       expect(cubit.state.isPlaying, false);
       verify(() => mockAudioPlayerHandler.stop()).called(1);
     });
+
+    test('playTrack maps playback exceptions to user-friendly message', () async {
+      when(() => mockAudioPlayerHandler.setAudioUrl(any()))
+          .thenThrow(Exception('SocketException: OS Error: Failed host lookup'));
+
+      await cubit.playTrack(testTrack);
+
+      expect(cubit.state.errorMessage, contains('لا يوجد اتصال بالإنترنت'));
+      expect(cubit.state.errorMessage!.contains('SocketException'), isFalse);
+    });
+
+    test('clearErrorMessage resets errorMessage to null', () async {
+      when(() => mockAudioPlayerHandler.setAudioUrl(any()))
+          .thenThrow(Exception('404 Not Found'));
+
+      await cubit.playTrack(testTrack);
+      expect(cubit.state.errorMessage, isNotNull);
+
+      cubit.clearErrorMessage();
+      expect(cubit.state.errorMessage, isNull);
+    });
   });
 }

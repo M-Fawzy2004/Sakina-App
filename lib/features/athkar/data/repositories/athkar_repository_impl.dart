@@ -1,5 +1,6 @@
 import 'package:fpdart/fpdart.dart';
 import 'package:sakina_app/core/errors/failures.dart';
+import 'package:sakina_app/core/utils/app_logger.dart';
 import 'package:sakina_app/features/athkar/data/datasources/athkar_local_data_source.dart';
 import 'package:sakina_app/features/athkar/domain/entities/athkar_category_entity.dart';
 import 'package:sakina_app/features/athkar/domain/entities/athkar_item_entity.dart';
@@ -83,7 +84,8 @@ class AthkarRepositoryImpl implements AthkarRepository {
 
       return Right(categories);
     } catch (e) {
-      return Left(AthkarFailure(message: 'فشل تحميل بيانات الأذكار: $e'));
+      AppLogger.error('AthkarRepository: getCategories failed', e);
+      return const Left(AthkarFailure(message: 'تعذر تحميل بيانات الأذكار، يرجى المحاولة لاحقاً'));
     }
   }
 
@@ -94,7 +96,8 @@ class AthkarRepositoryImpl implements AthkarRepository {
       final items = await localDataSource.getAthkarByCategory(category);
       return Right(items);
     } catch (e) {
-      return Left(AthkarFailure(message: 'فشل تحميل أذكار $category: $e'));
+      AppLogger.error('AthkarRepository: getAthkarByCategory failed for $category', e);
+      return Left(AthkarFailure(message: 'تعذر تحميل أذكار $category'));
     }
   }
 
@@ -104,7 +107,8 @@ class AthkarRepositoryImpl implements AthkarRepository {
       final all = await localDataSource.loadAllAthkar();
       return Right(all);
     } catch (e) {
-      return Left(AthkarFailure(message: 'فشل تحميل الأذكار: $e'));
+      AppLogger.error('AthkarRepository: getAllAthkar failed', e);
+      return const Left(AthkarFailure(message: 'تعذر تحميل قائمة الأذكار'));
     }
   }
 }

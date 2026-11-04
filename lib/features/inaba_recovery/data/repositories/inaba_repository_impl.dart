@@ -1,5 +1,6 @@
 import 'package:fpdart/fpdart.dart';
 import 'package:sakina_app/core/errors/failures.dart';
+import 'package:sakina_app/core/utils/app_logger.dart';
 import 'package:sakina_app/features/inaba_recovery/data/datasources/inaba_local_data_source.dart';
 import 'package:sakina_app/features/inaba_recovery/domain/entities/daily_hope_dose_entity.dart';
 import 'package:sakina_app/features/inaba_recovery/domain/entities/good_deed_entity.dart';
@@ -20,7 +21,8 @@ class InabaRepositoryImpl implements InabaRepository {
       final overview = await localDataSource.getInabaOverview();
       return Right(overview);
     } catch (e) {
-      return Left(CacheFailure(message: 'تعذر تحميل بيانات الإنابة: $e'));
+      AppLogger.error('InabaRepository: getInabaOverview failed', e);
+      return const Left(CacheFailure(message: 'تعذر تحميل بيانات الإنابة'));
     }
   }
 
@@ -30,7 +32,8 @@ class InabaRepositoryImpl implements InabaRepository {
       final deeds = await localDataSource.getGoodDeeds();
       return Right(deeds);
     } catch (e) {
-      return Left(CacheFailure(message: 'تعذر تحميل قائمة الحسنات: $e'));
+      AppLogger.error('InabaRepository: getGoodDeeds failed', e);
+      return const Left(CacheFailure(message: 'تعذر تحميل قائمة الحسنات'));
     }
   }
 
@@ -40,7 +43,8 @@ class InabaRepositoryImpl implements InabaRepository {
       final deed = await localDataSource.toggleGoodDeed(id);
       return Right(deed);
     } catch (e) {
-      return Left(CacheFailure(message: 'تعذر تحديث إنجاز الحسنة: $e'));
+      AppLogger.error('InabaRepository: toggleGoodDeed failed', e);
+      return const Left(CacheFailure(message: 'تعذر تحديث إنجاز الحسنة'));
     }
   }
 
@@ -53,7 +57,8 @@ class InabaRepositoryImpl implements InabaRepository {
       final deed = await localDataSource.addCustomGoodDeed(title, category);
       return Right(deed);
     } catch (e) {
-      return Left(CacheFailure(message: 'تعذر إضافة العمل الصالح: $e'));
+      AppLogger.error('InabaRepository: addCustomGoodDeed failed', e);
+      return const Left(CacheFailure(message: 'تعذر إضافة العمل الصالح'));
     }
   }
 
@@ -63,7 +68,8 @@ class InabaRepositoryImpl implements InabaRepository {
       final doses = await localDataSource.getHopeDoses();
       return Right(doses);
     } catch (e) {
-      return Left(CacheFailure(message: 'تعذر تحميل جرعات الأمل: $e'));
+      AppLogger.error('InabaRepository: getHopeDoses failed', e);
+      return const Left(CacheFailure(message: 'تعذر تحميل جرعات الأمل'));
     }
   }
 
@@ -75,7 +81,8 @@ class InabaRepositoryImpl implements InabaRepository {
       final dose = await localDataSource.toggleSaveHopeDose(id);
       return Right(dose);
     } catch (e) {
-      return Left(CacheFailure(message: 'تعذر حفظ جرعة الأمل: $e'));
+      AppLogger.error('InabaRepository: toggleSaveHopeDose failed', e);
+      return const Left(CacheFailure(message: 'تعذر حفظ جرعة الأمل'));
     }
   }
 
@@ -86,7 +93,8 @@ class InabaRepositoryImpl implements InabaRepository {
       final levels = await localDataSource.getSpiritualLevels();
       return Right(levels);
     } catch (e) {
-      return Left(CacheFailure(message: 'تعذر تحميل المستويات الإيمانية: $e'));
+      AppLogger.error('InabaRepository: getSpiritualLevels failed', e);
+      return const Left(CacheFailure(message: 'تعذر تحميل المستويات الإيمانية'));
     }
   }
 
@@ -97,7 +105,8 @@ class InabaRepositoryImpl implements InabaRepository {
       final reflections = await localDataSource.getReflections();
       return Right(reflections);
     } catch (e) {
-      return Left(CacheFailure(message: 'تعذر تحميل خواطر المحراب: $e'));
+      AppLogger.error('InabaRepository: getReflections failed', e);
+      return const Left(CacheFailure(message: 'تعذر تحميل خواطر المحراب'));
     }
   }
 
@@ -115,7 +124,8 @@ class InabaRepositoryImpl implements InabaRepository {
       );
       return Right(reflection);
     } catch (e) {
-      return Left(CacheFailure(message: 'تعذر حفظ الخاطرة: $e'));
+      AppLogger.error('InabaRepository: saveReflection failed', e);
+      return const Left(CacheFailure(message: 'تعذر حفظ الخاطرة'));
     }
   }
 
@@ -125,7 +135,8 @@ class InabaRepositoryImpl implements InabaRepository {
       await localDataSource.deleteReflection(id);
       return const Right(unit);
     } catch (e) {
-      return Left(CacheFailure(message: 'تعذر حذف الخاطرة: $e'));
+      AppLogger.error('InabaRepository: deleteReflection failed', e);
+      return const Left(CacheFailure(message: 'تعذر حذف الخاطرة'));
     }
   }
 
@@ -135,7 +146,8 @@ class InabaRepositoryImpl implements InabaRepository {
       await localDataSource.clearAllReflections();
       return const Right(unit);
     } catch (e) {
-      return Left(CacheFailure(message: 'تعذر محو خواطر المحراب: $e'));
+      AppLogger.error('InabaRepository: clearAllReflections failed', e);
+      return const Left(CacheFailure(message: 'تعذر محو خواطر المحراب'));
     }
   }
 
@@ -146,7 +158,8 @@ class InabaRepositoryImpl implements InabaRepository {
       final steps = await localDataSource.getRepentanceSteps();
       return Right(steps);
     } catch (e) {
-      return Left(CacheFailure(message: 'تعذر تحميل خطوات التوبة: $e'));
+      AppLogger.error('InabaRepository: getRepentanceSteps failed', e);
+      return const Left(CacheFailure(message: 'تعذر تحميل خطوات التوبة'));
     }
   }
 
@@ -158,7 +171,8 @@ class InabaRepositoryImpl implements InabaRepository {
       final step = await localDataSource.toggleRepentanceStep(id);
       return Right(step);
     } catch (e) {
-      return Left(CacheFailure(message: 'تعذر تحديث خطوة التوبة: $e'));
+      AppLogger.error('InabaRepository: toggleRepentanceStep failed', e);
+      return const Left(CacheFailure(message: 'تعذر تحديث خطوة التوبة'));
     }
   }
 
@@ -168,7 +182,8 @@ class InabaRepositoryImpl implements InabaRepository {
       final overview = await localDataSource.renewCovenant();
       return Right(overview);
     } catch (e) {
-      return Left(CacheFailure(message: 'تعذر تجديد العهد: $e'));
+      AppLogger.error('InabaRepository: renewCovenant failed', e);
+      return const Left(CacheFailure(message: 'تعذر تجديد العهد'));
     }
   }
 
@@ -178,7 +193,8 @@ class InabaRepositoryImpl implements InabaRepository {
       final overview = await localDataSource.logSpiritualVictory();
       return Right(overview);
     } catch (e) {
-      return Left(CacheFailure(message: 'تعذر تسجيل النصر الروحي: $e'));
+      AppLogger.error('InabaRepository: logSpiritualVictory failed', e);
+      return const Left(CacheFailure(message: 'تعذر تسجيل النصر الروحي'));
     }
   }
 
@@ -188,7 +204,8 @@ class InabaRepositoryImpl implements InabaRepository {
       final overview = await localDataSource.activateRecoveryPath();
       return Right(overview);
     } catch (e) {
-      return Left(CacheFailure(message: 'تعذر بدء مسار الإنابة: $e'));
+      AppLogger.error('InabaRepository: activateRecoveryPath failed', e);
+      return const Left(CacheFailure(message: 'تعذر بدء مسار الإنابة'));
     }
   }
 
@@ -198,7 +215,8 @@ class InabaRepositoryImpl implements InabaRepository {
       final overview = await localDataSource.advanceActiveDay();
       return Right(overview);
     } catch (e) {
-      return Left(CacheFailure(message: 'تعذر الانتقال لليوم التالي: $e'));
+      AppLogger.error('InabaRepository: advanceActiveDay failed', e);
+      return const Left(CacheFailure(message: 'تعذر الانتقال لليوم التالي'));
     }
   }
 }

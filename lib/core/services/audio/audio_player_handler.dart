@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:just_audio/just_audio.dart';
 import 'package:sakina_app/core/constants/app_constants.dart';
 import 'package:sakina_app/core/errors/exceptions.dart';
+import 'package:sakina_app/core/utils/app_logger.dart';
 
 abstract interface class AudioPlayerHandler {
   Stream<PlayerState> get playerStateStream;
@@ -51,7 +52,8 @@ class AudioPlayerHandlerImpl implements AudioPlayerHandler {
     try {
       await _player.setUrl(url);
     } catch (e) {
-      throw AudioPlaybackException(message: 'فشل تحميل المقطع الصوتي: $e');
+      AppLogger.error('AudioPlayerHandler: setAudioUrl failed', e);
+      throw const AudioPlaybackException(message: 'تعذر تحميل المقطع الصوتي، يرجى التحقق من اتصالك بالإنترنت');
     }
   }
 
@@ -60,7 +62,8 @@ class AudioPlayerHandlerImpl implements AudioPlayerHandler {
     try {
       await _player.play();
     } catch (e) {
-      throw AudioPlaybackException(message: 'فشل تشغيل الصوت: $e');
+      AppLogger.error('AudioPlayerHandler: play failed', e);
+      throw const AudioPlaybackException(message: 'تعذر تشغيل الصوت، يرجى المحاولة لاحقاً');
     }
   }
 
@@ -69,7 +72,8 @@ class AudioPlayerHandlerImpl implements AudioPlayerHandler {
     try {
       await _player.pause();
     } catch (e) {
-      throw AudioPlaybackException(message: 'فشل إيقاف الصوت مؤقتاً: $e');
+      AppLogger.error('AudioPlayerHandler: pause failed', e);
+      throw const AudioPlaybackException(message: 'تعذر إيقاف الصوت مؤقتاً');
     }
   }
 
@@ -78,7 +82,8 @@ class AudioPlayerHandlerImpl implements AudioPlayerHandler {
     try {
       await _player.stop();
     } catch (e) {
-      throw AudioPlaybackException(message: 'فشل إيقاف الصوت: $e');
+      AppLogger.error('AudioPlayerHandler: stop failed', e);
+      throw const AudioPlaybackException(message: 'تعذر إيقاف الصوت');
     }
   }
 
@@ -87,7 +92,8 @@ class AudioPlayerHandlerImpl implements AudioPlayerHandler {
     try {
       await _player.seek(position);
     } catch (e) {
-      throw AudioPlaybackException(message: 'فشل الانتقال لموضع الصوت: $e');
+      AppLogger.error('AudioPlayerHandler: seek failed', e);
+      throw const AudioPlaybackException(message: 'تعذر الانتقال لموضع الصوت');
     }
   }
 
@@ -101,7 +107,8 @@ class AudioPlayerHandlerImpl implements AudioPlayerHandler {
     try {
       await _player.setSpeed(speed.clamp(0.5, 2.5));
     } catch (e) {
-      throw AudioPlaybackException(message: 'فشل ضبط سرعة التلاوة: $e');
+      AppLogger.error('AudioPlayerHandler: setSpeed failed', e);
+      throw const AudioPlaybackException(message: 'تعذر ضبط سرعة التلاوة');
     }
   }
 

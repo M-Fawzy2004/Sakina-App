@@ -17,7 +17,7 @@ class CompleteOnboardingUseCase implements UseCase<String, NoParams> {
       // Route directly to the sanctuary home tab
       return const Right(AppRoutes.maladh);
     } catch (e) {
-      return Left(CacheFailure(message: 'فشل حفظ حالة الإعداد: $e'));
+      return const Left(CacheFailure(message: 'تعذر إتمام الإعداد الأولي، يرجى المحاولة ثانية'));
     }
   }
 }

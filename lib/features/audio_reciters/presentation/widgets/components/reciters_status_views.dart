@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:sakina_app/core/errors/error_mapper.dart';
 import 'package:sakina_app/core/theme/app_colors.dart';
 import 'package:sakina_app/core/theme/app_colors_scheme.dart';
 import 'package:sakina_app/core/utils/haptic_service.dart';
@@ -202,9 +203,7 @@ class RecitersErrorCard extends StatelessWidget {
             ),
             SizedBox(height: 6.h),
             Text(
-              message.isNotEmpty
-                  ? message
-                  : 'تأكد من اتصالك بالإنترنت لتصفح وتحميل التلاوات العذبة من خوادم البث المباشر.',
+              ErrorMapper.cleanMessage(message),
               textAlign: TextAlign.center,
               style: GoogleFonts.cairo(
                 fontSize: 12.sp,

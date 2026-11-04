@@ -31,7 +31,7 @@ class DatabaseHelperImpl implements DatabaseHelper {
         },
       );
     } catch (e) {
-      throw DatabaseException(message: 'فشل تهيئة قاعدة البيانات المحلية: $e');
+      throw const DatabaseException(message: 'تعذر تهيئة قاعدة البيانات المحلية');
     }
   }
 

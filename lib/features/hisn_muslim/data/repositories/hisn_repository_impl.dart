@@ -1,5 +1,6 @@
 import 'package:fpdart/fpdart.dart';
 import 'package:sakina_app/core/errors/failures.dart';
+import 'package:sakina_app/core/utils/app_logger.dart';
 import 'package:sakina_app/features/hisn_muslim/data/datasources/hisn_local_data_source.dart';
 import 'package:sakina_app/features/hisn_muslim/domain/entities/hisn_chapter_entity.dart';
 import 'package:sakina_app/features/hisn_muslim/domain/entities/hisn_dua_entity.dart';
@@ -17,7 +18,8 @@ class HisnRepositoryImpl implements HisnRepository {
       final chapters = await localDataSource.loadChapters();
       return Right(chapters);
     } catch (e) {
-      return Left(HisnFailure(message: 'فشل تحميل أبواب حصن المسلم: $e'));
+      AppLogger.error('HisnRepository: getAllChapters failed', e);
+      return const Left(HisnFailure(message: 'تعذر تحميل أبواب حصن المسلم، يرجى المحاولة لاحقاً'));
     }
   }
 
@@ -27,7 +29,8 @@ class HisnRepositoryImpl implements HisnRepository {
       final chapter = await localDataSource.getChapterById(id);
       return Right(chapter);
     } catch (e) {
-      return Left(HisnFailure(message: 'تعذر العثور على الباب المحدد: $e'));
+      AppLogger.error('HisnRepository: getChapterById failed for $id', e);
+      return const Left(HisnFailure(message: 'تعذر العثور على الباب المحدد'));
     }
   }
 
@@ -37,7 +40,8 @@ class HisnRepositoryImpl implements HisnRepository {
       final results = await localDataSource.searchDuas(query);
       return Right(results);
     } catch (e) {
-      return Left(HisnFailure(message: 'فشل البحث في حصن المسلم: $e'));
+      AppLogger.error('HisnRepository: searchDuas failed for $query', e);
+      return const Left(HisnFailure(message: 'تعذر إتمام البحث في حصن المسلم'));
     }
   }
 }

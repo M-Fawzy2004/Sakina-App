@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:sakina_app/core/errors/failures.dart';
+import 'package:sakina_app/core/utils/app_logger.dart';
 import 'package:sakina_app/features/settings/data/datasources/settings_local_data_source.dart';
 import 'package:sakina_app/features/settings/domain/entities/app_theme_mode.dart';
 import 'package:sakina_app/features/settings/domain/repositories/settings_repository.dart';
@@ -16,7 +17,8 @@ class SettingsRepositoryImpl implements SettingsRepository {
       final mode = await localDataSource.getThemeMode();
       return Right(mode);
     } catch (e) {
-      return Left(CacheFailure(message: 'Failed to retrieve theme mode: $e'));
+      AppLogger.error('SettingsRepository: getThemeMode failed', e);
+      return const Left(CacheFailure(message: 'تعذر استرجاع مظهر التطبيق المحفوظ'));
     }
   }
 
@@ -26,7 +28,8 @@ class SettingsRepositoryImpl implements SettingsRepository {
       await localDataSource.setThemeMode(mode);
       return const Right(null);
     } catch (e) {
-      return Left(CacheFailure(message: 'Failed to save theme mode: $e'));
+      AppLogger.error('SettingsRepository: setThemeMode failed', e);
+      return const Left(CacheFailure(message: 'تعذر حفظ مظهر التطبيق'));
     }
   }
 
@@ -36,7 +39,8 @@ class SettingsRepositoryImpl implements SettingsRepository {
       final color = await localDataSource.getPrimaryAccentColor();
       return Right(color);
     } catch (e) {
-      return Left(CacheFailure(message: 'Failed to retrieve accent color: $e'));
+      AppLogger.error('SettingsRepository: getPrimaryAccentColor failed', e);
+      return const Left(CacheFailure(message: 'تعذر استرجاع اللون المخصص'));
     }
   }
 
@@ -46,7 +50,8 @@ class SettingsRepositoryImpl implements SettingsRepository {
       await localDataSource.setPrimaryAccentColor(color);
       return const Right(null);
     } catch (e) {
-      return Left(CacheFailure(message: 'Failed to save accent color: $e'));
+      AppLogger.error('SettingsRepository: setPrimaryAccentColor failed', e);
+      return const Left(CacheFailure(message: 'تعذر حفظ اللون المخصص'));
     }
   }
 
@@ -56,7 +61,8 @@ class SettingsRepositoryImpl implements SettingsRepository {
       await localDataSource.resetSettings();
       return const Right(null);
     } catch (e) {
-      return Left(CacheFailure(message: 'Failed to reset settings: $e'));
+      AppLogger.error('SettingsRepository: resetSettings failed', e);
+      return const Left(CacheFailure(message: 'تعذر إعادة ضبط الإعدادات'));
     }
   }
 }

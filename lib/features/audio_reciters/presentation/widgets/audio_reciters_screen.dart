@@ -117,6 +117,7 @@ class _AudioRecitersView extends StatelessWidget {
                   context: context,
                   message: state.errorMessage!,
                 );
+                context.read<AudioRecitersCubit>().clearErrorMessage();
               }
             },
             builder: (context, state) {

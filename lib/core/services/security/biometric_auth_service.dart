@@ -49,6 +49,6 @@ class BiometricAuthServiceImpl implements BiometricAuthService {
       return await _auth.getAvailableBiometrics();
     } on PlatformException catch (_) {
       return const [];
-    }
+    } 
   }
 }

@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:sakina_app/core/errors/error_mapper.dart';
 import 'package:sakina_app/core/services/audio/audio_player_handler.dart';
 import 'package:sakina_app/core/usecases/usecase.dart';
+import 'package:sakina_app/core/utils/app_logger.dart';
 import 'package:sakina_app/features/audio_reciters/domain/entities/recitation_track_entity.dart';
 import 'package:sakina_app/features/audio_reciters/domain/entities/reciter_entity.dart';
 import 'package:sakina_app/features/audio_reciters/domain/usecases/get_featured_reciter_usecase.dart';
@@ -65,7 +67,7 @@ class AudioRecitersCubit extends Cubit<AudioRecitersState> {
   }
 
   Future<void> loadCatalog() async {
-    emit(state.copyWith(isLoading: true, errorMessage: null));
+    emit(state.copyWith(isLoading: true, clearErrorMessage: true));
 
     final recitersResult = await getRecitersUseCase(
       GetRecitersParams(
@@ -79,14 +81,14 @@ class AudioRecitersCubit extends Cubit<AudioRecitersState> {
     recitersResult.fold(
       (failure) => emit(state.copyWith(
         isLoading: false,
-        errorMessage: failure.message,
+        errorMessage: ErrorMapper.cleanMessage(failure.message),
       )),
       (reciters) {
         featuredResult.fold(
           (failure) => emit(state.copyWith(
             isLoading: false,
             reciters: reciters,
-            errorMessage: failure.message,
+            errorMessage: ErrorMapper.cleanMessage(failure.message),
           )),
           (featuredList) {
             emit(state.copyWith(
@@ -113,7 +115,7 @@ class AudioRecitersCubit extends Cubit<AudioRecitersState> {
 
   Future<void> selectCategory(String category) async {
     if (state.selectedCategory == category) return;
-    emit(state.copyWith(selectedCategory: category, isLoading: true));
+    emit(state.copyWith(selectedCategory: category, isLoading: true, clearErrorMessage: true));
 
     final result = await getRecitersUseCase(
       GetRecitersParams(
@@ -123,13 +125,13 @@ class AudioRecitersCubit extends Cubit<AudioRecitersState> {
     );
 
     result.fold(
-      (failure) => emit(state.copyWith(isLoading: false, errorMessage: failure.message)),
+      (failure) => emit(state.copyWith(isLoading: false, errorMessage: ErrorMapper.cleanMessage(failure.message))),
       (reciters) => emit(state.copyWith(isLoading: false, reciters: reciters)),
     );
   }
 
   Future<void> search(String query) async {
-    emit(state.copyWith(searchQuery: query, isLoading: true));
+    emit(state.copyWith(searchQuery: query, isLoading: true, clearErrorMessage: true));
 
     final result = await getRecitersUseCase(
       GetRecitersParams(
@@ -139,7 +141,7 @@ class AudioRecitersCubit extends Cubit<AudioRecitersState> {
     );
 
     result.fold(
-      (failure) => emit(state.copyWith(isLoading: false, errorMessage: failure.message)),
+      (failure) => emit(state.copyWith(isLoading: false, errorMessage: ErrorMapper.cleanMessage(failure.message))),
       (reciters) => emit(state.copyWith(isLoading: false, reciters: reciters)),
     );
   }
@@ -148,7 +150,7 @@ class AudioRecitersCubit extends Cubit<AudioRecitersState> {
     emit(state.copyWith(
       selectedReciter: reciter,
       isLoadingTracks: true,
-      errorMessage: null,
+      clearErrorMessage: true,
     ));
 
     final result = await getReciterTracksUseCase(
@@ -158,7 +160,7 @@ class AudioRecitersCubit extends Cubit<AudioRecitersState> {
     result.fold(
       (failure) => emit(state.copyWith(
         isLoadingTracks: false,
-        errorMessage: failure.message,
+        errorMessage: ErrorMapper.cleanMessage(failure.message),
       )),
       (tracks) => emit(state.copyWith(
         isLoadingTracks: false,
@@ -174,6 +176,7 @@ class AudioRecitersCubit extends Cubit<AudioRecitersState> {
         isBuffering: true,
         duration: track.duration,
         position: Duration.zero,
+        clearErrorMessage: true,
       ));
 
       await audioPlayerHandler.setAudioUrl(track.audioUrl);
@@ -181,10 +184,13 @@ class AudioRecitersCubit extends Cubit<AudioRecitersState> {
         await audioPlayerHandler.setSpeed(state.playbackSpeed);
       }
       await audioPlayerHandler.play();
-    } catch (e) {
+    } catch (e, stackTrace) {
+      AppLogger.error('AudioRecitersCubit: playTrack failed', e, stackTrace);
+      final friendlyError = ErrorMapper.mapAudioError(e);
       emit(state.copyWith(
         isBuffering: false,
-        errorMessage: 'تعذر تشغيل التلاوة: $e',
+        isPlaying: false,
+        errorMessage: friendlyError,
       ));
     }
   }
@@ -195,7 +201,7 @@ class AudioRecitersCubit extends Cubit<AudioRecitersState> {
     );
 
     tracksResult.fold(
-      (failure) => emit(state.copyWith(errorMessage: failure.message)),
+      (failure) => emit(state.copyWith(errorMessage: ErrorMapper.cleanMessage(failure.message))),
       (tracks) {
         if (tracks.isNotEmpty) {
           playTrack(tracks.first);
@@ -351,6 +357,12 @@ class AudioRecitersCubit extends Cubit<AudioRecitersState> {
       pause();
       emit(state.copyWith(clearSleepTimer: true));
     });
+  }
+
+  void clearErrorMessage() {
+    if (state.errorMessage != null) {
+      emit(state.copyWith(clearErrorMessage: true));
+    }
   }
 
   @override
