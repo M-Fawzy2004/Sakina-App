@@ -115,3 +115,4 @@ class SettingsAppearanceSection extends StatelessWidget {
     );
   }
 }
+

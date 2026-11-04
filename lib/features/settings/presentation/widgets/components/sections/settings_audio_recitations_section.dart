@@ -124,3 +124,4 @@ class SettingsAudioRecitationsSection extends StatelessWidget {
     );
   }
 }
+

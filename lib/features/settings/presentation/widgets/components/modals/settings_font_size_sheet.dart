@@ -241,3 +241,4 @@ class _FontSizePreset {
     required this.desc,
   });
 }
+

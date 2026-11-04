@@ -83,3 +83,4 @@ class SettingsQuranReadingSection extends StatelessWidget {
     );
   }
 }
+

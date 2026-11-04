@@ -80,3 +80,4 @@ class SettingsNotificationsSection extends StatelessWidget {
     );
   }
 }
+

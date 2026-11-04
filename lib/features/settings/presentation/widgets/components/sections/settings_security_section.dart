@@ -50,3 +50,4 @@ class SettingsSecuritySection extends StatelessWidget {
     );
   }
 }
+
