@@ -1,4 +1,4 @@
-package com.sakina.app
+package com.sakina.islamic
 
 import io.flutter.embedding.android.FlutterFragmentActivity
 
