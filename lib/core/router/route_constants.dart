@@ -14,4 +14,5 @@ abstract final class AppRoutes {
   static const String sunnahBooks = '/sunnah-books';
   static const String istighfar = '/istighfar';
   static const String settings = '/settings';
+  static const String cardMaker = '/card-maker';
 }

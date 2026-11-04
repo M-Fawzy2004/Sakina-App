@@ -75,12 +75,6 @@ class InabaHopeCardView extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                     height: 1.9,
                     color: AppColors.pureChalk,
-                    shadows: [
-                      Shadow(
-                        color: AppColors.obsidianCore.withValues(alpha: 0.8),
-                        blurRadius: 8.r,
-                      ),
-                    ],
                   ),
                 ),
                 SizedBox(height: 10.h),

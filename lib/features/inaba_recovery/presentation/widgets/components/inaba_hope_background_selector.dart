@@ -15,6 +15,12 @@ class InabaHopeBackgroundSelector extends StatelessWidget {
     'assets/images/background_2.jpg',
     'assets/images/background_3.jpg',
     'assets/images/background_4.jpg',
+    'assets/images/background_5.jpg',
+    'assets/images/background_6.jpg',
+    'assets/images/background_7.jpg',
+    'assets/images/background_8.jpg',
+    'assets/images/background_9.jpg',
+    'assets/images/background_10.jpg',
   ];
 
   const InabaHopeBackgroundSelector({

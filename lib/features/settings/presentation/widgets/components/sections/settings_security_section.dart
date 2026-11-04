@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:sakina_app/core/theme/app_colors_scheme.dart';
+import 'package:sakina_app/core/utils/url_launcher_helper.dart';
 import 'package:sakina_app/features/settings/presentation/widgets/components/settings_section_card.dart';
 import 'package:sakina_app/features/settings/presentation/widgets/components/settings_switch_tile.dart';
+import 'package:sakina_app/features/settings/presentation/widgets/components/settings_tile_item.dart';
 
-/// Security & Recovery Privacy section: biometrics / PIN lock for Inaba, and stealth mode.
+/// Security & Recovery Privacy section: biometrics / PIN lock for Inaba, stealth mode, and privacy policy.
 class SettingsSecuritySection extends StatelessWidget {
   final bool inabaBiometricLock;
   final bool stealthNotifications;
@@ -46,8 +48,17 @@ class SettingsSecuritySection extends StatelessWidget {
           value: stealthNotifications,
           onChanged: onStealthNotificationsChanged,
         ),
+        Divider(
+          color: colors.borderHairline.withValues(alpha: 0.5),
+          height: 1.h,
+        ),
+        SettingsTileItem(
+          icon: Iconsax.shield_tick,
+          title: 'سِيَاسَةُ الخُصُوصِيَّةِ وَحِمَايَةُ البَيَانَاتِ',
+          subtitle: 'اطَّلِعْ عَلَى وَثِيقَةِ الخُصُوصِيَّةِ وَعَدَمِ جَمْعِ البَيَانَاتِ',
+          onTap: () => UrlLauncherHelper.openPrivacyPolicy(context),
+        ),
       ],
     );
   }
 }
-

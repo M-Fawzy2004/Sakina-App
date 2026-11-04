@@ -127,7 +127,7 @@ class _MaladhView extends StatelessWidget {
                                     context.go(AppRoutes.audio);
                                   },
                                   onCardMakerTap: () {
-                                    // Verse card maker preserved for later
+                                    context.push(AppRoutes.cardMaker);
                                   },
                                   onAthkarTap: () {
                                     context.push(AppRoutes.athkar);

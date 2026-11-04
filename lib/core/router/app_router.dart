@@ -15,6 +15,7 @@ import 'package:sakina_app/features/quran_reading/presentation/widgets/quran_scr
 import 'package:sakina_app/features/quran_reading/presentation/widgets/surah_reader_screen.dart';
 import 'package:sakina_app/features/settings/presentation/widgets/settings_screen.dart';
 import 'package:sakina_app/features/splash/presentation/widgets/splash_screen.dart';
+import 'package:sakina_app/features/verse_card_maker/presentation/widgets/verse_card_maker_screen.dart';
 
 final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -50,6 +51,11 @@ final GoRouter appRouter = GoRouter(
       path: AppRoutes.istighfar,
       parentNavigatorKey: rootNavigatorKey,
       builder: (context, state) => const IstighfarScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.cardMaker,
+      parentNavigatorKey: rootNavigatorKey,
+      builder: (context, state) => const VerseCardMakerScreen(),
     ),
 
     // Stateful Navigation Shell preserving tab state & scroll physics across the 5 core features
