@@ -45,7 +45,14 @@ class SakinaApp extends StatelessWidget {
                 supportedLocales: AppLocalizations.supportedLocales,
                 locale: DevicePreview.locale(context) ?? const Locale('ar'),
                 builder: (context, routerChild) {
-                  return DevicePreview.appBuilder(context, routerChild);
+                  final scaledChild = MediaQuery(
+                    data: MediaQuery.of(context).copyWith(
+                      textScaler:
+                          TextScaler.linear(settingsState.textScaleFactor),
+                    ),
+                    child: routerChild ?? const SizedBox.shrink(),
+                  );
+                  return DevicePreview.appBuilder(context, scaledChild);
                 },
               );
             },

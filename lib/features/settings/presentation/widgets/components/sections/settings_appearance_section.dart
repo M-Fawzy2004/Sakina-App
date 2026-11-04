@@ -11,24 +11,24 @@ import 'package:sakina_app/features/settings/presentation/widgets/components/set
 import 'package:sakina_app/features/settings/presentation/widgets/components/settings_tile_item.dart';
 import 'package:sakina_app/features/settings/presentation/widgets/theme_selector_screen.dart';
 
-/// Appearance & Themes section: theme mode option row, font size, and script style.
+/// Appearance & Themes section: theme mode option row, app-wide font size, and script style.
 class SettingsAppearanceSection extends StatelessWidget {
   final SettingsState state;
-  final double quranFontSize;
-  final ValueChanged<double> onFontSizeChanged;
+  final double appFontScale;
+  final ValueChanged<double> onFontScaleChanged;
 
   const SettingsAppearanceSection({
     super.key,
     required this.state,
-    required this.quranFontSize,
-    required this.onFontSizeChanged,
+    required this.appFontScale,
+    required this.onFontScaleChanged,
   });
 
-  String _getFontSizeLabel(double size) {
-    if (size <= 20) return 'صَغِيرٌ';
-    if (size <= 24) return 'مُعْتَدِلٌ';
-    if (size <= 28) return 'مُرِيحٌ';
-    if (size <= 32) return 'كَبِيرٌ';
+  String _getFontScaleLabel(double scale) {
+    if (scale <= 0.95) return 'صَغِيرٌ';
+    if (scale <= 1.05) return 'مُعْتَدِلٌ (قِيَاسِي)';
+    if (scale <= 1.15) return 'مُرِيحٌ';
+    if (scale <= 1.25) return 'كَبِيرٌ';
     return 'جَلِيٌّ جِدًّا';
   }
 
@@ -76,19 +76,19 @@ class SettingsAppearanceSection extends StatelessWidget {
         ),
         SettingsTileItem(
           icon: Iconsax.textalign_justifycenter,
-          title: 'حَجْمُ خَطِّ الآيَاتِ القُرْآنِيَّةِ',
+          title: 'حَجْمُ خَطِّ التَّطْبِيقِ وَالنُّصُوصِ',
           subtitle:
-              '${_getFontSizeLabel(quranFontSize)} (${quranFontSize.toInt()}sp) — مُرِيحٌ لِلْعَيْنِ',
+              '${_getFontScaleLabel(appFontScale)} (${(appFontScale * 100).toInt()}%) — لِكَافَّةِ الشَّاشَاتِ',
           onTap: () {
             SettingsFontSizeSheet.show(
               context: context,
-              currentSize: quranFontSize,
-              onSizeSelected: (newSize) {
-                onFontSizeChanged(newSize);
+              currentScale: appFontScale,
+              onScaleSelected: (newScale) {
+                onFontScaleChanged(newScale);
                 AppTopSnackBar.showSuccess(
                   context: context,
                   message:
-                      'تم تحديث حجم الخط القرآني بنجاح (${newSize.toInt()}sp)',
+                      'تم تحديث حجم خط التطبيق بنجاح (${(newScale * 100).toInt()}%)',
                 );
               },
             );

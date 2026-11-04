@@ -47,11 +47,14 @@ void main() {
           .thenAnswer((_) async => const Right(AppThemeMode.light));
       when(() => mockSettingsRepository.getPrimaryAccentColor())
           .thenAnswer((_) async => const Right(Color(0xFF10B981)));
+      when(() => mockSettingsRepository.getAppTextScale())
+          .thenAnswer((_) async => const Right(1.1));
 
       await cubit.loadSettings();
 
       expect(cubit.state.appThemeMode, AppThemeMode.light);
       expect(cubit.state.primaryAccentColor, const Color(0xFF10B981));
+      expect(cubit.state.textScaleFactor, 1.1);
       verify(() => mockGetThemeModeUseCase(any())).called(1);
       verify(() => mockSettingsRepository.getPrimaryAccentColor()).called(1);
     });

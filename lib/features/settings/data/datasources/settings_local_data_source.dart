@@ -8,12 +8,15 @@ abstract interface class SettingsLocalDataSource {
   Future<void> setThemeMode(AppThemeMode mode);
   Future<Color> getPrimaryAccentColor();
   Future<void> setPrimaryAccentColor(Color color);
+  Future<double> getAppTextScale();
+  Future<void> setAppTextScale(double scale);
   Future<void> resetSettings();
 }
 
 class SettingsLocalDataSourceImpl implements SettingsLocalDataSource {
   static const String _themeModeKey = 'sakina_app_theme_mode';
   static const String _accentColorKey = 'sakina_app_primary_accent_color';
+  static const String _textScaleKey = 'sakina_app_text_scale_factor';
 
   final PreferencesService preferencesService;
 
@@ -45,8 +48,20 @@ class SettingsLocalDataSourceImpl implements SettingsLocalDataSource {
   }
 
   @override
+  Future<double> getAppTextScale() async {
+    final scale = preferencesService.getDouble(_textScaleKey);
+    return scale ?? 1.0;
+  }
+
+  @override
+  Future<void> setAppTextScale(double scale) async {
+    await preferencesService.setDouble(_textScaleKey, scale);
+  }
+
+  @override
   Future<void> resetSettings() async {
     await preferencesService.remove(_themeModeKey);
     await preferencesService.remove(_accentColorKey);
+    await preferencesService.remove(_textScaleKey);
   }
 }

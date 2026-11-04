@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:sakina_app/core/services/audio/audio_player_handler.dart';
+import 'package:sakina_app/core/services/storage/preferences_service.dart';
 import 'package:sakina_app/core/usecases/usecase.dart';
 import 'package:sakina_app/core/utils/arabic_text_utils.dart';
 import 'package:sakina_app/features/quran_reading/domain/entities/quran_bookmark_entity.dart';
@@ -23,6 +24,7 @@ class QuranCubit extends Cubit<QuranState> {
   final GetLastReadBookmarkUseCase getLastReadBookmarkUseCase;
   final SaveLastReadBookmarkUseCase saveLastReadBookmarkUseCase;
   final AudioPlayerHandler audioPlayerHandler;
+  final PreferencesService? preferencesService;
 
   StreamSubscription<PlayerState>? _playerStateSubscription;
 
@@ -33,6 +35,7 @@ class QuranCubit extends Cubit<QuranState> {
     required this.getLastReadBookmarkUseCase,
     required this.saveLastReadBookmarkUseCase,
     required this.audioPlayerHandler,
+    this.preferencesService,
   }) : super(const QuranInitial()) {
     _initAudioStreams();
   }
@@ -114,12 +117,16 @@ class QuranCubit extends Cubit<QuranState> {
       (surahs) {
         final juzs = juzsResult.getOrElse((_) => const []);
         final bookmark = bookmarkResult.getOrElse((_) => null);
+        final storedReciter = preferencesService
+                ?.getString('sakina_settings_reciter_id') ??
+            EveryAyahAudioUrlBuilder.defaultReciterId;
 
         emit(QuranLoaded(
           allSurahs: surahs,
           filteredSurahs: surahs,
           juzs: juzs,
           lastReadBookmark: bookmark,
+          activeReciterId: storedReciter,
         ));
       },
     );
@@ -330,6 +337,10 @@ class QuranCubit extends Cubit<QuranState> {
     final currentSurah = currentState.activeReadingSurah;
 
     emit(currentState.copyWith(activeReciterId: reciterId));
+    if (preferencesService != null) {
+      unawaited(preferencesService!
+          .setString('sakina_settings_reciter_id', reciterId));
+    }
 
     if (isCurrentlyPlaying && currentAyah != null && currentSurah != null) {
       playAyahAudio(

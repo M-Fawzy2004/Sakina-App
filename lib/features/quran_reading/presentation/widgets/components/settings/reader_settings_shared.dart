@@ -23,15 +23,17 @@ class ReaderDragHandle extends StatelessWidget {
   }
 }
 
-/// Sheet Header with Calligraphy title and settings icon.
+/// Sheet Header with Calligraphy title, settings icon, and reset to defaults action.
 class ReaderSheetHeader extends StatelessWidget {
   final Color accentColor;
   final Color secondaryTextColor;
+  final VoidCallback? onResetToDefault;
 
   const ReaderSheetHeader({
     super.key,
     required this.accentColor,
     required this.secondaryTextColor,
+    this.onResetToDefault,
   });
 
   @override
@@ -59,13 +61,48 @@ class ReaderSheetHeader extends StatelessWidget {
           ),
         ),
         SizedBox(width: 8.w),
-        Text(
-          'تَخْصِيصُ القِرَاءَةِ',
-          style: AppTextStyles.caption.copyWith(
-            color: secondaryTextColor,
-            fontSize: 11.sp,
+        if (onResetToDefault != null)
+          InkWell(
+            onTap: onResetToDefault,
+            borderRadius: BorderRadius.circular(8.r),
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8.r),
+                border: Border.all(
+                  color: accentColor.withValues(alpha: 0.4),
+                  width: 0.8.r,
+                ),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Iconsax.rotate_left,
+                    size: 13.r,
+                    color: accentColor,
+                  ),
+                  SizedBox(width: 4.w),
+                  Text(
+                    'الافتراضي',
+                    style: AppTextStyles.caption.copyWith(
+                      color: accentColor,
+                      fontSize: 10.5.sp,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          )
+        else
+          Text(
+            'تَخْصِيصُ القِرَاءَةِ',
+            style: AppTextStyles.caption.copyWith(
+              color: secondaryTextColor,
+              fontSize: 11.sp,
+            ),
           ),
-        ),
       ],
     );
   }

@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:iconsax/iconsax.dart';
+import 'package:sakina_app/core/di/injection_container.dart';
+import 'package:sakina_app/core/services/storage/preferences_service.dart';
 import 'package:sakina_app/core/theme/app_colors_scheme.dart';
 import 'package:sakina_app/core/utils/app_top_snack_bar.dart';
 import 'package:sakina_app/core/utils/haptic_service.dart';
+import 'package:sakina_app/features/quran_reading/presentation/cubit/quran_cubit.dart';
+import 'package:sakina_app/features/settings/domain/services/settings_persistence_manager.dart';
 import 'package:sakina_app/features/settings/presentation/cubit/settings_cubit.dart';
 import 'package:sakina_app/features/settings/presentation/cubit/settings_state.dart';
+import 'package:sakina_app/features/settings/presentation/widgets/components/modals/settings_reset_dialog.dart';
 import 'package:sakina_app/features/settings/presentation/widgets/components/sections/settings_appearance_section.dart';
 import 'package:sakina_app/features/settings/presentation/widgets/components/sections/settings_audio_recitations_section.dart';
 import 'package:sakina_app/features/settings/presentation/widgets/components/sections/settings_notifications_section.dart';
@@ -20,9 +23,8 @@ import 'package:sakina_app/features/settings/presentation/widgets/components/set
 import 'package:sakina_app/features/settings/presentation/widgets/components/settings_sanctuary_card.dart';
 
 /// Al-I'dadat (Settings & Preferences) Sanctuary Screen.
-/// Clean, modular, comprehensive settings without drop shadows.
-/// Replaces the top hero billboard with a spiritual sanctuary overview card,
-/// presenting theme customization as an ordinary, elegant option row.
+/// Clean, modular, comprehensive settings backed 100% by persistent local storage.
+/// Zero drop shadows and pure ScreenUtil responsive design.
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
 
@@ -32,12 +34,12 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   // Quran & Display Settings
-  double _quranFontSize = 26.0;
   String _readingStyle = 'كُرُوتُ الآيَاتِ المُنْفَرِدَةِ مَعَ إِضَاءَةِ التِّلَاوَةِ';
   bool _keepScreenAwake = true;
 
   // Audio Recitations Settings
-  String _selectedReciter = 'الشَّيْخُ مِشَارِي رَاشِد العَفَاسِي';
+  String _selectedReciterId = 'Alafasy_128kbps';
+  String _selectedReciterName = 'الشَّيْخُ مِشَارِي رَاشِد العَفَاسِي';
   String _audioQuality = 'جَوْدَةٌ عَالِيَةٌ (HQ 128 kbps) — نَقَاءُ اسْتُودْيُو';
   bool _autoPlayNext = true;
   String _sleepTimer = 'مُعَطَّلٌ حَالِيًّا';
@@ -54,6 +56,57 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   // Storage Cache
   String _cacheSizeText = '١٨.٤ م.ب';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadPersistedSettings();
+  }
+
+  void _loadPersistedSettings() {
+    final prefs = sl<PreferencesService>();
+    final data = SettingsPersistenceManager.load(prefs);
+    _selectedReciterId = data.reciterId;
+    _selectedReciterName = data.reciterName;
+    _audioQuality = data.audioQuality;
+    _autoPlayNext = data.autoPlayNext;
+    _sleepTimer = data.sleepTimer;
+    _readingStyle = data.readingStyle;
+    _keepScreenAwake = data.keepAwake;
+    _morningEveningAzkar = data.morningEveningAzkar;
+    _dailyQuranReminder = data.dailyQuranReminder;
+    _dailyHopeReminder = data.dailyHopeReminder;
+    _nightPrayerReminder = data.nightPrayerReminder;
+    _inabaBiometricLock = data.inabaLock;
+    _stealthNotifications = data.stealthNotifications;
+  }
+
+  Future<void> _updateBoolPref(
+    String key,
+    bool val,
+    void Function(bool) setter,
+    String toastMessage,
+  ) async {
+    HapticService.selectionClick();
+    setState(() => setter(val));
+    await sl<PreferencesService>().setBool(key, val);
+    if (mounted) {
+      AppTopSnackBar.showSuccess(context: context, message: toastMessage);
+    }
+  }
+
+  Future<void> _handleReciterChanged(String id, String name) async {
+    setState(() {
+      _selectedReciterId = id;
+      _selectedReciterName = name;
+    });
+    final prefs = sl<PreferencesService>();
+    await prefs.setString(SettingsPersistenceManager.keyReciterId, id);
+    await prefs.setString(SettingsPersistenceManager.keyReciterName, name);
+    if (mounted) {
+      context.read<QuranCubit>().setReciter(id);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -80,7 +133,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
                   SliverToBoxAdapter(child: SizedBox(height: 10.h)),
 
-                  // 2. Serene Spiritual Sanctuary Overview Card (Replacing Hero)
+                  // 2. Serene Spiritual Sanctuary Overview Card
                   SliverToBoxAdapter(
                     child: Padding(
                       padding: EdgeInsets.symmetric(horizontal: 16.w),
@@ -90,15 +143,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
                   SliverToBoxAdapter(child: SizedBox(height: 16.h)),
 
-                  // 3. Appearance & Themes (Theme as a Standard Option Tile)
+                  // 3. Appearance & Themes (Theme & App-Wide Font Scale)
                   SliverToBoxAdapter(
                     child: Padding(
                       padding: EdgeInsets.symmetric(horizontal: 16.w),
                       child: SettingsAppearanceSection(
                         state: state,
-                        quranFontSize: _quranFontSize,
-                        onFontSizeChanged: (newSize) {
-                          setState(() => _quranFontSize = newSize);
+                        appFontScale: state.textScaleFactor,
+                        onFontScaleChanged: (newScale) {
+                          cubit.setTextScaleFactor(newScale);
                         },
                       ),
                     ),
@@ -113,12 +166,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       child: SettingsQuranReadingSection(
                         readingStyle: _readingStyle,
                         keepScreenAwake: _keepScreenAwake,
-                        onReadingStyleChanged: (newStyle) {
+                        onReadingStyleChanged: (newStyle) async {
                           setState(() => _readingStyle = newStyle);
+                          await sl<PreferencesService>().setString(
+                            SettingsPersistenceManager.keyReadingStyle,
+                            newStyle,
+                          );
                         },
                         onKeepScreenAwakeChanged: (val) {
-                          HapticService.selectionClick();
-                          setState(() => _keepScreenAwake = val);
+                          _updateBoolPref(
+                            SettingsPersistenceManager.keyKeepAwake,
+                            val,
+                            (v) => _keepScreenAwake = v,
+                            val
+                                ? 'تم تفعيل إبقاء الشاشة مضاءة أثناء القراءة'
+                                : 'تم تعطيل إبقاء الشاشة مضاءة',
+                          );
                         },
                       ),
                     ),
@@ -126,27 +189,40 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
                   SliverToBoxAdapter(child: SizedBox(height: 16.h)),
 
-                  // 5. Audio Recitations Sanctuary
+                  // 5. Audio Recitations Sanctuary (Per-Ayah & Maladh Reciter)
                   SliverToBoxAdapter(
                     child: Padding(
                       padding: EdgeInsets.symmetric(horizontal: 16.w),
                       child: SettingsAudioRecitationsSection(
-                        selectedReciter: _selectedReciter,
+                        selectedReciterId: _selectedReciterId,
+                        selectedReciterName: _selectedReciterName,
                         audioQuality: _audioQuality,
                         autoPlayNext: _autoPlayNext,
                         sleepTimer: _sleepTimer,
-                        onReciterChanged: (reciter) {
-                          setState(() => _selectedReciter = reciter);
-                        },
-                        onAudioQualityChanged: (quality) {
+                        onReciterChanged: _handleReciterChanged,
+                        onAudioQualityChanged: (quality) async {
                           setState(() => _audioQuality = quality);
+                          await sl<PreferencesService>().setString(
+                            SettingsPersistenceManager.keyAudioQuality,
+                            quality,
+                          );
                         },
                         onAutoPlayNextChanged: (val) {
-                          HapticService.selectionClick();
-                          setState(() => _autoPlayNext = val);
+                          _updateBoolPref(
+                            SettingsPersistenceManager.keyAutoPlayNext,
+                            val,
+                            (v) => _autoPlayNext = v,
+                            val
+                                ? 'تم تفعيل التشغيل التلقائي للتلاوة التالية'
+                                : 'تم تعطيل التشغيل التلقائي',
+                          );
                         },
-                        onSleepTimerChanged: (timer) {
+                        onSleepTimerChanged: (timer) async {
                           setState(() => _sleepTimer = timer);
+                          await sl<PreferencesService>().setString(
+                            SettingsPersistenceManager.keySleepTimer,
+                            timer,
+                          );
                         },
                       ),
                     ),
@@ -164,20 +240,44 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         dailyHopeReminder: _dailyHopeReminder,
                         nightPrayerReminder: _nightPrayerReminder,
                         onMorningEveningChanged: (val) {
-                          HapticService.selectionClick();
-                          setState(() => _morningEveningAzkar = val);
+                          _updateBoolPref(
+                            SettingsPersistenceManager.keyMorningEveningAzkar,
+                            val,
+                            (v) => _morningEveningAzkar = v,
+                            val
+                                ? 'تم تفعيل تذكيرات أذكار الصباح والمساء 🌿'
+                                : 'تم إيقاف تذكيرات أذكار الصباح والمساء',
+                          );
                         },
                         onDailyQuranChanged: (val) {
-                          HapticService.selectionClick();
-                          setState(() => _dailyQuranReminder = val);
+                          _updateBoolPref(
+                            SettingsPersistenceManager.keyDailyQuranReminder,
+                            val,
+                            (v) => _dailyQuranReminder = v,
+                            val
+                                ? 'تم تفعيل تنبيه الورد القرآني اليومي 📖'
+                                : 'تم إيقاف تنبيه الورد القرآني',
+                          );
                         },
                         onDailyHopeChanged: (val) {
-                          HapticService.selectionClick();
-                          setState(() => _dailyHopeReminder = val);
+                          _updateBoolPref(
+                            SettingsPersistenceManager.keyDailyHopeReminder,
+                            val,
+                            (v) => _dailyHopeReminder = v,
+                            val
+                                ? 'تم تفعيل جرعة الأمل اليومية ✨'
+                                : 'تم إيقاف جرعة الأمل اليومية',
+                          );
                         },
                         onNightPrayerChanged: (val) {
-                          HapticService.selectionClick();
-                          setState(() => _nightPrayerReminder = val);
+                          _updateBoolPref(
+                            SettingsPersistenceManager.keyNightPrayerReminder,
+                            val,
+                            (v) => _nightPrayerReminder = v,
+                            val
+                                ? 'تم تفعيل تذكير قيام الليل والأسحار 🌙'
+                                : 'تم إيقاف تذكير قيام الليل',
+                          );
                         },
                       ),
                     ),
@@ -193,12 +293,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         inabaBiometricLock: _inabaBiometricLock,
                         stealthNotifications: _stealthNotifications,
                         onInabaBiometricLockChanged: (val) {
-                          HapticService.selectionClick();
-                          setState(() => _inabaBiometricLock = val);
+                          _updateBoolPref(
+                            SettingsPersistenceManager.keyInabaLock,
+                            val,
+                            (v) => _inabaBiometricLock = v,
+                            val
+                                ? 'تم تفعيل حماية قسم الإنابة بـ PIN / البصمة 🛡️'
+                                : 'تم تعطيل قفل قسم الإنابة',
+                          );
                         },
                         onStealthNotificationsChanged: (val) {
-                          HapticService.selectionClick();
-                          setState(() => _stealthNotifications = val);
+                          _updateBoolPref(
+                            SettingsPersistenceManager.keyStealthNotifications,
+                            val,
+                            (v) => _stealthNotifications = v,
+                            val
+                                ? 'تم تفعيل الوضع السري لإشعارات الإنابة 🔒'
+                                : 'تم إيقاف الوضع السري للإشعارات',
+                          );
                         },
                       ),
                     ),
@@ -221,29 +333,28 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
                   SliverToBoxAdapter(child: SizedBox(height: 16.h)),
 
-                  // 9. About Sakina & Perpetual Charity (صدقة جارية)
-                  SliverToBoxAdapter(
+                  // 9. About Sanctuary Card & Developer Contact
+                  const SliverToBoxAdapter(
                     child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16.w),
-                      child: const SettingsAboutSanctuaryCard(),
+                      padding: EdgeInsets.symmetric(horizontal: 16.0),
+                      child: SettingsAboutSanctuaryCard(),
                     ),
                   ),
 
                   SliverToBoxAdapter(child: SizedBox(height: 16.h)),
 
-                  // 10. Reset to Defaults
+                  // 10. Reset to Factory Defaults Card
                   SliverToBoxAdapter(
                     child: Padding(
                       padding: EdgeInsets.symmetric(horizontal: 16.w),
                       child: SettingsResetCard(
-                        onResetTap: () => _confirmResetAll(cubit),
+                        onResetTap: () => _showResetConfirmationDialog(cubit),
                       ),
                     ),
                   ),
 
-                  // Bottom padding for floating navigation bar
                   SliverToBoxAdapter(
-                    child: SizedBox(height: bottomPadding + 96.h),
+                    child: SizedBox(height: 90.h + bottomPadding),
                   ),
                 ],
               ),
@@ -254,101 +365,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Future<void> _confirmResetAll(SettingsCubit cubit) async {
-    final colors = context.colors;
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => Directionality(
-        textDirection: TextDirection.rtl,
-        child: AlertDialog(
-          backgroundColor: colors.cardSurface,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20.r),
-            side: BorderSide(
-              color: colors.borderHairline.withValues(alpha: 0.8),
-              width: 1.r,
-            ),
-          ),
-          title: Row(
-            children: [
-              Icon(Iconsax.rotate_left, color: colors.accentGold, size: 22.r),
-              SizedBox(width: 8.w),
-              Text(
-                'استعادة الإعدادات الافتراضية',
-                style: GoogleFonts.cairo(
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.w700,
-                  color: colors.textPrimary,
-                ),
-              ),
-            ],
-          ),
-          content: Text(
-            'هل تود إعادة تعيين الثيم، لون التمييز الأساسي، وكافة الإعدادات إلى الضبط الأولي للمصنع؟',
-            style: GoogleFonts.cairo(
-              fontSize: 13.sp,
-              color: colors.textSecondary,
-              height: 1.5,
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(ctx).pop(false),
-              child: Text(
-                'إلغاء',
-                style: GoogleFonts.cairo(
-                  color: colors.textSecondary,
-                  fontSize: 13.sp,
-                ),
-              ),
-            ),
-            ElevatedButton(
-              onPressed: () => Navigator.of(ctx).pop(true),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: colors.accentGold,
-                foregroundColor: colors.background,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.r),
-                ),
-                elevation: 0,
-              ),
-              child: Text(
-                'استعادة الآن',
-                style: GoogleFonts.cairo(
-                  fontSize: 13.sp,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-
+  Future<void> _showResetConfirmationDialog(SettingsCubit cubit) async {
+    final confirmed = await SettingsResetDialog.show(context);
     if (confirmed == true && mounted) {
       HapticService.selectionClick();
       await cubit.resetToDefaults();
+      await SettingsPersistenceManager.resetAll(sl<PreferencesService>());
       if (!mounted) return;
-      setState(() {
-        _quranFontSize = 26.0;
-        _readingStyle = 'كُرُوتُ الآيَاتِ المُنْفَرِدَةِ مَعَ إِضَاءَةِ التِّلَاوَةِ';
-        _keepScreenAwake = true;
-        _selectedReciter = 'الشَّيْخُ مِشَارِي رَاشِد العَفَاسِي';
-        _audioQuality = 'جَوْدَةٌ عَالِيَةٌ (HQ 128 kbps) — نَقَاءُ اسْتُودْيُو';
-        _autoPlayNext = true;
-        _sleepTimer = 'مُعَطَّلٌ حَالِيًّا';
-        _morningEveningAzkar = true;
-        _dailyQuranReminder = true;
-        _dailyHopeReminder = true;
-        _nightPrayerReminder = false;
-        _inabaBiometricLock = true;
-        _stealthNotifications = false;
-        _cacheSizeText = '١٨.٤ م.ب';
-      });
-      AppTopSnackBar.show(
+      setState(() => _loadPersistedSettings());
+      AppTopSnackBar.showSuccess(
         context: context,
-        message: 'تمت استعادة الإعدادات الافتراضية بنجاح',
-        icon: Iconsax.tick_circle,
+        message: 'تمت استعادة الإعدادات الافتراضية بنجاح 🌿',
       );
     }
   }

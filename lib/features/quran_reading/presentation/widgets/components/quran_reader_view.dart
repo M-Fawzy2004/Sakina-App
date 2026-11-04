@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:sakina_app/core/di/injection_container.dart';
+import 'package:sakina_app/core/services/storage/preferences_service.dart';
 import 'package:sakina_app/core/theme/app_colors.dart';
 import 'package:sakina_app/core/theme/app_colors_scheme.dart';
 import 'package:sakina_app/core/utils/haptic_service.dart';
@@ -8,6 +10,7 @@ import 'package:sakina_app/features/quran_reading/domain/entities/ayah_entity.da
 import 'package:sakina_app/features/quran_reading/domain/entities/quran_bookmark_entity.dart';
 import 'package:sakina_app/features/quran_reading/domain/entities/quran_reader_preferences.dart';
 import 'package:sakina_app/features/quran_reading/domain/entities/surah_entity.dart';
+import 'package:sakina_app/features/quran_reading/domain/services/quran_reader_preferences_storage.dart';
 import 'package:sakina_app/features/quran_reading/presentation/widgets/components/reader/reader_ambient_background.dart';
 import 'package:sakina_app/features/quran_reading/presentation/widgets/components/reader/reader_auto_scroll_timer.dart';
 import 'package:sakina_app/features/quran_reading/presentation/widgets/components/reader/reader_modal_controllers.dart';
@@ -89,22 +92,17 @@ class _QuranReaderViewState extends State<QuranReaderView> {
     });
   }
 
-  ScrollController _getScrollControllerForPage(int pageIndex) {
-    return _pageScrollControllers.putIfAbsent(
-      pageIndex,
-      () => ScrollController(),
-    );
-  }
+  ScrollController _getScrollControllerForPage(int pageIndex) =>
+      _pageScrollControllers.putIfAbsent(pageIndex, () => ScrollController());
 
-  int _calculateInitialPageIndex([List<AyahEntity>? versesOverride]) {
-    return ReaderPageCalculator.calculateInitialPageIndex(
-      verses: versesOverride ?? widget.verses,
-      totalPages: _totalPages,
-      versesPerPage: _versesPerPage,
-      initialAyahNumber: widget.initialAyahNumber,
-      initialPageNumber: widget.initialPageNumber,
-    );
-  }
+  int _calculateInitialPageIndex([List<AyahEntity>? versesOverride]) =>
+      ReaderPageCalculator.calculateInitialPageIndex(
+        verses: versesOverride ?? widget.verses,
+        totalPages: _totalPages,
+        versesPerPage: _versesPerPage,
+        initialAyahNumber: widget.initialAyahNumber,
+        initialPageNumber: widget.initialPageNumber,
+      );
 
   void _scrollToTargetAyahIfPresent() {
     final targetAyah = widget.initialAyahNumber;
@@ -135,6 +133,9 @@ class _QuranReaderViewState extends State<QuranReaderView> {
   @override
   void initState() {
     super.initState();
+    if (sl.isRegistered<PreferencesService>()) {
+      _preferences = QuranReaderPreferencesStorage.load(sl<PreferencesService>());
+    }
     _currentPageIndex = _calculateInitialPageIndex();
     _selectedAyahNumber = widget.initialAyahNumber;
     _pageController = PageController(initialPage: _currentPageIndex);
@@ -146,13 +147,17 @@ class _QuranReaderViewState extends State<QuranReaderView> {
     super.didChangeDependencies();
     if (!_hasThemeInitialized) {
       _hasThemeInitialized = true;
-      _preferences = _preferences.copyWith(
-        theme: ReaderPageCalculator.resolveDefaultTheme(
-          isDark: context.isDark,
-          isEmerald: context.colors.background == AppColors.emeraldSanctuaryCore,
-          isObsidian: context.colors.background == AppColors.obsidianCore,
-        ),
-      );
+      final hasSaved = sl.isRegistered<PreferencesService>() &&
+          sl<PreferencesService>().getString(QuranReaderPreferencesStorage.keyTheme) != null;
+      if (!hasSaved) {
+        _preferences = _preferences.copyWith(
+          theme: ReaderPageCalculator.resolveDefaultTheme(
+            isDark: context.isDark,
+            isEmerald: context.colors.background == AppColors.emeraldSanctuaryCore,
+            isObsidian: context.colors.background == AppColors.obsidianCore,
+          ),
+        );
+      }
     }
   }
 
@@ -162,9 +167,7 @@ class _QuranReaderViewState extends State<QuranReaderView> {
     if (oldWidget.surah.id != widget.surah.id) {
       _currentPageIndex = _calculateInitialPageIndex();
       _selectedAyahNumber = widget.initialAyahNumber;
-      for (final c in _pageScrollControllers.values) {
-        c.dispose();
-      }
+      for (final c in _pageScrollControllers.values) { c.dispose(); }
       _pageScrollControllers.clear();
       if (_pageController.hasClients) _pageController.jumpToPage(_currentPageIndex);
       _scrollToTargetAyahIfPresent();
@@ -183,17 +186,13 @@ class _QuranReaderViewState extends State<QuranReaderView> {
   }
 
   void _autoPagingForRecitation(int ayahNumber) {
-    final targetPageIndex = (ayahNumber - 1) ~/ _versesPerPage;
-    if (targetPageIndex != _currentPageIndex &&
-        targetPageIndex >= 0 &&
-        targetPageIndex < _totalPages) {
-      _currentPageIndex = targetPageIndex;
+    final target = (ayahNumber - 1) ~/ _versesPerPage;
+    if (target != _currentPageIndex && target >= 0 && target < _totalPages) {
+      _currentPageIndex = target;
       if (_pageController.hasClients) {
-        _pageController.animateToPage(
-          targetPageIndex,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOutCubic,
-        );
+        _pageController.animateToPage(target,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOutCubic);
       }
     }
   }
@@ -202,8 +201,8 @@ class _QuranReaderViewState extends State<QuranReaderView> {
   void dispose() {
     _autoScrollTimer.dispose();
     _pageController.dispose();
-    for (final controller in _pageScrollControllers.values) {
-      controller.dispose();
+    for (final c in _pageScrollControllers.values) {
+      c.dispose();
     }
     _pageScrollControllers.clear();
     super.dispose();
@@ -214,30 +213,24 @@ class _QuranReaderViewState extends State<QuranReaderView> {
       speed: _preferences.autoScrollSpeed,
       getController: () => _getScrollControllerForPage(_currentPageIndex),
       canAdvancePage: () => _currentPageIndex < _totalPages - 1,
-      onAdvancePage: () {
-        _pageController.nextPage(
-          duration: const Duration(milliseconds: 400),
-          curve: Curves.easeInOut,
-        );
-      },
+      onAdvancePage: () => _pageController.nextPage(
+        duration: const Duration(milliseconds: 400),
+        curve: Curves.easeInOut,
+      ),
     );
   }
 
   void _onAyahTap(int ayahNumber) {
     HapticService.selectionClick();
-    setState(() {
-      _selectedAyahNumber =
-          (_selectedAyahNumber == ayahNumber) ? null : ayahNumber;
-    });
-    widget.onBookmarkSaved(
-      QuranBookmarkEntity(
-        surahId: widget.surah.id,
-        surahName: widget.surah.nameArabic,
-        ayahNumber: ayahNumber,
-        pageNumber: widget.surah.pageNumber,
-        timestamp: DateTime.now(),
-      ),
-    );
+    setState(() => _selectedAyahNumber =
+        (_selectedAyahNumber == ayahNumber) ? null : ayahNumber);
+    widget.onBookmarkSaved(QuranBookmarkEntity(
+      surahId: widget.surah.id,
+      surahName: widget.surah.nameArabic,
+      ayahNumber: ayahNumber,
+      pageNumber: widget.surah.pageNumber,
+      timestamp: DateTime.now(),
+    ));
   }
 
   void _handlePreviousPage() {
@@ -273,29 +266,50 @@ class _QuranReaderViewState extends State<QuranReaderView> {
     }
   }
 
+  void _handleSettingsChanged(QuranReaderPreferences p) {
+    setState(() {
+      _preferences = p;
+      if (p.isAutoScrollEnabled) {
+        _startAutoScroll();
+      } else {
+        _autoScrollTimer.stop();
+      }
+    });
+    if (sl.isRegistered<PreferencesService>()) {
+      unawaited(QuranReaderPreferencesStorage.save(sl<PreferencesService>(), p));
+    }
+  }
+
+  void _handleSpeedChanged(double s) {
+    HapticService.selectionClick();
+    setState(() {
+      _preferences = _preferences.copyWith(autoScrollSpeed: s);
+      if (!_autoScrollTimer.isPaused) _startAutoScroll();
+    });
+    if (sl.isRegistered<PreferencesService>()) {
+      unawaited(QuranReaderPreferencesStorage.save(sl<PreferencesService>(), _preferences));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final activeTheme = _preferences.theme;
     final currentVerses = _getVersesForPage(_currentPageIndex);
     final activeAyah = widget.verses.firstWhere(
       (a) => a.numberInSurah == _selectedAyahNumber,
-      orElse: () => currentVerses.isNotEmpty
-          ? currentVerses.first
-          : (widget.verses.isNotEmpty
-              ? widget.verses.first
-              : AyahEntity(
-                  numberInSurah: 1,
-                  text: 'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ',
-                  page: widget.surah.pageNumber,
-                  juz: widget.surah.juzNumber,
-                )),
+      orElse: () =>
+          currentVerses.firstOrNull ??
+          widget.verses.firstOrNull ??
+          AyahEntity(
+            numberInSurah: 1,
+            text: 'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ',
+            page: widget.surah.pageNumber,
+            juz: widget.surah.juzNumber,
+          ),
     );
 
     final start = _currentPageIndex * _versesPerPage + 1;
-    final end = (start + currentVerses.length - 1).clamp(
-      start,
-      widget.verses.length,
-    );
+    final end = (start + currentVerses.length - 1).clamp(start, widget.verses.length);
     final pageLabel = _totalPages > 1
         ? 'الآيَاتُ $start - $end • ص ${_currentPageIndex + 1}/$_totalPages'
         : 'سُورَةُ ${widget.surah.nameArabic} • ص ${widget.surah.pageNumber} • جزء ${widget.surah.juzNumber}';
@@ -333,8 +347,7 @@ class _QuranReaderViewState extends State<QuranReaderView> {
             onTriggerSurahTransition: _triggerSurahTransition,
             onBookmarkSaved: widget.onBookmarkSaved,
             onClose: widget.onClose,
-            onOpenSurahSwitch: () =>
-                ReaderModalControllers.openSurahQuickSwitch(
+            onOpenSurahSwitch: () => ReaderModalControllers.openSurahQuickSwitch(
               context: context,
               surah: widget.surah,
               allSurahs: widget.allSurahs,
@@ -343,26 +356,13 @@ class _QuranReaderViewState extends State<QuranReaderView> {
             onOpenSettings: () => ReaderModalControllers.openSettings(
               context: context,
               preferences: _preferences,
-              onPreferencesChanged: (p) => setState(() {
-                _preferences = p;
-                if (p.isAutoScrollEnabled) {
-                  _startAutoScroll();
-                } else {
-                  _autoScrollTimer.stop();
-                }
-              }),
+              onPreferencesChanged: _handleSettingsChanged,
             ),
             onToggleAutoScrollPause: () {
               HapticService.selectionClick();
               setState(() => _autoScrollTimer.togglePause());
             },
-            onAutoScrollSpeedChanged: (s) {
-              HapticService.selectionClick();
-              setState(() {
-                _preferences = _preferences.copyWith(autoScrollSpeed: s);
-                if (!_autoScrollTimer.isPaused) _startAutoScroll();
-              });
-            },
+            onAutoScrollSpeedChanged: _handleSpeedChanged,
             onCloseAutoScroll: () {
               HapticService.selectionClick();
               _autoScrollTimer.stop();

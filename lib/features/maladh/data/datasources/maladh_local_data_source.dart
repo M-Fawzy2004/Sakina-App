@@ -51,8 +51,10 @@ class MaladhLocalDataSourceImpl implements MaladhLocalDataSource {
     final hijriDate = _computeHijriDate(now);
     final gregorianDate = _formatArabicGregorianDate(now);
 
-    // 4. Streak Continuity
+    // 4. Streak Continuity & Preferred Reciter Audio
     final storedStreak = preferencesService.getInt(_keyStreakDays) ?? 3;
+    final preferredReciterId = preferencesService.getString('sakina_settings_reciter_id') ?? 'Alafasy_128kbps';
+    final resolvedAudioUrl = selectedVerse.audioUrl.replaceAll('Alafasy_128kbps', preferredReciterId);
 
     return MaladhHeaderModel(
       greetingTitle: greetingTitle,
@@ -61,7 +63,7 @@ class MaladhLocalDataSourceImpl implements MaladhLocalDataSource {
       gregorianDate: gregorianDate,
       dailyVerseText: selectedVerse.verse,
       dailyVerseSurah: selectedVerse.surah,
-      dailyVerseAudioUrl: selectedVerse.audioUrl,
+      dailyVerseAudioUrl: resolvedAudioUrl,
       nextPrayerName: nextPrayerName,
       nextPrayerTimeRemaining: nextPrayerRemaining,
       streakDays: storedStreak,

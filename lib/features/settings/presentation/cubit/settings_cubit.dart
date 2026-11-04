@@ -29,11 +29,18 @@ class SettingsCubit extends Cubit<SettingsState> {
     );
 
     Color accentColor = AppColors.champagneGold;
+    double scale = 1.0;
     if (repository != null) {
       final colorResult = await repository!.getPrimaryAccentColor();
       accentColor = colorResult.fold(
         (_) => AppColors.champagneGold,
         (color) => color,
+      );
+
+      final scaleResult = await repository!.getAppTextScale();
+      scale = scaleResult.fold(
+        (_) => 1.0,
+        (s) => s,
       );
     }
 
@@ -41,6 +48,7 @@ class SettingsCubit extends Cubit<SettingsState> {
       isLoading: false,
       appThemeMode: themeMode,
       primaryAccentColor: accentColor,
+      textScaleFactor: scale,
     ));
   }
 
@@ -72,12 +80,28 @@ class SettingsCubit extends Cubit<SettingsState> {
     }
   }
 
+  /// Sets the application font text scale factor across all screens.
+  Future<void> setTextScaleFactor(double scale) async {
+    // 1. Instant optimistic UI update
+    emit(state.copyWith(textScaleFactor: scale));
+
+    // 2. Persist in storage asynchronously
+    if (repository != null) {
+      final result = await repository!.setAppTextScale(scale);
+      result.fold(
+        (failure) => emit(state.copyWith(errorMessage: failure.message)),
+        (_) {},
+      );
+    }
+  }
+
   /// Resets all appearance preferences back to initial default values.
   Future<void> resetToDefaults() async {
     // 1. Instant optimistic UI reset
     emit(state.copyWith(
       appThemeMode: AppThemeMode.charcoal,
       primaryAccentColor: AppColors.champagneGold,
+      textScaleFactor: 1.0,
     ));
 
     // 2. Reset persistence in storage

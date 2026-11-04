@@ -141,17 +141,39 @@ class _TopToastWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Determine the true hardware status bar height from the native FlutterView
-    // to prevent any collision with the camera punch hole, notch, or clock
-    final view = View.maybeOf(context);
-    final hardwareTop =
-        view != null ? view.padding.top / view.devicePixelRatio : 0.0;
-    final mediaTop = MediaQuery.maybePaddingOf(context)?.top ?? 0.0;
-    final statusBarHeight = math.max(hardwareTop, mediaTop);
+    // Determine the true hardware status bar height from all available platform signals
+    // to strictly prevent any collision with the camera punch hole, notch, or clock
+    final view = View.maybeOf(context) ??
+        (rootNavigatorKey.currentContext != null
+            ? View.maybeOf(rootNavigatorKey.currentContext!)
+            : null);
 
-    // Guaranteed clearance below status bar, notch, and punch-hole camera
-    final safeTop =
-        (statusBarHeight > 0 ? math.max(statusBarHeight, 36.h) : 44.h) + 12.h;
+    final viewPaddingTop =
+        view != null ? view.viewPadding.top / view.devicePixelRatio : 0.0;
+    final paddingTop =
+        view != null ? view.padding.top / view.devicePixelRatio : 0.0;
+    final mediaPaddingTop = MediaQuery.maybePaddingOf(context)?.top ?? 0.0;
+    final mediaViewPaddingTop =
+        MediaQuery.maybeViewPaddingOf(context)?.top ?? 0.0;
+    final rootMqTop = rootNavigatorKey.currentContext != null
+        ? MediaQuery.maybePaddingOf(rootNavigatorKey.currentContext!)?.top ??
+            0.0
+        : 0.0;
+    final screenUtilTop = ScreenUtil().statusBarHeight;
+
+    // Resolve the true status bar / cutout height from all available platform signals
+    final resolvedStatusBar = [
+      viewPaddingTop,
+      paddingTop,
+      mediaPaddingTop,
+      mediaViewPaddingTop,
+      rootMqTop,
+      screenUtilTop,
+      48.0, // Guaranteed minimum baseline for modern camera punch holes and notches
+    ].reduce(math.max);
+
+    // Guaranteed clearance strictly below notch, camera hole, and status bar clock/icons
+    final safeTop = resolvedStatusBar + 12.h;
 
     return Positioned(
       top: safeTop,
@@ -167,7 +189,7 @@ class _TopToastWidget extends StatelessWidget {
             curve: Curves.easeOutCubic,
             builder: (context, value, child) {
               return Transform.translate(
-                offset: Offset(0, (1.0 - value) * -22.h),
+                offset: Offset(0, (1.0 - value) * -16.h),
                 child: Opacity(
                   opacity: value.clamp(0.0, 1.0),
                   child: child,
@@ -176,19 +198,18 @@ class _TopToastWidget extends StatelessWidget {
             },
             child: GestureDetector(
               onVerticalDragUpdate: (details) {
-                if (details.primaryDelta != null &&
-                    details.primaryDelta! < -3) {
+                if (details.primaryDelta != null && details.primaryDelta! < -3) {
                   onDismiss();
                 }
               },
               child: Container(
                 constraints: BoxConstraints(
-                  minHeight: 40.h,
-                  maxHeight: 52.h,
+                  minHeight: 46.h,
+                  maxHeight: 64.h,
                 ),
                 padding: EdgeInsets.symmetric(
-                  horizontal: 12.w,
-                  vertical: 6.h,
+                  horizontal: 14.w,
+                  vertical: 8.h,
                 ),
                 decoration: BoxDecoration(
                   color: backgroundColor,

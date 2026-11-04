@@ -8,5 +8,7 @@ abstract interface class SettingsRepository {
   Future<Either<Failure, void>> setThemeMode(AppThemeMode mode);
   Future<Either<Failure, Color>> getPrimaryAccentColor();
   Future<Either<Failure, void>> setPrimaryAccentColor(Color color);
+  Future<Either<Failure, double>> getAppTextScale();
+  Future<Either<Failure, void>> setAppTextScale(double scale);
   Future<Either<Failure, void>> resetSettings();
 }

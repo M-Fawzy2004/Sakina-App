@@ -3,9 +3,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
+import 'package:get_it/get_it.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:sakina_app/core/services/storage/preferences_service.dart';
 import 'package:sakina_app/core/theme/app_theme.dart';
 import 'package:sakina_app/core/usecases/usecase.dart';
+import 'package:sakina_app/features/quran_reading/presentation/cubit/quran_cubit.dart';
+import 'package:sakina_app/features/quran_reading/presentation/cubit/quran_state.dart';
 import 'package:sakina_app/features/settings/domain/entities/app_theme_mode.dart';
 import 'package:sakina_app/features/settings/domain/repositories/settings_repository.dart';
 import 'package:sakina_app/features/settings/domain/usecases/get_theme_mode_usecase.dart';
@@ -17,11 +21,15 @@ import 'package:sakina_app/features/settings/presentation/widgets/theme_selector
 class MockGetThemeModeUseCase extends Mock implements GetThemeModeUseCase {}
 class MockSetThemeModeUseCase extends Mock implements SetThemeModeUseCase {}
 class MockSettingsRepository extends Mock implements SettingsRepository {}
+class MockPreferencesService extends Mock implements PreferencesService {}
+class MockQuranCubit extends Mock implements QuranCubit {}
 
 void main() {
   late MockGetThemeModeUseCase mockGetThemeModeUseCase;
   late MockSetThemeModeUseCase mockSetThemeModeUseCase;
   late MockSettingsRepository mockSettingsRepository;
+  late MockPreferencesService mockPreferencesService;
+  late MockQuranCubit mockQuranCubit;
   late SettingsCubit cubit;
 
   setUpAll(() {
@@ -34,6 +42,26 @@ void main() {
     mockGetThemeModeUseCase = MockGetThemeModeUseCase();
     mockSetThemeModeUseCase = MockSetThemeModeUseCase();
     mockSettingsRepository = MockSettingsRepository();
+    mockPreferencesService = MockPreferencesService();
+    mockQuranCubit = MockQuranCubit();
+
+    when(() => mockQuranCubit.state).thenReturn(const QuranInitial());
+    when(() => mockQuranCubit.stream).thenAnswer((_) => const Stream.empty());
+    when(() => mockQuranCubit.close()).thenAnswer((_) async {});
+
+    when(() => mockPreferencesService.getString(any())).thenReturn(null);
+    when(() => mockPreferencesService.getBool(any())).thenReturn(null);
+    when(() => mockPreferencesService.getInt(any())).thenReturn(null);
+    when(() => mockPreferencesService.getDouble(any())).thenReturn(null);
+    when(() => mockPreferencesService.setString(any(), any()))
+        .thenAnswer((_) async => true);
+    when(() => mockPreferencesService.setBool(any(), any()))
+        .thenAnswer((_) async => true);
+
+    if (GetIt.I.isRegistered<PreferencesService>()) {
+      GetIt.I.unregister<PreferencesService>();
+    }
+    GetIt.I.registerSingleton<PreferencesService>(mockPreferencesService);
 
     when(() => mockSetThemeModeUseCase(any()))
         .thenAnswer((_) async => const Right(null));
@@ -51,13 +79,19 @@ void main() {
 
   tearDown(() {
     cubit.close();
+    if (GetIt.I.isRegistered<PreferencesService>()) {
+      GetIt.I.unregister<PreferencesService>();
+    }
   });
 
   Widget buildTestWidget(Widget child) {
     return ScreenUtilInit(
       designSize: const Size(393, 852),
-      builder: (context, _) => BlocProvider<SettingsCubit>.value(
-        value: cubit,
+      builder: (context, _) => MultiBlocProvider(
+        providers: [
+          BlocProvider<SettingsCubit>.value(value: cubit),
+          BlocProvider<QuranCubit>.value(value: mockQuranCubit),
+        ],
         child: MaterialApp(
           theme: AppTheme.charcoalLuxury,
           home: child,

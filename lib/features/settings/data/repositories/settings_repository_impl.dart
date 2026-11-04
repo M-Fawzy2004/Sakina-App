@@ -56,6 +56,28 @@ class SettingsRepositoryImpl implements SettingsRepository {
   }
 
   @override
+  Future<Either<Failure, double>> getAppTextScale() async {
+    try {
+      final scale = await localDataSource.getAppTextScale();
+      return Right(scale);
+    } catch (e) {
+      AppLogger.error('SettingsRepository: getAppTextScale failed', e);
+      return const Right(1.0);
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> setAppTextScale(double scale) async {
+    try {
+      await localDataSource.setAppTextScale(scale);
+      return const Right(null);
+    } catch (e) {
+      AppLogger.error('SettingsRepository: setAppTextScale failed', e);
+      return const Left(CacheFailure(message: 'تعذر حفظ حجم خط التطبيق'));
+    }
+  }
+
+  @override
   Future<Either<Failure, void>> resetSettings() async {
     try {
       await localDataSource.resetSettings();

@@ -9,20 +9,22 @@ import 'package:sakina_app/features/settings/presentation/widgets/components/set
 import 'package:sakina_app/features/settings/presentation/widgets/components/settings_switch_tile.dart';
 import 'package:sakina_app/features/settings/presentation/widgets/components/settings_tile_item.dart';
 
-/// Audio Recitations section: default reciter, stream quality, auto-play next, sleep timer.
+/// Audio Recitations section: verse/Maladh reciter, stream quality, auto-play next, sleep timer.
 class SettingsAudioRecitationsSection extends StatelessWidget {
-  final String selectedReciter;
+  final String selectedReciterId;
+  final String selectedReciterName;
   final String audioQuality;
   final bool autoPlayNext;
   final String sleepTimer;
-  final ValueChanged<String> onReciterChanged;
+  final void Function(String reciterId, String reciterName) onReciterChanged;
   final ValueChanged<String> onAudioQualityChanged;
   final ValueChanged<bool> onAutoPlayNextChanged;
   final ValueChanged<String> onSleepTimerChanged;
 
   const SettingsAudioRecitationsSection({
     super.key,
-    required this.selectedReciter,
+    required this.selectedReciterId,
+    required this.selectedReciterName,
     required this.audioQuality,
     required this.autoPlayNext,
     required this.sleepTimer,
@@ -42,18 +44,20 @@ class SettingsAudioRecitationsSection extends StatelessWidget {
       children: [
         SettingsTileItem(
           icon: Iconsax.user_tag,
-          title: 'القَارِئُ الاِفْتِرَاضِيُّ لِلتِّلَاوَةِ',
-          subtitle: selectedReciter,
+          title: 'قَارِئُ الآيَاتِ وَوِرْدِ المَلَاذِ',
+          subtitle:
+              '$selectedReciterName — لِتِلَاوَةِ الآيَاتِ بِالمُصْحَفِ وَبِطَاقَةِ المَلَاذِ',
           onTap: () {
             SettingsReciterSheet.show(
               context: context,
-              currentReciter: selectedReciter,
-              onReciterSelected: (reciter) {
-                onReciterChanged(reciter);
+              currentReciterId: selectedReciterId,
+              onReciterSelected: (reciterId, reciterName) {
+                onReciterChanged(reciterId, reciterName);
                 if (context.mounted) {
                   AppTopSnackBar.showSuccess(
                     context: context,
-                    message: 'تم اختيار $reciter قارئاً افتراضياً',
+                    message:
+                        'تم اختيار $reciterName قارئاً للآيات وورد الملاذ 🌿',
                   );
                 }
               },

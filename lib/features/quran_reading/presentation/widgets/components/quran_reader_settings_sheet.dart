@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:sakina_app/core/di/injection_container.dart';
+import 'package:sakina_app/core/services/storage/preferences_service.dart';
 import 'package:sakina_app/core/theme/app_spacing.dart';
+import 'package:sakina_app/core/utils/app_top_snack_bar.dart';
 import 'package:sakina_app/core/utils/haptic_service.dart';
 import 'package:sakina_app/features/quran_reading/domain/entities/quran_reader_preferences.dart';
+import 'package:sakina_app/features/quran_reading/domain/services/quran_reader_preferences_storage.dart';
 import 'package:sakina_app/features/quran_reading/presentation/widgets/components/settings/reader_comfort_section.dart';
 import 'package:sakina_app/features/quran_reading/presentation/widgets/components/settings/reader_settings_shared.dart';
 import 'package:sakina_app/features/quran_reading/presentation/widgets/components/settings/reader_style_section.dart';
@@ -57,6 +61,19 @@ class _QuranReaderSettingsSheetState extends State<QuranReaderSettingsSheet> {
     widget.onPreferencesChanged(updated);
   }
 
+  Future<void> _handleResetToDefault() async {
+    HapticService.selectionClick();
+    await QuranReaderPreferencesStorage.reset(sl<PreferencesService>());
+    const defaults = QuranReaderPreferences();
+    _updatePreferences(defaults);
+    if (mounted) {
+      AppTopSnackBar.showSuccess(
+        context: context,
+        message: 'تمت استعادة إعدادات المصحف الافتراضية بنجاح 🌿',
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final activeTheme = _currentPreferences.theme;
@@ -81,6 +98,7 @@ class _QuranReaderSettingsSheetState extends State<QuranReaderSettingsSheet> {
           ReaderSheetHeader(
             accentColor: activeAccent,
             secondaryTextColor: activeTheme.secondaryTextColor,
+            onResetToDefault: _handleResetToDefault,
           ),
           AppSpacing.verticalSm,
           Expanded(

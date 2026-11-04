@@ -197,6 +197,7 @@ void _initFeatureModules() {
       getLastReadBookmarkUseCase: sl(),
       saveLastReadBookmarkUseCase: sl(),
       audioPlayerHandler: sl(),
+      preferencesService: sl(),
     ),
   );
 
