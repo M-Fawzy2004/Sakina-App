@@ -14,6 +14,7 @@ import 'package:video_player/video_player.dart';
 /// Strictly zero drop shadows with anti-aliased clean edge boundaries.
 class VerseCardDisplay extends StatelessWidget {
   final GlobalKey cardKey;
+  final GlobalKey? overlayKey;
   final VerseCardItem verse;
   final String? presetAsset;
   final File? customImageFile;
@@ -21,10 +22,13 @@ class VerseCardDisplay extends StatelessWidget {
   final String reciterName;
   final bool isPlayingRecitation;
   final bool isOverlayOnly;
+  final VoidCallback? onBadgeTap;
+  final int currentAyahDisplayIndex;
 
   const VerseCardDisplay({
     super.key,
     required this.cardKey,
+    this.overlayKey,
     required this.verse,
     this.presetAsset,
     this.customImageFile,
@@ -32,11 +36,18 @@ class VerseCardDisplay extends StatelessWidget {
     required this.reciterName,
     required this.isPlayingRecitation,
     this.isOverlayOnly = false,
+    this.onBadgeTap,
+    this.currentAyahDisplayIndex = 0,
   });
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.colors;
+    final hasMultiVerses =
+        verse.versesTextList != null && verse.versesTextList!.isNotEmpty;
+    final activeAyahText = hasMultiVerses
+        ? verse.getAyahTextAt(currentAyahDisplayIndex)
+        : verse.ayahText;
+    final activeAyahNumber = verse.ayahNumber + currentAyahDisplayIndex;
 
     return RepaintBoundary(
       key: cardKey,
@@ -44,13 +55,9 @@ class VerseCardDisplay extends StatelessWidget {
         width: double.infinity,
         decoration: BoxDecoration(
           color: isOverlayOnly ? Colors.transparent : AppColors.obsidianCore,
-          borderRadius: BorderRadius.circular(22.r),
-          border: isOverlayOnly
-              ? null
-              : Border.all(
-                  color: colors.accentGold.withValues(alpha: 0.35),
-                  width: 1.r,
-                ),
+          borderRadius:
+              isOverlayOnly ? BorderRadius.zero : BorderRadius.circular(16.r),
+          border: null,
         ),
         clipBehavior: Clip.antiAlias,
         child: Stack(
@@ -81,52 +88,125 @@ class VerseCardDisplay extends StatelessWidget {
                 ),
               ),
 
-            // 3. Foreground Card Content (Surah Badge, Ayah Typography, Reciter & Watermark)
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 18.h),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  // Top Row: Surah & Ayah Badge
-                  _SurahAyahBadge(verse: verse),
-
-                  // Center: Pure Quranic Verse Typography
-                  Expanded(
-                    child: Center(
-                      child: SingleChildScrollView(
-                        physics: const BouncingScrollPhysics(),
-                        child: Text(
-                          verse.ayahText,
-                          textAlign: TextAlign.center,
-                          style: GoogleFonts.amiri(
-                            fontSize: 21.sp,
-                            fontWeight: FontWeight.w700,
-                            height: 2.1,
-                            color: AppColors.pureChalk,
-                          ),
-                        ),
+            // 3. Foreground Card Content (Surah Badge, Animated Ayah Typography, Reciter & Watermark)
+            // Wrapped in overlayKey boundary so it can be captured as a pure transparent
+            // overlay with zero video/background freeze for video reel compilation.
+            RepaintBoundary(
+              key: overlayKey,
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 18.h),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    // Top Row: Surah & Active Ayah Badge
+                    GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: onBadgeTap,
+                      child: _SurahAyahBadge(
+                        surahName: verse.surahName,
+                        ayahNumber: activeAyahNumber,
                       ),
                     ),
-                  ),
 
-                  // Bottom Row: Reciter attribution & Sakina Watermark
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      // Reciter tag
-                      Flexible(
-                        child: _ReciterAttributionBadge(
-                          reciterName: reciterName,
-                          isPlaying: isPlayingRecitation,
-                        ),
+                    // Center: Pure Quranic Verse Typography
+                    // When in isOverlayOnly mode (capturing static PNG frames for video),
+                    // render direct Text without AnimatedSwitcher to prevent cross-frame ghosting.
+                    Expanded(
+                      child: Center(
+                        child: isOverlayOnly
+                            ? SingleChildScrollView(
+                                physics: const NeverScrollableScrollPhysics(),
+                                child: Text(
+                                  activeAyahText,
+                                  textAlign: TextAlign.center,
+                                  style: GoogleFonts.amiri(
+                                    fontSize: activeAyahText.length > 250
+                                        ? 14.5.sp
+                                        : (activeAyahText.length > 150
+                                            ? 17.5.sp
+                                            : 21.sp),
+                                    fontWeight: FontWeight.w700,
+                                    height:
+                                        activeAyahText.length > 250 ? 1.85 : 2.1,
+                                    color: AppColors.pureChalk,
+                                    shadows: [
+                                      Shadow(
+                                        color: Colors.black.withValues(alpha: 0.85),
+                                        blurRadius: 10,
+                                        offset: const Offset(0, 2),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              )
+                            : AnimatedSwitcher(
+                                duration: const Duration(milliseconds: 550),
+                                switchInCurve: Curves.easeOutCubic,
+                                switchOutCurve: Curves.easeInCubic,
+                                transitionBuilder: (child, animation) {
+                                  return FadeTransition(
+                                    opacity: animation,
+                                    child: SlideTransition(
+                                      position: Tween<Offset>(
+                                        begin: const Offset(0.0, 0.05),
+                                        end: Offset.zero,
+                                      ).animate(animation),
+                                      child: child,
+                                    ),
+                                  );
+                                },
+                                child: SingleChildScrollView(
+                                  key: ValueKey('$activeAyahNumber-$activeAyahText'),
+                                  physics: const BouncingScrollPhysics(),
+                                  child: Text(
+                                    activeAyahText,
+                                    textAlign: TextAlign.center,
+                                    style: GoogleFonts.amiri(
+                                      fontSize: activeAyahText.length > 250
+                                          ? 14.5.sp
+                                          : (activeAyahText.length > 150
+                                              ? 17.5.sp
+                                              : 21.sp),
+                                      fontWeight: FontWeight.w700,
+                                      height:
+                                          activeAyahText.length > 250 ? 1.85 : 2.1,
+                                      color: AppColors.pureChalk,
+                                      shadows: [
+                                        Shadow(
+                                          color: Colors.black.withValues(alpha: 0.85),
+                                          blurRadius: 10,
+                                          offset: const Offset(0, 2),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
                       ),
-                      SizedBox(width: 8.w),
+                    ),
 
-                      // Sakina Watermark
-                      const VerseCardWatermark(),
-                    ],
-                  ),
-                ],
+                    // Bottom Row: Reciter attribution & Sakina Watermark
+                    // Reciter badge is hidden for static images, shown only for video reels
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        if (videoController != null)
+                          Flexible(
+                            child: _ReciterAttributionBadge(
+                              reciterName: reciterName,
+                              isPlaying: isPlayingRecitation,
+                            ),
+                          )
+                        else
+                          const SizedBox.shrink(),
+                        SizedBox(width: 8.w),
+
+                        // Sakina Watermark
+                        const VerseCardWatermark(),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
@@ -180,9 +260,13 @@ class _CardBackgroundLayer extends StatelessWidget {
 }
 
 class _SurahAyahBadge extends StatelessWidget {
-  final VerseCardItem verse;
+  final String surahName;
+  final int ayahNumber;
 
-  const _SurahAyahBadge({required this.verse});
+  const _SurahAyahBadge({
+    required this.surahName,
+    required this.ayahNumber,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -208,7 +292,7 @@ class _SurahAyahBadge extends StatelessWidget {
           ),
           SizedBox(width: 8.w),
           Text(
-            'سُورَةُ ${verse.surahName} • الآيَةُ ${verse.ayahNumber}',
+            'سُورَةُ $surahName • الآيَةُ $ayahNumber',
             style: GoogleFonts.cairo(
               fontSize: 11.5.sp,
               fontWeight: FontWeight.w700,
@@ -234,23 +318,17 @@ class _ReciterAttributionBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.colors;
 
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
-      decoration: BoxDecoration(
-        color: colors.background.withValues(alpha: 0.55),
-        borderRadius: BorderRadius.circular(10.r),
-        border: Border.all(
-          color: colors.borderHairline.withValues(alpha: 0.5),
-          width: 0.7.r,
-        ),
-      ),
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 2.h),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(
             isPlaying ? Icons.volume_up_rounded : Icons.mic_none_rounded,
-            size: 12.r,
-            color: isPlaying ? colors.accentGold : colors.textSecondary,
+            size: 13.r,
+            color: isPlaying
+                ? colors.accentGold
+                : AppColors.pureChalk.withValues(alpha: 0.8),
           ),
           SizedBox(width: 5.w),
           Flexible(
@@ -258,9 +336,16 @@ class _ReciterAttributionBadge extends StatelessWidget {
               reciterName,
               overflow: TextOverflow.ellipsis,
               style: GoogleFonts.cairo(
-                fontSize: 9.5.sp,
+                fontSize: 10.sp,
                 fontWeight: FontWeight.w600,
-                color: colors.textSecondary,
+                color: AppColors.pureChalk.withValues(alpha: 0.85),
+                shadows: [
+                  Shadow(
+                    color: Colors.black.withValues(alpha: 0.8),
+                    blurRadius: 6,
+                    offset: const Offset(0, 1),
+                  ),
+                ],
               ),
             ),
           ),

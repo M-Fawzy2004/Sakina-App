@@ -50,7 +50,78 @@ void main() {
           find.text('سُورَةُ ${verse.surahName} • الآيَةُ ${verse.ayahNumber}'),
           findsOneWidget);
       expect(find.byType(VerseCardWatermark), findsOneWidget);
-      expect(find.text('تطبيق سَكِينَة'), findsOneWidget);
+      expect(find.text('سَكِينَة'), findsOneWidget);
+    });
+
+    testWidgets('VerseCardDisplay renders multi-verse range badge with zero border',
+        (tester) async {
+      final key = GlobalKey();
+      final overlayKey = GlobalKey();
+      const multiVerse = VerseCardItem(
+        surahNumber: 2,
+        ayahNumber: 1,
+        endAyahNumber: 3,
+        surahName: 'البقرة',
+        ayahText: 'الم',
+        versesTextList: [
+          'الم',
+          'ذَٰلِكَ الْكِتَابُ لَا رَيْبَ ۛ فِيهِ ۛ هُدًى لِّلْمُتَّقِينَ',
+          'الَّذِينَ يُؤْمِنُونَ بِالْغَيْبِ',
+        ],
+        theme: 'هدى',
+        durationSeconds: 20,
+      );
+
+      await tester.pumpWidget(
+        buildTestableWidget(
+          Scaffold(
+            body: VerseCardDisplay(
+              cardKey: key,
+              overlayKey: overlayKey,
+              verse: multiVerse,
+              currentAyahDisplayIndex: 0,
+              reciterName: 'مشاري راشد العفاسي',
+              isPlayingRecitation: false,
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('سُورَةُ البقرة • الآيَةُ 1'), findsOneWidget);
+      expect(find.text('الم'), findsOneWidget);
+
+      // Verify ZERO outer border on card container
+      final container = tester.widget<Container>(
+        find.descendant(
+          of: find.byKey(key),
+          matching: find.byType(Container).first,
+        ),
+      );
+      final boxDecoration = container.decoration as BoxDecoration?;
+      expect(boxDecoration?.border, isNull);
+
+      // Now pump with active Ayah index = 1
+      await tester.pumpWidget(
+        buildTestableWidget(
+          Scaffold(
+            body: VerseCardDisplay(
+              cardKey: key,
+              overlayKey: overlayKey,
+              verse: multiVerse,
+              currentAyahDisplayIndex: 1,
+              reciterName: 'مشاري راشد العفاسي',
+              isPlayingRecitation: false,
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('سُورَةُ البقرة • الآيَةُ 2'), findsOneWidget);
+      expect(
+          find.text('ذَٰلِكَ الْكِتَابُ لَا رَيْبَ ۛ فِيهِ ۛ هُدًى لِّلْمُتَّقِينَ'),
+          findsOneWidget);
     });
 
     testWidgets(
@@ -169,19 +240,32 @@ void main() {
 
       expect(find.text('صَانِعُ بِطَاقَاتِ الآيَاتِ'), findsOneWidget);
       expect(find.byType(VerseCardDisplay), findsOneWidget);
-      expect(find.byType(VerseCardPlaybackBar), findsOneWidget);
+      // In default Image Mode, playback bar is hidden to prevent unwanted audio
+      expect(find.byType(VerseCardPlaybackBar), findsNothing);
       expect(find.byType(VerseCardBackgroundSelector), findsOneWidget);
       expect(find.byType(VerseCardActionsRow), findsOneWidget);
 
-      // Verify navigating to next verse updates text
+      // Verify switching to Video Reels mode reveals video hero and playback bar
+      await tester.tap(find.textContaining('فِيدْيُو رِيلْز'));
+      await tester.pumpAndSettle();
+      expect(find.byType(VerseCardPlaybackBar), findsOneWidget);
+      expect(find.text('اخْتِيَارُ مَقْطَعِ فِيدْيُو مِنَ الِاسْتُودْيُو'), findsOneWidget);
+
+      // Verify navigating to next verse via playback bar updates text
       final initialVerse = VerseCardItem.curatedVerses[0];
       final nextVerse = VerseCardItem.curatedVerses[1];
       expect(find.text(initialVerse.ayahText), findsOneWidget);
 
-      await tester.tap(find.byTooltip('الآية التالية'), warnIfMissed: false);
+      await tester.ensureVisible(find.byTooltip('الآية التالية'));
+      await tester.tap(find.byTooltip('الآية التالية'));
       await tester.pumpAndSettle();
 
       expect(find.text(nextVerse.ayahText), findsOneWidget);
+
+      // Switch back to Image mode and verify clean state
+      await tester.tap(find.textContaining('تَصْمِيمُ صُورَة'));
+      await tester.pumpAndSettle();
+      expect(find.byType(VerseCardPlaybackBar), findsNothing);
     });
   });
 }

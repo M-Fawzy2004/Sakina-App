@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:sakina_app/core/utils/app_top_snack_bar.dart';
 import 'package:sakina_app/core/widgets/navigation/main_scaffold_shell.dart';
 import 'package:sakina_app/core/widgets/navigation/sakina_bottom_nav_bar.dart';
 
@@ -130,6 +131,29 @@ void main() {
       // Tap scroll-to-top
       await tester.tap(arrowFinder);
       await tester.pumpAndSettle();
+    });
+
+    testWidgets('intercepts back press with PopScope and shows double back snackbar on first press',
+        (tester) async {
+      const fakeShell = _FakeStatefulNavigationShell(currentIndex: 0);
+
+      await tester.pumpWidget(buildTestShell(shell: fakeShell));
+      await tester.pumpAndSettle();
+
+      final popScopeFinder = find.byWidgetPredicate((w) => w is PopScope);
+      expect(popScopeFinder, findsOneWidget);
+
+      final dynamic popScopeWidget = tester.widget(popScopeFinder);
+      expect(popScopeWidget.canPop, false);
+
+      // Trigger first back press
+      popScopeWidget.onPopInvokedWithResult(false, null);
+      await tester.pump();
+
+      expect(find.text('اضغط مرة أخرى للخروج من التطبيق'), findsOneWidget);
+
+      await tester.pump(const Duration(seconds: 3));
+      AppTopSnackBar.dismiss();
     });
   });
 }

@@ -88,24 +88,31 @@ abstract final class VerseCardExporter {
   }
 
   /// Compiles, exports, and saves a composite 30s MP4 video reel to gallery.
-  static Future<void> saveVideoReel({
+  static Future<File?> saveVideoReel({
     required BuildContext context,
     required File videoFile,
     required VerseCardItem verse,
     required EveryAyahReciter reciter,
-    required GlobalKey boundaryKey,
+    List<File>? overlayFiles,
+    List<double>? ayahDurations,
+    GlobalKey? boundaryKey,
+    void Function(double progress, String step)? onProgress,
   }) async {
     try {
       final video = await VerseCardVideoGenerator.generateVideo(
         videoFile: videoFile,
         verse: verse,
         reciter: reciter,
+        overlayFiles: overlayFiles,
+        ayahDurations: ayahDurations,
         boundaryKey: boundaryKey,
+        onProgress: onProgress,
       );
 
       if (video == null) throw Exception('Video generation returned null');
 
       final saved = await VerseCardVideoGenerator.saveVideoToGallery(video);
+      onProgress?.call(1.0, 'اكْتَمَلَ الحِفْظُ فِي أَلْبُومِ سَكِينَة بِنَجَاح! ✨');
       if (context.mounted) {
         if (saved) {
           AppTopSnackBar.showSuccess(
@@ -118,10 +125,13 @@ abstract final class VerseCardExporter {
             videoFile: videoFile,
             verse: verse,
             reciter: reciter,
+            overlayFiles: overlayFiles,
+            ayahDurations: ayahDurations,
             boundaryKey: boundaryKey,
           );
         }
       }
+      return video;
     } catch (e, st) {
       AppLogger.error('Failed to export video reel', e, st, 'CARD_MAKER');
       if (context.mounted) {
@@ -130,6 +140,7 @@ abstract final class VerseCardExporter {
           message: 'تعذر إنتاج الفيديو، يرجى التأكد من مساحة الجهاز وإعادة المحاولة',
         );
       }
+      return null;
     }
   }
 
@@ -139,13 +150,17 @@ abstract final class VerseCardExporter {
     required File videoFile,
     required VerseCardItem verse,
     required EveryAyahReciter reciter,
-    required GlobalKey boundaryKey,
+    List<File>? overlayFiles,
+    List<double>? ayahDurations,
+    GlobalKey? boundaryKey,
   }) async {
     try {
       final video = await VerseCardVideoGenerator.generateVideo(
         videoFile: videoFile,
         verse: verse,
         reciter: reciter,
+        overlayFiles: overlayFiles,
+        ayahDurations: ayahDurations,
         boundaryKey: boundaryKey,
       );
       if (video != null && context.mounted) {

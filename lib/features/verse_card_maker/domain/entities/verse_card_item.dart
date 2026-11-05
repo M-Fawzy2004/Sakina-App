@@ -2,19 +2,60 @@
 class VerseCardItem {
   final int surahNumber;
   final int ayahNumber;
+  final int? endAyahNumber;
   final String surahName;
   final String ayahText;
   final String theme;
   final int durationSeconds;
+  final List<String>? versesTextList;
 
   const VerseCardItem({
     required this.surahNumber,
     required this.ayahNumber,
+    this.endAyahNumber,
     required this.surahName,
     required this.ayahText,
     required this.theme,
     required this.durationSeconds,
+    this.versesTextList,
   });
+
+  /// True when this card represents a consecutive range of multiple ayahs.
+  bool get isRange => endAyahNumber != null && endAyahNumber! > ayahNumber;
+
+  /// The count of verses included in this card item.
+  int get versesCount => isRange ? (endAyahNumber! - ayahNumber + 1) : 1;
+
+  /// Retrieves the individual Ayah text for the given relative index (0-based).
+  String getAyahTextAt(int index) {
+    if (versesTextList != null && versesTextList!.isNotEmpty) {
+      final safeIndex = index.clamp(0, versesTextList!.length - 1);
+      return versesTextList![safeIndex];
+    }
+    return ayahText;
+  }
+
+  VerseCardItem copyWith({
+    int? surahNumber,
+    int? ayahNumber,
+    int? endAyahNumber,
+    String? surahName,
+    String? ayahText,
+    String? theme,
+    int? durationSeconds,
+    List<String>? versesTextList,
+  }) {
+    return VerseCardItem(
+      surahNumber: surahNumber ?? this.surahNumber,
+      ayahNumber: ayahNumber ?? this.ayahNumber,
+      endAyahNumber: endAyahNumber ?? this.endAyahNumber,
+      surahName: surahName ?? this.surahName,
+      ayahText: ayahText ?? this.ayahText,
+      theme: theme ?? this.theme,
+      durationSeconds: durationSeconds ?? this.durationSeconds,
+      versesTextList: versesTextList ?? this.versesTextList,
+    );
+  }
 
   /// Curated selection of inspiring, emotionally comforting Quranic verses
   /// calibrated with realistic recitation durations for video syncing.

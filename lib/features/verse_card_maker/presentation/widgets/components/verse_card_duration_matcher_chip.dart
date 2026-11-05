@@ -12,12 +12,14 @@ class VerseCardDurationMatcherChip extends StatelessWidget {
   final int videoDurationSeconds;
   final VerseCardItem currentVerse;
   final VoidCallback onAutoMatchVerse;
+  final VoidCallback? onPickAyahRange;
 
   const VerseCardDurationMatcherChip({
     super.key,
     required this.videoDurationSeconds,
     required this.currentVerse,
     required this.onAutoMatchVerse,
+    this.onPickAyahRange,
   });
 
   @override
@@ -104,30 +106,61 @@ class VerseCardDurationMatcherChip extends StatelessWidget {
                 ],
               ),
             ),
-            GestureDetector(
-              onTap: () {
-                HapticService.selectionClick();
-                onAutoMatchVerse();
-              },
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
-                decoration: BoxDecoration(
-                  color: colors.accentGold.withValues(alpha: 0.16),
-                  borderRadius: BorderRadius.circular(8.r),
-                  border: Border.all(
-                    color: colors.accentGold.withValues(alpha: 0.6),
-                    width: 0.8.r,
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (onPickAyahRange != null) ...[
+                  GestureDetector(
+                    onTap: () {
+                      HapticService.selectionClick();
+                      onPickAyahRange!();
+                    },
+                    child: Container(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 9.w, vertical: 5.h),
+                      decoration: BoxDecoration(
+                        color: colors.accentGold,
+                        borderRadius: BorderRadius.circular(8.r),
+                      ),
+                      child: Text(
+                        'اخْتِيَارُ الآيَاتِ',
+                        style: GoogleFonts.cairo(
+                          fontSize: 10.sp,
+                          fontWeight: FontWeight.w800,
+                          color: colors.background,
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 6.w),
+                ],
+                GestureDetector(
+                  onTap: () {
+                    HapticService.selectionClick();
+                    onAutoMatchVerse();
+                  },
+                  child: Container(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 8.w, vertical: 5.h),
+                    decoration: BoxDecoration(
+                      color: colors.accentGold.withValues(alpha: 0.16),
+                      borderRadius: BorderRadius.circular(8.r),
+                      border: Border.all(
+                        color: colors.accentGold.withValues(alpha: 0.6),
+                        width: 0.8.r,
+                      ),
+                    ),
+                    child: Text(
+                      'تَوْفِيقُ الآيَة',
+                      style: GoogleFonts.cairo(
+                        fontSize: 10.sp,
+                        fontWeight: FontWeight.w800,
+                        color: colors.accentGold,
+                      ),
+                    ),
                   ),
                 ),
-                child: Text(
-                  'تَوْفِيقُ الآيَة',
-                  style: GoogleFonts.cairo(
-                    fontSize: 10.sp,
-                    fontWeight: FontWeight.w800,
-                    color: colors.accentGold,
-                  ),
-                ),
-              ),
+              ],
             ),
           ],
         ),

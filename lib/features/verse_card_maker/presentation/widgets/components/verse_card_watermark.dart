@@ -4,8 +4,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sakina_app/core/theme/app_colors_scheme.dart';
 
-/// Luxury subtle branding watermark for exported cards in Sakina.
-/// Placed on the corner without drop shadows.
+/// Luxury subtle, light branding watermark for exported cards and video reels in Sakina.
+/// Designed borderless with soft shadow and delicate opacity for professional reel aesthetic.
 class VerseCardWatermark extends StatelessWidget {
   final Color? color;
 
@@ -17,18 +17,10 @@ class VerseCardWatermark extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final brandColor = color ?? colors.accentGold;
+    final brandColor = (color ?? colors.accentGold).withValues(alpha: 0.75);
 
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
-      decoration: BoxDecoration(
-        color: colors.background.withValues(alpha: 0.55),
-        borderRadius: BorderRadius.circular(10.r),
-        border: Border.all(
-          color: brandColor.withValues(alpha: 0.35),
-          width: 0.7.r,
-        ),
-      ),
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 2.h),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -39,12 +31,19 @@ class VerseCardWatermark extends StatelessWidget {
           ),
           SizedBox(width: 5.w),
           Text(
-            'تطبيق سَكِينَة',
+            'سَكِينَة',
             style: GoogleFonts.cairo(
               fontSize: 10.5.sp,
               fontWeight: FontWeight.w700,
               color: brandColor,
-              letterSpacing: 0.3,
+              letterSpacing: 0.4,
+              shadows: [
+                Shadow(
+                  color: Colors.black.withValues(alpha: 0.8),
+                  blurRadius: 6,
+                  offset: const Offset(0, 1),
+                ),
+              ],
             ),
           ),
         ],

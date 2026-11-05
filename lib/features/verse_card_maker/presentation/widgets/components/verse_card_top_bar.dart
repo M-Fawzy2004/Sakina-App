@@ -10,11 +10,13 @@ import 'package:sakina_app/core/utils/haptic_service.dart';
 class VerseCardTopBar extends StatelessWidget {
   final VoidCallback onBack;
   final VoidCallback? onRandomAyah;
+  final VoidCallback? onPickAyah;
 
   const VerseCardTopBar({
     super.key,
     required this.onBack,
     this.onRandomAyah,
+    this.onPickAyah,
   });
 
   @override
@@ -33,8 +35,8 @@ class VerseCardTopBar extends StatelessWidget {
               onBack();
             },
             child: Container(
-              width: 40.r,
-              height: 40.r,
+              width: 38.r,
+              height: 38.r,
               decoration: BoxDecoration(
                 color: colors.cardSurface,
                 shape: BoxShape.circle,
@@ -83,31 +85,64 @@ class VerseCardTopBar extends StatelessWidget {
             ),
           ),
 
-          // Side Balancing Action: Random Verse Picker
-          GestureDetector(
-            onTap: () {
-              HapticService.selectionClick();
-              onRandomAyah?.call();
-            },
-            child: Container(
-              width: 40.r,
-              height: 40.r,
-              decoration: BoxDecoration(
-                color: colors.cardSurface,
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: colors.borderHairline,
-                  width: 1.r,
+          // Side Balancing Actions: Ayah Picker & Random Verse
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (onPickAyah != null) ...[
+                GestureDetector(
+                  onTap: () {
+                    HapticService.selectionClick();
+                    onPickAyah!();
+                  },
+                  child: Container(
+                    width: 38.r,
+                    height: 38.r,
+                    decoration: BoxDecoration(
+                      color: colors.cardSurface,
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: colors.accentGold.withValues(alpha: 0.5),
+                        width: 1.r,
+                      ),
+                    ),
+                    child: Center(
+                      child: Icon(
+                        Iconsax.book_1,
+                        size: 17.r,
+                        color: colors.accentGold,
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(width: 8.w),
+              ],
+              GestureDetector(
+                onTap: () {
+                  HapticService.selectionClick();
+                  onRandomAyah?.call();
+                },
+                child: Container(
+                  width: 38.r,
+                  height: 38.r,
+                  decoration: BoxDecoration(
+                    color: colors.cardSurface,
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: colors.borderHairline,
+                      width: 1.r,
+                    ),
+                  ),
+                  child: Center(
+                    child: Icon(
+                      Iconsax.magic_star,
+                      size: 17.r,
+                      color: colors.accentGold,
+                    ),
+                  ),
                 ),
               ),
-              child: Center(
-                child: Icon(
-                  Iconsax.magic_star,
-                  size: 18.r,
-                  color: colors.accentGold,
-                ),
-              ),
-            ),
+            ],
           ),
         ],
       ),

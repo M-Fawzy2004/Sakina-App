@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:sakina_app/core/theme/app_colors_scheme.dart';
+import 'package:sakina_app/core/utils/app_top_snack_bar.dart';
 import 'package:sakina_app/core/utils/haptic_service.dart';
 import 'package:sakina_app/core/widgets/navigation/sakina_bottom_nav_bar.dart';
 
@@ -25,6 +27,32 @@ class MainScaffoldShell extends StatefulWidget {
 class _MainScaffoldShellState extends State<MainScaffoldShell> {
   bool _showScrollToTop = false;
   BuildContext? _activeScrollContext;
+  DateTime? _lastBackPressTime;
+
+  void _handlePopInvoked(bool didPop) {
+    if (didPop) return;
+
+    final now = DateTime.now();
+    if (_lastBackPressTime == null ||
+        now.difference(_lastBackPressTime!) > const Duration(seconds: 2)) {
+      _lastBackPressTime = now;
+      HapticService.selectionClick();
+      final colors = context.colors;
+      AppTopSnackBar.show(
+        context: context,
+        message: 'اضغط مرة أخرى للخروج من التطبيق',
+        icon: Iconsax.logout,
+        iconColor: colors.accentGold,
+        backgroundColor: colors.cardSurface,
+        borderColor: colors.accentGold.withValues(alpha: 0.35),
+        textColor: colors.textPrimary,
+        duration: const Duration(seconds: 2),
+      );
+    } else {
+      AppTopSnackBar.dismiss();
+      SystemNavigator.pop();
+    }
+  }
 
   bool _onScrollNotification(ScrollNotification notification) {
     // Only respond to vertical scrolling events
@@ -86,57 +114,61 @@ class _MainScaffoldShellState extends State<MainScaffoldShell> {
         ? (bottomPadding * 0.35 + 4.h)
         : 6.h;
 
-    return Scaffold(
-      backgroundColor: colors.background,
-      resizeToAvoidBottomInset: false,
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          // 1. Persistent State Branch View listening to scroll gestures
-          Positioned.fill(
-            child: NotificationListener<ScrollNotification>(
-              onNotification: _onScrollNotification,
-              child: widget.navigationShell,
-            ),
-          ),
-
-          // 2. Floating Luxury Scroll-to-Top Action Button (Mushaf long reader view only)
-          if (!isKeyboardOpen)
-            AnimatedPositioned(
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeInOutCubic,
-              right: 20.w,
-              bottom: bottomOffset + 76.h,
-              child: _ScrollToTopButton(
-                isVisible: _showScrollToTop,
-                onTap: _scrollToTop,
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) => _handlePopInvoked(didPop),
+      child: Scaffold(
+        backgroundColor: colors.background,
+        resizeToAvoidBottomInset: false,
+        body: Stack(
+          fit: StackFit.expand,
+          children: [
+            // 1. Persistent State Branch View listening to scroll gestures
+            Positioned.fill(
+              child: NotificationListener<ScrollNotification>(
+                onNotification: _onScrollNotification,
+                child: widget.navigationShell,
               ),
             ),
 
-          // 3. Persistent Floating Luxury Stadium Bottom Navigation Bar
-          if (!isKeyboardOpen)
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: bottomOffset,
-              child: SakinaBottomNavBar(
-                currentIndex: widget.navigationShell.currentIndex,
-                onItemSelected: (index) {
-                  if (_showScrollToTop) {
-                    setState(() {
-                      _showScrollToTop = false;
-                    });
-                  }
-                  _activeScrollContext = null;
-                  widget.navigationShell.goBranch(
-                    index,
-                    initialLocation:
-                        index == widget.navigationShell.currentIndex,
-                  );
-                },
+            // 2. Floating Luxury Scroll-to-Top Action Button (Mushaf long reader view only)
+            if (!isKeyboardOpen)
+              AnimatedPositioned(
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeInOutCubic,
+                right: 20.w,
+                bottom: bottomOffset + 76.h,
+                child: _ScrollToTopButton(
+                  isVisible: _showScrollToTop,
+                  onTap: _scrollToTop,
+                ),
               ),
-            ),
-        ],
+
+            // 3. Persistent Floating Luxury Stadium Bottom Navigation Bar
+            if (!isKeyboardOpen)
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: bottomOffset,
+                child: SakinaBottomNavBar(
+                  currentIndex: widget.navigationShell.currentIndex,
+                  onItemSelected: (index) {
+                    if (_showScrollToTop) {
+                      setState(() {
+                        _showScrollToTop = false;
+                      });
+                    }
+                    _activeScrollContext = null;
+                    widget.navigationShell.goBranch(
+                      index,
+                      initialLocation:
+                          index == widget.navigationShell.currentIndex,
+                    );
+                  },
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }
