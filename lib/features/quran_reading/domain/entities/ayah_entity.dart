@@ -40,8 +40,6 @@ class AyahEntity extends Equatable {
   /// Resolves the Ayah text based on the user's preferred Quranic calligraphy script.
   String textForStyle(QuranScriptStyle style) {
     switch (style) {
-      case QuranScriptStyle.imlaei:
-        return textImlaei ?? text;
       case QuranScriptStyle.indopak:
         return textIndoPak ?? textUthmani ?? text;
       case QuranScriptStyle.amiri:

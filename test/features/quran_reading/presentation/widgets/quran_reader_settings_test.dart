@@ -123,11 +123,11 @@ void main() {
       await tester.pumpAndSettle();
       expect(currentPrefs.style, equals(QuranReadingStyle.continuous));
 
-      // Tap script style card (الرسم الإملائي المرن)
-      expect(find.text('الرَّسْمُ الإِمْلائِيُّ المَرِن'), findsOneWidget);
-      await tester.tap(find.text('الرَّسْمُ الإِمْلائِيُّ المَرِن'));
+      // Tap script style card (خط النسخ القرآني)
+      expect(find.text('خَطُّ النَّسْخِ القُرْآنِيُّ'), findsOneWidget);
+      await tester.tap(find.text('خَطُّ النَّسْخِ القُرْآنِيُّ'));
       await tester.pumpAndSettle();
-      expect(currentPrefs.scriptStyle, equals(QuranScriptStyle.imlaei));
+      expect(currentPrefs.scriptStyle, equals(QuranScriptStyle.amiri));
 
       // Scroll down to reveal font size buttons
       await tester.drag(find.byType(ListView), const Offset(0, -250));

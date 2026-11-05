@@ -177,23 +177,36 @@ class ScriptStyleSection extends StatelessWidget {
           accentColor: accentColor,
         ),
         AppSpacing.verticalXs,
-        GridView.count(
-          crossAxisCount: 2,
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          mainAxisSpacing: 8.h,
-          crossAxisSpacing: 8.w,
-          childAspectRatio: 2.1,
-          children: QuranScriptStyle.values.map((style) {
-            final isSelected = style == selectedScriptStyle;
-            return _ScriptStyleCard(
-              style: style,
-              isSelected: isSelected,
-              accentColor: accentColor,
-              activeTheme: activeTheme,
-              onTap: () => onScriptStyleChanged(style),
-            );
-          }).toList(),
+        _ScriptStyleCard(
+          style: QuranScriptStyle.uthmani,
+          isSelected: selectedScriptStyle == QuranScriptStyle.uthmani,
+          accentColor: accentColor,
+          activeTheme: activeTheme,
+          onTap: () => onScriptStyleChanged(QuranScriptStyle.uthmani),
+        ),
+        SizedBox(height: 8.h),
+        Row(
+          children: [
+            Expanded(
+              child: _ScriptStyleCard(
+                style: QuranScriptStyle.amiri,
+                isSelected: selectedScriptStyle == QuranScriptStyle.amiri,
+                accentColor: accentColor,
+                activeTheme: activeTheme,
+                onTap: () => onScriptStyleChanged(QuranScriptStyle.amiri),
+              ),
+            ),
+            SizedBox(width: 8.w),
+            Expanded(
+              child: _ScriptStyleCard(
+                style: QuranScriptStyle.indopak,
+                isSelected: selectedScriptStyle == QuranScriptStyle.indopak,
+                accentColor: accentColor,
+                activeTheme: activeTheme,
+                onTap: () => onScriptStyleChanged(QuranScriptStyle.indopak),
+              ),
+            ),
+          ],
         ),
       ],
     );

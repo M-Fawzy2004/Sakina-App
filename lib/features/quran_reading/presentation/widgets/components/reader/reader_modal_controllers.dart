@@ -56,6 +56,7 @@ abstract final class ReaderModalControllers {
     required ValueChanged<QuranReaderPreferences> onPreferencesChanged,
   }) {
     HapticService.selectionClick();
+    QuranReaderPreferences activePrefs = preferences;
 
     showModalBottomSheet<void>(
       context: context,
@@ -65,9 +66,11 @@ abstract final class ReaderModalControllers {
       builder: (bottomSheetContext) => StatefulBuilder(
         builder: (modalContext, setModalState) {
           return QuranReaderSettingsSheet(
-            preferences: preferences,
+            preferences: activePrefs,
             onPreferencesChanged: (newPrefs) {
-              setModalState(() {});
+              setModalState(() {
+                activePrefs = newPrefs;
+              });
               onPreferencesChanged(newPrefs);
             },
           );

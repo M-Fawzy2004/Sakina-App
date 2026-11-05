@@ -308,9 +308,14 @@ class _QuranReaderViewState extends State<QuranReaderView> {
           ),
     );
 
-    final start = _currentPageIndex * _versesPerPage + 1;
-    final end = (start + currentVerses.length - 1).clamp(start, widget.verses.length);
-    final pageLabel = _totalPages > 1
+    final totalVerses = widget.verses.length;
+    final start = totalVerses > 0
+        ? (_currentPageIndex * _versesPerPage + 1).clamp(1, totalVerses)
+        : 1;
+    final end = totalVerses > 0
+        ? (start + currentVerses.length - 1).clamp(start, totalVerses)
+        : 1;
+    final pageLabel = (_totalPages > 1 && totalVerses > 0)
         ? 'الآيَاتُ $start - $end • ص ${_currentPageIndex + 1}/$_totalPages'
         : 'سُورَةُ ${widget.surah.nameArabic} • ص ${widget.surah.pageNumber} • جزء ${widget.surah.juzNumber}';
 

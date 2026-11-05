@@ -92,11 +92,13 @@ class ReaderPageCarousel extends StatelessWidget {
         itemBuilder: (context, pageIndex) {
           final pageVerses = getVersesForPage(pageIndex);
           final isFirstPage = pageIndex == 0;
-          final startVerseNum = pageIndex * versesPerPage + 1;
-          final endVerseNum = (startVerseNum + pageVerses.length - 1).clamp(
-            startVerseNum,
-            verses.length,
-          );
+          final totalVerses = verses.length;
+          final startVerseNum = totalVerses > 0
+              ? (pageIndex * versesPerPage + 1).clamp(1, totalVerses)
+              : 1;
+          final endVerseNum = totalVerses > 0
+              ? (startVerseNum + pageVerses.length - 1).clamp(startVerseNum, totalVerses)
+              : 1;
 
           final currentSurahIdx = allSurahs.indexWhere(
             (s) => s.id == surah.id,

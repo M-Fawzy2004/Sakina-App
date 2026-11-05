@@ -83,6 +83,12 @@ class _SurahReaderScreenState extends State<SurahReaderScreen> {
           final activeSurah = state.activeReadingSurah ?? widget.surah;
           final verses = state.activeVerses;
 
+          if (verses.isEmpty ||
+              (state.activeReadingSurah != null &&
+                  state.activeReadingSurah!.id != widget.surah.id)) {
+            return const QuranShimmer();
+          }
+
           return QuranReaderView(
             surah: activeSurah,
             verses: verses,

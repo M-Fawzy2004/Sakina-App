@@ -35,7 +35,7 @@ void main() {
       when(() => mockPrefs.getString(QuranReaderPreferencesStorage.keyStyle))
           .thenReturn('verseByVerse');
       when(() => mockPrefs.getString(QuranReaderPreferencesStorage.keyScriptStyle))
-          .thenReturn('imlaei');
+          .thenReturn('amiri');
       when(() => mockPrefs.getString(QuranReaderPreferencesStorage.keyFontSize))
           .thenReturn('large');
       when(() => mockPrefs.getString(QuranReaderPreferencesStorage.keyTheme))
@@ -52,7 +52,7 @@ void main() {
       final prefs = QuranReaderPreferencesStorage.load(mockPrefs);
 
       expect(prefs.style, QuranReadingStyle.verseByVerse);
-      expect(prefs.scriptStyle, QuranScriptStyle.imlaei);
+      expect(prefs.scriptStyle, QuranScriptStyle.amiri);
       expect(prefs.fontSize, QuranFontSize.large);
       expect(prefs.theme, QuranReaderTheme.emerald);
       expect(prefs.lineSpacing, QuranLineSpacing.spacious);

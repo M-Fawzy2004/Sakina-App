@@ -32,23 +32,17 @@ enum QuranScriptStyle {
     badgeText: 'مُعْتَمَد',
     fontFamily: 'Amiri',
   ),
-  imlaei(
-    title: 'الرَّسْمُ الإِمْلائِيُّ المَرِن',
-    description: 'خَطٌّ قِيَاسِيٌّ مُبَسَّطٌ لِلتَّيْسِيرِ وَسُرْعَةِ التَّدَبُّرِ',
-    badgeText: 'مُيَسَّر',
-    fontFamily: 'Cairo',
-  ),
   amiri(
-    title: 'الخَطُّ الأَمِيرِيُّ القُرْآنِيُّ',
-    description: 'طِبَاعَةٌ كِلاسِيكِيَّةٌ فَاخِرَةٌ تَنْبِضُ بِأَصَالَةِ النَّسْخِ',
-    badgeText: 'كِلاسِيكِي',
-    fontFamily: 'Amiri',
+    title: 'خَطُّ النَّسْخِ القُرْآنِيُّ',
+    description: 'طِبَاعَةٌ وَاضِحَةٌ كِلاسِيكِيَّةٌ لِرَاحَةِ القِرَاءَةِ',
+    badgeText: 'نَسْخ',
+    fontFamily: 'Noto Naskh Arabic',
   ),
   indopak(
-    title: 'الرَّسْمُ النَّسْتَعْلِيق / المَشْرِقِيُّ',
+    title: 'الرَّسْمُ المَشْرِقِيُّ (النَّسْتَعْلِيق)',
     description: 'رَسْمُ المَصَاحِفِ التَّقْلِيدِيِّ بِبِلادِ المَشْرِقِ وَآسِيَا',
     badgeText: 'مَشْرِقِي',
-    fontFamily: 'Amiri',
+    fontFamily: 'Scheherazade New',
   );
 
   final String title;

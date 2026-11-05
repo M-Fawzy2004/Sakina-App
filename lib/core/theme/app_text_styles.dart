@@ -16,15 +16,18 @@ abstract final class AppTextStyles {
   /// Resolves the sacred scripture font family and baseline style based on selected [QuranScriptStyle].
   static TextStyle quranScriptStyleOf(QuranScriptStyle style) {
     switch (style) {
-      case QuranScriptStyle.imlaei:
-        return GoogleFonts.cairo(
-          fontWeight: FontWeight.w700,
-          letterSpacing: 0.2,
-        );
-      case QuranScriptStyle.amiri:
-      case QuranScriptStyle.indopak:
       case QuranScriptStyle.uthmani:
         return GoogleFonts.amiri(
+          fontWeight: FontWeight.w700,
+          letterSpacing: 0.3,
+        );
+      case QuranScriptStyle.amiri:
+        return GoogleFonts.notoNaskhArabic(
+          fontWeight: FontWeight.w700,
+          letterSpacing: 0.3,
+        );
+      case QuranScriptStyle.indopak:
+        return GoogleFonts.scheherazadeNew(
           fontWeight: FontWeight.w700,
           letterSpacing: 0.3,
         );
