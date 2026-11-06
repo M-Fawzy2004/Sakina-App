@@ -11,6 +11,7 @@ class InabaPlanStepTile extends StatelessWidget {
   final RecoveryPlanDayStepEntity step;
   final bool isLocked;
   final bool isCurrentDay;
+  final bool isLockedUntilTomorrow;
   final VoidCallback onToggle;
 
   const InabaPlanStepTile({
@@ -18,6 +19,7 @@ class InabaPlanStepTile extends StatelessWidget {
     required this.step,
     required this.isLocked,
     required this.isCurrentDay,
+    this.isLockedUntilTomorrow = false,
     required this.onToggle,
   });
 
@@ -65,6 +67,7 @@ class InabaPlanStepTile extends StatelessWidget {
                     isCompleted: step.isCompleted,
                     isLocked: isLocked,
                     isCurrentDay: isCurrentDay,
+                    isLockedUntilTomorrow: isLockedUntilTomorrow,
                   ),
                 ),
               ],
@@ -143,12 +146,14 @@ class _StepTitleRow extends StatelessWidget {
   final bool isCompleted;
   final bool isLocked;
   final bool isCurrentDay;
+  final bool isLockedUntilTomorrow;
 
   const _StepTitleRow({
     required this.title,
     required this.isCompleted,
     required this.isLocked,
     required this.isCurrentDay,
+    this.isLockedUntilTomorrow = false,
   });
 
   @override
@@ -184,6 +189,37 @@ class _StepTitleRow extends StatelessWidget {
                 fontWeight: FontWeight.bold,
                 color: colors.accentGold,
               ),
+            ),
+          )
+        else if (isLockedUntilTomorrow)
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
+            decoration: BoxDecoration(
+              color: colors.accentGold.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(6.r),
+              border: Border.all(
+                color: colors.accentGold.withValues(alpha: 0.3),
+                width: 0.6.r,
+              ),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Iconsax.clock,
+                  size: 10.r,
+                  color: colors.accentGold,
+                ),
+                SizedBox(width: 4.w),
+                Text(
+                  'يُفتح غداً',
+                  style: GoogleFonts.almarai(
+                    fontSize: 10.sp,
+                    fontWeight: FontWeight.bold,
+                    color: colors.accentGold,
+                  ),
+                ),
+              ],
             ),
           )
         else if (isLocked)

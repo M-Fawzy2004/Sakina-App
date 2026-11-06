@@ -176,6 +176,32 @@ class InabaCubit extends Cubit<InabaState> {
   void lockConfessionSanctuary() => emit(state.copyWith(isConfessionUnlocked: false));
 
   // --- Recovery Plans Management ---
+  Future<void> completePlanStep(String planId, int dayNumber) async {
+    if (recoveryPlansLocalDataSource == null) return;
+    try {
+      final updatedPlan = await recoveryPlansLocalDataSource!.completePlanDayStep(
+        planId: planId,
+        dayNumber: dayNumber,
+        completedAt: DateTime.now(),
+      );
+      final updatedPlans = state.recoveryPlans.map((p) => p.id == planId ? updatedPlan : p).toList();
+
+      InabaOverviewEntity? updatedOverview = state.overview;
+      if (state.overview != null && state.overview!.currentActiveDay == dayNumber) {
+        final advRes = await advanceActiveDayUseCase(const NoParams());
+        advRes.fold((_) {}, (ov) => updatedOverview = ov);
+      }
+
+      emit(state.copyWith(
+        recoveryPlans: updatedPlans,
+        overview: updatedOverview,
+        toastFeedback: 'هنيئاً لك إتمام مهام اليوم $dayNumber! ستُفتح مهام اليوم التالي غداً بإذن الله',
+      ));
+    } catch (e) {
+      emit(state.copyWith(errorMessage: e.toString()));
+    }
+  }
+
   Future<void> togglePlanStep(String planId, int dayNumber) async {
     if (recoveryPlansLocalDataSource == null) return;
     try {
@@ -195,7 +221,9 @@ class InabaCubit extends Cubit<InabaState> {
       emit(state.copyWith(
         recoveryPlans: updatedPlans,
         overview: updatedOverview,
-        toastFeedback: step.isCompleted ? 'تم إنجاز خطوة اليوم بنجاح، ثبّتك الله' : 'تم تعديل حالة الخطوة',
+        toastFeedback: step.isCompleted
+            ? 'تم إنجاز مهام اليوم $dayNumber بنجاح! ستُفتح مهام الغد في موعدها'
+            : 'تم تعديل حالة الخطوة',
       ));
     } catch (e) {
       emit(state.copyWith(errorMessage: e.toString()));

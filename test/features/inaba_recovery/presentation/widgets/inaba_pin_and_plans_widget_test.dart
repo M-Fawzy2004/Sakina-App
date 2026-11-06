@@ -10,6 +10,7 @@ import 'package:sakina_app/features/inaba_recovery/presentation/widgets/componen
 import 'package:sakina_app/features/inaba_recovery/data/datasources/static/inaba_recovery_plans_seed_data.dart';
 import 'package:sakina_app/features/inaba_recovery/presentation/widgets/components/inaba_active_daily_step_card.dart';
 import 'package:sakina_app/features/inaba_recovery/presentation/widgets/components/inaba_covenant_activation_card.dart';
+import 'package:sakina_app/features/inaba_recovery/presentation/widgets/components/mihrab_numeric_keypad.dart';
 
 class MockInabaCubit extends Mock implements InabaCubit {}
 
@@ -168,6 +169,64 @@ void main() {
 
       await tester.tap(find.text('الخطة كاملة'));
       expect(viewed, isTrue);
+    });
+
+    testWidgets('MihrabNumericKeypad renders digits strictly in LTR order (1 left, 3 right)',
+        (tester) async {
+      await tester.pumpWidget(
+        createTestWidget(
+          Directionality(
+            textDirection: TextDirection.rtl,
+            child: MihrabNumericKeypad(
+              currentPin: '',
+              onDigitPressed: (_) {},
+              onBackspacePressed: () {},
+              onClearPressed: () {},
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final pos1 = tester.getTopLeft(find.text('1')).dx;
+      final pos2 = tester.getTopLeft(find.text('2')).dx;
+      final pos3 = tester.getTopLeft(find.text('3')).dx;
+
+      expect(pos1 < pos2, isTrue, reason: 'Digit 1 must be to the left of 2');
+      expect(pos2 < pos3, isTrue, reason: 'Digit 2 must be to the left of 3');
+    });
+
+    testWidgets('InabaActiveDailyStepCard displays tomorrow lock banner when completed today',
+        (tester) async {
+      final now = DateTime.now();
+      final stepCompletedToday = InabaRecoveryPlansSeedData.defaultPlans.first.steps.first.copyWith(
+        isCompleted: true,
+        completedAt: now,
+      );
+      final plan = InabaRecoveryPlansSeedData.defaultPlans.first.copyWith(
+        steps: [
+          stepCompletedToday,
+          ...InabaRecoveryPlansSeedData.defaultPlans.first.steps.skip(1),
+        ],
+      );
+
+      await tester.pumpWidget(
+        createTestWidget(
+          InabaActiveDailyStepCard(
+            currentDay: 1,
+            plan: plan,
+            onCompleteStep: () {},
+            onViewFullPlan: () {},
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text('أتممت مهام اليوم بحمد الله • تُفتح مهام اليوم التالي غداً بإذن الله'),
+        findsOneWidget,
+      );
+      expect(find.text('أتممت مهمة اليوم بحمد الله'), findsOneWidget);
     });
   });
 }

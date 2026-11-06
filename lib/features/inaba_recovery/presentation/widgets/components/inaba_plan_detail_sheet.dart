@@ -9,6 +9,7 @@ import 'package:sakina_app/core/utils/app_top_snack_bar.dart';
 import 'package:sakina_app/features/inaba_recovery/domain/entities/spiritual_recovery_plan_entity.dart';
 import 'package:sakina_app/features/inaba_recovery/presentation/cubit/inaba_cubit.dart';
 import 'package:sakina_app/features/inaba_recovery/presentation/cubit/inaba_state.dart';
+import 'package:sakina_app/features/inaba_recovery/presentation/widgets/components/inaba_daily_tasks_sheet.dart';
 import 'package:sakina_app/features/inaba_recovery/presentation/widgets/components/inaba_plan_step_tile.dart';
 
 /// Interactive detail sheet allowing worshippers to follow recovery day by day with reactive updates.
@@ -60,7 +61,6 @@ class InabaPlanDetailSheet extends StatelessWidget {
                   steps: [],
                 ),
         );
-        final currentActiveDay = state.overview?.currentActiveDay ?? 1;
 
         return Directionality(
           textDirection: TextDirection.rtl,
@@ -128,24 +128,44 @@ class InabaPlanDetailSheet extends StatelessWidget {
                     separatorBuilder: (_, _) => SizedBox(height: 10.h),
                     itemBuilder: (context, index) {
                       final step = plan.steps[index];
-                      final isLocked = step.dayNumber > currentActiveDay;
-                      final isCurrent = step.dayNumber == currentActiveDay;
+                      final isUnlocked = plan.isStepUnlocked(step.dayNumber);
+                      final isLockedUntilTomorrow =
+                          plan.isStepLockedUntilTomorrow(step.dayNumber);
+                      final isLocked = !isUnlocked;
+                      final isCurrent =
+                          step.dayNumber == plan.activeOrTodayStep.dayNumber;
 
                       return InabaPlanStepTile(
                         step: step,
                         isLocked: isLocked,
                         isCurrentDay: isCurrent,
+                        isLockedUntilTomorrow: isLockedUntilTomorrow,
                         onToggle: () {
+                          if (isLockedUntilTomorrow) {
+                            HapticFeedback.lightImpact();
+                            AppTopSnackBar.show(
+                              context: context,
+                              message:
+                                  'أتممت مهام اليوم بفضل الله؛ خطوات العزم مبنية يوماً بيوم.. ستُفتح مهام اليوم ${step.dayNumber} غداً بإذن الله',
+                            );
+                            return;
+                          }
                           if (isLocked) {
                             HapticFeedback.lightImpact();
                             AppTopSnackBar.show(
                               context: context,
-                              message: 'هذا اليوم مغلق؛ أتمم خطوات الأيام السابقة أولاً للتقدم',
+                              message:
+                                  'هذا اليوم مغلق؛ أتمم خطوات الأيام السابقة أولاً للتقدم',
                             );
                             return;
                           }
                           HapticFeedback.lightImpact();
-                          context.read<InabaCubit>().togglePlanStep(plan.id, step.dayNumber);
+                          InabaDailyTasksSheet.show(
+                            context,
+                            planId: plan.id,
+                            dayNumber: step.dayNumber,
+                            cubit: context.read<InabaCubit>(),
+                          );
                         },
                       );
                     },

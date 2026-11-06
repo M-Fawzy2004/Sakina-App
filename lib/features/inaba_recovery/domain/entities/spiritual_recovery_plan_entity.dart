@@ -9,6 +9,7 @@ class RecoveryPlanDayStepEntity {
   final String recommendedDhikr;
   final String scripturalEvidence;
   final bool isCompleted;
+  final DateTime? completedAt;
 
   const RecoveryPlanDayStepEntity({
     required this.dayNumber,
@@ -17,7 +18,16 @@ class RecoveryPlanDayStepEntity {
     required this.recommendedDhikr,
     required this.scripturalEvidence,
     this.isCompleted = false,
+    this.completedAt,
   });
+
+  bool get isCompletedToday {
+    if (!isCompleted || completedAt == null) return false;
+    final now = DateTime.now();
+    return now.year == completedAt!.year &&
+        now.month == completedAt!.month &&
+        now.day == completedAt!.day;
+  }
 
   RecoveryPlanDayStepEntity copyWith({
     int? dayNumber,
@@ -26,6 +36,7 @@ class RecoveryPlanDayStepEntity {
     String? recommendedDhikr,
     String? scripturalEvidence,
     bool? isCompleted,
+    DateTime? completedAt,
   }) {
     return RecoveryPlanDayStepEntity(
       dayNumber: dayNumber ?? this.dayNumber,
@@ -34,6 +45,7 @@ class RecoveryPlanDayStepEntity {
       recommendedDhikr: recommendedDhikr ?? this.recommendedDhikr,
       scripturalEvidence: scripturalEvidence ?? this.scripturalEvidence,
       isCompleted: isCompleted ?? this.isCompleted,
+      completedAt: completedAt ?? this.completedAt,
     );
   }
 
@@ -44,6 +56,7 @@ class RecoveryPlanDayStepEntity {
         'recommendedDhikr': recommendedDhikr,
         'scripturalEvidence': scripturalEvidence,
         'isCompleted': isCompleted,
+        'completedAt': completedAt?.toIso8601String(),
       };
 
   factory RecoveryPlanDayStepEntity.fromJson(Map<String, dynamic> json) {
@@ -54,6 +67,9 @@ class RecoveryPlanDayStepEntity {
       recommendedDhikr: json['recommendedDhikr'] as String? ?? '',
       scripturalEvidence: json['scripturalEvidence'] as String? ?? '',
       isCompleted: json['isCompleted'] as bool? ?? false,
+      completedAt: json['completedAt'] != null
+          ? DateTime.tryParse(json['completedAt'] as String)
+          : null,
     );
   }
 }
@@ -87,6 +103,64 @@ class SpiritualRecoveryPlanEntity {
 
   bool get isFullyCompleted =>
       steps.isNotEmpty && completedStepsCount == steps.length;
+
+  /// Checks whether a specific day's milestone is unlocked.
+  /// Day 1 is always unlocked.
+  /// Day N is unlocked ONLY IF day N-1 is completed AND day N-1 was NOT completed on the current calendar day
+  /// (enforcing the strict spiritual rule of completing at most one step per calendar day).
+  bool isStepUnlocked(int dayNumber, {DateTime? now}) {
+    if (dayNumber <= 1) return true;
+    final prevIndex = steps.indexWhere((s) => s.dayNumber == dayNumber - 1);
+    if (prevIndex == -1) return false;
+    final prevStep = steps[prevIndex];
+    if (!prevStep.isCompleted) return false;
+    final completedAt = prevStep.completedAt;
+    if (completedAt == null) return true;
+    final current = now ?? DateTime.now();
+    final isSameDay = current.year == completedAt.year &&
+        current.month == completedAt.month &&
+        current.day == completedAt.day;
+    return !isSameDay && current.isAfter(completedAt);
+  }
+
+  /// Checks if step N is specifically locked until tomorrow because step N-1 was completed today.
+  bool isStepLockedUntilTomorrow(int dayNumber, {DateTime? now}) {
+    if (dayNumber <= 1) return false;
+    final prevIndex = steps.indexWhere((s) => s.dayNumber == dayNumber - 1);
+    if (prevIndex == -1) return false;
+    final prevStep = steps[prevIndex];
+    if (!prevStep.isCompleted) return false;
+    final completedAt = prevStep.completedAt;
+    if (completedAt == null) return false;
+    final current = now ?? DateTime.now();
+    return current.year == completedAt.year &&
+        current.month == completedAt.month &&
+        current.day == completedAt.day;
+  }
+
+  /// The step that is either completed today or the next active incomplete step.
+  RecoveryPlanDayStepEntity get activeOrTodayStep {
+    if (steps.isEmpty) {
+      return const RecoveryPlanDayStepEntity(
+        dayNumber: 1,
+        title: '',
+        practicalAction: '',
+        recommendedDhikr: '',
+        scripturalEvidence: '',
+      );
+    }
+    final todayCompleted = steps.where((s) => s.isCompletedToday).toList();
+    if (todayCompleted.isNotEmpty) {
+      return todayCompleted.last;
+    }
+    final nextIncomplete = steps.where((s) => !s.isCompleted).toList();
+    if (nextIncomplete.isNotEmpty) {
+      return nextIncomplete.first;
+    }
+    return steps.last;
+  }
+
+  bool get hasStepCompletedToday => steps.any((s) => s.isCompletedToday);
 
   SpiritualRecoveryPlanEntity copyWith({
     String? id,

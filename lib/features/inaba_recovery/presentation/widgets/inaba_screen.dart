@@ -11,6 +11,7 @@ import 'package:sakina_app/features/inaba_recovery/presentation/widgets/componen
 import 'package:sakina_app/features/inaba_recovery/presentation/widgets/components/inaba_covenant_activation_card.dart';
 import 'package:sakina_app/features/inaba_recovery/presentation/widgets/components/inaba_covenant_renewal_sheet.dart';
 import 'package:sakina_app/features/inaba_recovery/presentation/widgets/components/inaba_daily_hope_sheet.dart';
+import 'package:sakina_app/features/inaba_recovery/presentation/widgets/components/inaba_daily_tasks_sheet.dart';
 import 'package:sakina_app/features/inaba_recovery/presentation/widgets/components/inaba_emergency_haven_card.dart';
 import 'package:sakina_app/features/inaba_recovery/presentation/widgets/components/inaba_emergency_rescue_sheet.dart';
 import 'package:sakina_app/features/inaba_recovery/presentation/widgets/components/inaba_good_deeds_sheet.dart';
@@ -244,11 +245,25 @@ class _InabaJourneySection extends StatelessWidget {
                   InabaActiveDailyStepCard(
                     currentDay: overview.currentActiveDay,
                     plan: state.recoveryPlans.first,
+                    onOpenTasks: () {
+                      final activeStep =
+                          state.recoveryPlans.first.activeOrTodayStep;
+                      InabaDailyTasksSheet.show(
+                        context,
+                        planId: state.recoveryPlans.first.id,
+                        dayNumber: activeStep.dayNumber,
+                        cubit: context.read<InabaCubit>(),
+                      );
+                    },
                     onCompleteStep: () {
-                      context.read<InabaCubit>().togglePlanStep(
-                            state.recoveryPlans.first.id,
-                            overview.currentActiveDay,
-                          );
+                      final activeStep =
+                          state.recoveryPlans.first.activeOrTodayStep;
+                      InabaDailyTasksSheet.show(
+                        context,
+                        planId: state.recoveryPlans.first.id,
+                        dayNumber: activeStep.dayNumber,
+                        cubit: context.read<InabaCubit>(),
+                      );
                     },
                     onViewFullPlan: () {
                       InabaPlanDetailSheet.show(

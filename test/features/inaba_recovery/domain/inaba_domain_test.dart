@@ -4,6 +4,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:sakina_app/core/errors/failures.dart';
 import 'package:sakina_app/core/usecases/usecase.dart';
 import 'package:sakina_app/features/inaba_recovery/domain/entities/inaba_overview_entity.dart';
+import 'package:sakina_app/features/inaba_recovery/domain/entities/spiritual_recovery_plan_entity.dart';
 import 'package:sakina_app/features/inaba_recovery/domain/repositories/inaba_repository.dart';
 import 'package:sakina_app/features/inaba_recovery/domain/usecases/activate_recovery_path_usecase.dart';
 import 'package:sakina_app/features/inaba_recovery/domain/usecases/advance_active_day_usecase.dart';
@@ -111,6 +112,47 @@ void main() {
 
       expect(result, Right(advancedOverview));
       verify(() => mockRepository.advanceActiveDay()).called(1);
+    });
+
+    test('SpiritualRecoveryPlanEntity strictly enforces 1 day completion per calendar day', () {
+      final now = DateTime(2026, 11, 6, 12, 0);
+      final step1CompletedToday = RecoveryPlanDayStepEntity(
+        dayNumber: 1,
+        title: 'Step 1',
+        practicalAction: 'Action 1',
+        recommendedDhikr: 'Dhikr 1',
+        scripturalEvidence: 'Evidence 1',
+        isCompleted: true,
+        completedAt: now,
+      );
+      const step2 = RecoveryPlanDayStepEntity(
+        dayNumber: 2,
+        title: 'Step 2',
+        practicalAction: 'Action 2',
+        recommendedDhikr: 'Dhikr 2',
+        scripturalEvidence: 'Evidence 2',
+        isCompleted: false,
+      );
+
+      final plan = SpiritualRecoveryPlanEntity(
+        id: 'plan_7_days',
+        title: 'Plan',
+        badge: 'Badge',
+        durationText: '7 days',
+        description: 'Desc',
+        iconKey: 'sun',
+        steps: [step1CompletedToday, step2],
+      );
+
+      // On the same day: step 1 is completed today, step 2 is locked until tomorrow
+      expect(step1CompletedToday.isCompletedToday, isTrue);
+      expect(plan.isStepUnlocked(2, now: now), isFalse);
+      expect(plan.isStepLockedUntilTomorrow(2, now: now), isTrue);
+
+      // On the next calendar day (tomorrow): step 2 unlocks!
+      final tomorrow = DateTime(2026, 11, 7, 9, 0);
+      expect(plan.isStepUnlocked(2, now: tomorrow), isTrue);
+      expect(plan.isStepLockedUntilTomorrow(2, now: tomorrow), isFalse);
     });
   });
 }

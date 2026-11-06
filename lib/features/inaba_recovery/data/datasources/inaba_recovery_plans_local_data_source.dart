@@ -10,6 +10,11 @@ abstract interface class InabaRecoveryPlansLocalDataSource {
     required String planId,
     required int dayNumber,
   });
+  Future<SpiritualRecoveryPlanEntity> completePlanDayStep({
+    required String planId,
+    required int dayNumber,
+    DateTime? completedAt,
+  });
   Future<void> resetPlan(String planId);
 }
 
@@ -59,7 +64,40 @@ class InabaRecoveryPlansLocalDataSourceImpl
     final currentPlan = plans[planIndex];
     final updatedSteps = currentPlan.steps.map((s) {
       if (s.dayNumber == dayNumber) {
-        return s.copyWith(isCompleted: !s.isCompleted);
+        final willBeCompleted = !s.isCompleted;
+        return s.copyWith(
+          isCompleted: willBeCompleted,
+          completedAt: willBeCompleted ? DateTime.now() : null,
+        );
+      }
+      return s;
+    }).toList();
+
+    final updatedPlan = currentPlan.copyWith(steps: updatedSteps);
+    plans[planIndex] = updatedPlan;
+    await _savePlans(plans);
+    return updatedPlan;
+  }
+
+  @override
+  Future<SpiritualRecoveryPlanEntity> completePlanDayStep({
+    required String planId,
+    required int dayNumber,
+    DateTime? completedAt,
+  }) async {
+    final plans = await getRecoveryPlans();
+    final planIndex = plans.indexWhere((p) => p.id == planId);
+    if (planIndex == -1) {
+      throw Exception('Plan not found: $planId');
+    }
+
+    final currentPlan = plans[planIndex];
+    final updatedSteps = currentPlan.steps.map((s) {
+      if (s.dayNumber == dayNumber) {
+        return s.copyWith(
+          isCompleted: true,
+          completedAt: completedAt ?? DateTime.now(),
+        );
       }
       return s;
     }).toList();
@@ -77,7 +115,7 @@ class InabaRecoveryPlansLocalDataSourceImpl
     if (planIndex != -1) {
       final currentPlan = plans[planIndex];
       final resetSteps = currentPlan.steps
-          .map((s) => s.copyWith(isCompleted: false))
+          .map((s) => s.copyWith(isCompleted: false, completedAt: null))
           .toList();
       plans[planIndex] = currentPlan.copyWith(steps: resetSteps);
       await _savePlans(plans);

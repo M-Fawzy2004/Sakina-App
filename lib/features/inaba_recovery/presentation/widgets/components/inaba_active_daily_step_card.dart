@@ -12,6 +12,7 @@ class InabaActiveDailyStepCard extends StatelessWidget {
   final SpiritualRecoveryPlanEntity plan;
   final VoidCallback onCompleteStep;
   final VoidCallback onViewFullPlan;
+  final VoidCallback? onOpenTasks;
 
   const InabaActiveDailyStepCard({
     super.key,
@@ -19,6 +20,7 @@ class InabaActiveDailyStepCard extends StatelessWidget {
     required this.plan,
     required this.onCompleteStep,
     required this.onViewFullPlan,
+    this.onOpenTasks,
   });
 
   @override
@@ -26,9 +28,10 @@ class InabaActiveDailyStepCard extends StatelessWidget {
     final colors = context.colors;
     final step = plan.steps.firstWhere(
       (s) => s.dayNumber == currentDay,
-      orElse: () => plan.steps.last,
+      orElse: () => plan.activeOrTodayStep,
     );
     final isDone = step.isCompleted;
+    final isCompletedToday = step.isCompletedToday;
 
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 6.h),
@@ -49,7 +52,7 @@ class InabaActiveDailyStepCard extends StatelessWidget {
           children: [
             // Top Badge & Navigation
             _StepHeaderRow(
-              currentDay: currentDay,
+              currentDay: step.dayNumber,
               totalDays: plan.steps.length,
               isDone: isDone,
               onViewFullPlan: onViewFullPlan,
@@ -73,14 +76,54 @@ class InabaActiveDailyStepCard extends StatelessWidget {
 
             // Dhikr of the day
             _DhikrBox(dhikrText: step.recommendedDhikr),
-            SizedBox(height: 14.h),
+            SizedBox(height: 12.h),
+
+            // Tomorrow lock banner if completed today
+            if (isCompletedToday) ...[
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+                decoration: BoxDecoration(
+                  color: colors.accentEmerald.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(10.r),
+                  border: Border.all(
+                    color: colors.accentEmerald.withValues(alpha: 0.35),
+                    width: 0.8.r,
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Iconsax.clock,
+                      size: 16.r,
+                      color: colors.accentEmerald,
+                    ),
+                    SizedBox(width: 8.w),
+                    Expanded(
+                      child: Text(
+                        'أتممت مهام اليوم بحمد الله • تُفتح مهام اليوم التالي غداً بإذن الله',
+                        style: GoogleFonts.almarai(
+                          fontSize: 11.sp,
+                          fontWeight: FontWeight.bold,
+                          color: colors.accentEmerald,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: 10.h),
+            ],
 
             // Action / Complete Button
             _CompletionButton(
               isDone: isDone,
               onPressed: () {
                 HapticFeedback.lightImpact();
-                onCompleteStep();
+                if (onOpenTasks != null) {
+                  onOpenTasks!();
+                } else {
+                  onCompleteStep();
+                }
               },
             ),
           ],
@@ -110,57 +153,64 @@ class _StepHeaderRow extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Row(
-          children: [
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
-              decoration: BoxDecoration(
-                color: colors.accentGold.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(8.r),
-                border: Border.all(
-                  color: colors.accentGold.withValues(alpha: 0.25),
-                  width: 0.8.r,
-                ),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Iconsax.calendar_tick,
-                    size: 14.r,
-                    color: colors.accentGold,
+        Expanded(
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                decoration: BoxDecoration(
+                  color: colors.accentGold.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(8.r),
+                  border: Border.all(
+                    color: colors.accentGold.withValues(alpha: 0.25),
+                    width: 0.8.r,
                   ),
-                  SizedBox(width: 5.w),
-                  Text(
-                    'اليوم $currentDay من $totalDays',
-                    style: GoogleFonts.almarai(
-                      fontSize: 11.sp,
-                      fontWeight: FontWeight.bold,
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Iconsax.calendar_tick,
+                      size: 14.r,
                       color: colors.accentGold,
                     ),
-                  ),
-                ],
-              ),
-            ),
-            if (isDone) ...[
-              SizedBox(width: 6.w),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 3.h),
-                decoration: BoxDecoration(
-                  color: colors.accentEmerald.withValues(alpha: 0.14),
-                  borderRadius: BorderRadius.circular(6.r),
-                ),
-                child: Text(
-                  'مكتمل بنجاح ✓',
-                  style: GoogleFonts.almarai(
-                    fontSize: 10.sp,
-                    fontWeight: FontWeight.bold,
-                    color: colors.accentEmerald,
-                  ),
+                    SizedBox(width: 5.w),
+                    Text(
+                      'اليوم $currentDay من $totalDays',
+                      style: GoogleFonts.almarai(
+                        fontSize: 11.sp,
+                        fontWeight: FontWeight.bold,
+                        color: colors.accentGold,
+                      ),
+                    ),
+                  ],
                 ),
               ),
+              if (isDone) ...[
+                SizedBox(width: 6.w),
+                Flexible(
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 3.h),
+                    decoration: BoxDecoration(
+                      color: colors.accentEmerald.withValues(alpha: 0.14),
+                      borderRadius: BorderRadius.circular(6.r),
+                    ),
+                    child: Text(
+                      'مكتمل بنجاح',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.almarai(
+                        fontSize: 10.sp,
+                        fontWeight: FontWeight.bold,
+                        color: colors.accentEmerald,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ],
-          ],
+          ),
         ),
         InkWell(
           onTap: onViewFullPlan,
@@ -337,11 +387,15 @@ class _CompletionButton extends StatelessWidget {
               size: 16.r,
             ),
             SizedBox(width: 8.w),
-            Text(
-              isDone ? 'أتممت مهمة اليوم بحمد الله' : 'إتمام خطوة اليوم',
-              style: GoogleFonts.almarai(
-                fontWeight: FontWeight.bold,
-                fontSize: 12.5.sp,
+            Flexible(
+              child: Text(
+                isDone ? 'أتممت مهمة اليوم بحمد الله' : 'إتمام خطوة اليوم',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: GoogleFonts.almarai(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12.5.sp,
+                ),
               ),
             ),
           ],

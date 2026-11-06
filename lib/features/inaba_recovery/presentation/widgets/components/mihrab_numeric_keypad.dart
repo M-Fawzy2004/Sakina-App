@@ -22,35 +22,38 @@ class MihrabNumericKeypad extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        // 4-Dot PIN Indicator Display
-        _PinDotsDisplay(filledCount: currentPin.length),
-        SizedBox(height: 24.h),
+    return Directionality(
+      textDirection: TextDirection.ltr,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // 4-Dot PIN Indicator Display
+          _PinDotsDisplay(filledCount: currentPin.length),
+          SizedBox(height: 24.h),
 
-        // Keypad Grid: 1-9, Clear, 0, Backspace
-        _KeypadRow(
-          digits: const ['1', '2', '3'],
-          onDigitTap: onDigitPressed,
-        ),
-        SizedBox(height: 12.h),
-        _KeypadRow(
-          digits: const ['4', '5', '6'],
-          onDigitTap: onDigitPressed,
-        ),
-        SizedBox(height: 12.h),
-        _KeypadRow(
-          digits: const ['7', '8', '9'],
-          onDigitTap: onDigitPressed,
-        ),
-        SizedBox(height: 12.h),
-        _BottomKeypadRow(
-          onDigitTap: onDigitPressed,
-          onBackspace: onBackspacePressed,
-          onClear: onClearPressed,
-        ),
-      ],
+          // Keypad Grid: 1-9, Clear, 0, Backspace
+          _KeypadRow(
+            digits: const ['1', '2', '3'],
+            onDigitTap: onDigitPressed,
+          ),
+          SizedBox(height: 12.h),
+          _KeypadRow(
+            digits: const ['4', '5', '6'],
+            onDigitTap: onDigitPressed,
+          ),
+          SizedBox(height: 12.h),
+          _KeypadRow(
+            digits: const ['7', '8', '9'],
+            onDigitTap: onDigitPressed,
+          ),
+          SizedBox(height: 12.h),
+          _BottomKeypadRow(
+            onDigitTap: onDigitPressed,
+            onBackspace: onBackspacePressed,
+            onClear: onClearPressed,
+          ),
+        ],
+      ),
     );
   }
 }
