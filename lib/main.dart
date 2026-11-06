@@ -47,7 +47,8 @@ void main() async {
       await sl<LocalNotificationService>().initialize();
       if (sl.isRegistered<PreferencesService>()) {
         final prefs = sl<PreferencesService>();
-        final hasPrompted = prefs.getBool(
+        final hasPrompted =
+            prefs.getBool(
               SettingsPersistenceManager.keyNotificationPermissionPrompted,
             ) ??
             false;

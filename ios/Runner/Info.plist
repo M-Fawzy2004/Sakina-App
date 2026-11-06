@@ -32,6 +32,8 @@
 	<string>Sakina requires access to save your customized Quranic cards and video reels to your photo library.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Sakina requires access to select background media and save your customized Quranic cards and reels to your photo library.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>تطبيق سكينة يحتاج إلى موقعك لحساب مواقيت الصلاة بدقة فلكية وتنبيهك قبل كل صلاة في مدينتك.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

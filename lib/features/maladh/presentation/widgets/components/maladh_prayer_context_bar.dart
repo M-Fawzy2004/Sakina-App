@@ -2,9 +2,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:sakina_app/core/services/storage/preferences_service.dart';
 import 'package:sakina_app/core/theme/app_colors.dart';
 import 'package:sakina_app/core/theme/app_colors_scheme.dart';
 import 'package:sakina_app/features/maladh/domain/services/cairo_prayer_times_calculator.dart';
+import 'package:sakina_app/features/maladh/domain/services/global_prayer_times_calculator.dart';
+import 'package:sakina_app/core/di/injection_container.dart';
 
 /// Luxury Prayer Context & Countdown Bar (The First Half - Image 2).
 /// Displays:
@@ -31,11 +34,15 @@ class _MaladhPrayerContextBarState extends State<MaladhPrayerContextBar> {
   @override
   void initState() {
     super.initState();
-    _scheduleInfo = CairoPrayerTimesCalculator.calculate();
+    _scheduleInfo = GlobalPrayerTimesCalculator.calculate(
+      prefs: sl.isRegistered<PreferencesService>() ? sl<PreferencesService>() : null,
+    );
     _timer = Timer.periodic(const Duration(seconds: 1), (_) {
       if (mounted) {
         setState(() {
-          _scheduleInfo = CairoPrayerTimesCalculator.calculate();
+          _scheduleInfo = GlobalPrayerTimesCalculator.calculate(
+            prefs: sl.isRegistered<PreferencesService>() ? sl<PreferencesService>() : null,
+          );
         });
       }
     });

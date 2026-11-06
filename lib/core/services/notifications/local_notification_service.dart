@@ -4,6 +4,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:sakina_app/core/services/notifications/quran_reflections_catalog.dart';
 import 'package:sakina_app/core/services/storage/preferences_service.dart';
 import 'package:sakina_app/core/utils/app_logger.dart';
+import 'package:sakina_app/features/maladh/domain/services/global_prayer_times_calculator.dart';
 import 'package:sakina_app/features/settings/domain/services/settings_persistence_manager.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
@@ -19,7 +20,10 @@ abstract class LocalNotificationService {
   Future<void> scheduleDailyQuranReminder({required bool enabled});
   Future<void> scheduleDailyHopeReminder({required bool enabled});
   Future<void> scheduleNightPrayerReminder({required bool enabled});
-  Future<void> schedulePrePrayerReminders({required bool enabled});
+  Future<void> schedulePrePrayerReminders({
+    required bool enabled,
+    PreferencesService? prefs,
+  });
   Future<void> scheduleRotatingQuranNotifications({
     required bool enabled,
     PreferencesService? prefs,
@@ -415,7 +419,10 @@ class LocalNotificationServiceImpl implements LocalNotificationService {
   }
 
   @override
-  Future<void> schedulePrePrayerReminders({required bool enabled}) async {
+  Future<void> schedulePrePrayerReminders({
+    required bool enabled,
+    PreferencesService? prefs,
+  }) async {
     if (!enabled) {
       await cancel(idPrePrayerFajr);
       await cancel(idPrePrayerDhuhr);
@@ -425,58 +432,75 @@ class LocalNotificationServiceImpl implements LocalNotificationService {
       return;
     }
 
-    // Fajr (04:41) - 5 mins = 04:36
+    final schedule = GlobalPrayerTimesCalculator.calculate(
+      prefs: prefs,
+    );
+
+    final now = DateTime.now();
+    final fajr = schedule.fajrTime ?? DateTime(now.year, now.month, now.day, 4, 41);
+    final dhuhr = schedule.dhuhrTime ?? DateTime(now.year, now.month, now.day, 11, 40);
+    final asr = schedule.asrTime ?? DateTime(now.year, now.month, now.day, 14, 43);
+    final maghrib = schedule.maghribTime ?? DateTime(now.year, now.month, now.day, 17, 7);
+    final isha = schedule.ishaTime ?? DateTime(now.year, now.month, now.day, 18, 26);
+
+    final fajrReminder = fajr.subtract(const Duration(minutes: 5));
+    final dhuhrReminder = dhuhr.subtract(const Duration(minutes: 5));
+    final asrReminder = asr.subtract(const Duration(minutes: 5));
+    final maghribReminder = maghrib.subtract(const Duration(minutes: 5));
+    final ishaReminder = isha.subtract(const Duration(minutes: 5));
+
+    // Fajr reminder (5 mins before)
     await _scheduleDaily(
       id: idPrePrayerFajr,
       title: 'اقترب موعد أذان الفجر',
       body:
           'بقيت خمس دقائق على أذان الفجر؛ تهيأ للوقوف بين يدي الله والوضوء لصلاة الفجر المباركة.',
-      hour: 4,
-      minute: 36,
+      hour: fajrReminder.hour,
+      minute: fajrReminder.minute,
       payload: 'pre_prayer_fajr',
     );
 
-    // Dhuhr (11:40) - 5 mins = 11:35
+    // Dhuhr reminder (5 mins before)
     await _scheduleDaily(
       id: idPrePrayerDhuhr,
       title: 'اقترب موعد أذان الظهر',
       body:
           'بقيت خمس دقائق على أذان الظهر؛ أقبل على صلاتك وتهيأ لإراحة فؤادك بين يدي ربك.',
-      hour: 11,
-      minute: 35,
+      hour: dhuhrReminder.hour,
+      minute: dhuhrReminder.minute,
       payload: 'pre_prayer_dhuhr',
     );
 
-    // Asr (14:43) - 5 mins = 14:38
+    // Asr reminder (5 mins before)
     await _scheduleDaily(
       id: idPrePrayerAsr,
       title: 'اقترب موعد أذان العصر',
       body:
           'بقيت خمس دقائق على أذان العصر؛ حافظ على الصلاة الوسطى وأقبل على لقاء الله بقلب خاشع.',
-      hour: 14,
-      minute: 38,
+      hour: asrReminder.hour,
+      minute: asrReminder.minute,
       payload: 'pre_prayer_asr',
     );
 
-    // Maghrib (17:07) - 5 mins = 17:02
+    // Maghrib reminder (5 mins before)
     await _scheduleDaily(
       id: idPrePrayerMaghrib,
       title: 'اقترب موعد أذان المغرب',
       body:
           'بقيت خمس دقائق على أذان المغرب؛ اختم نهارك بذكر الله وتهيأ لأداء الفريضة.',
-      hour: 17,
-      minute: 2,
+      hour: maghribReminder.hour,
+      minute: maghribReminder.minute,
       payload: 'pre_prayer_maghrib',
     );
 
-    // Isha (18:26) - 5 mins = 18:21
+    // Isha reminder (5 mins before)
     await _scheduleDaily(
       id: idPrePrayerIsha,
       title: 'اقترب موعد أذان العشاء',
       body:
           'بقيت خمس دقائق على أذان العشاء؛ أقبل على صلاتك واختم يومك بالطاعة والسكينة.',
-      hour: 18,
-      minute: 21,
+      hour: ishaReminder.hour,
+      minute: ishaReminder.minute,
       payload: 'pre_prayer_isha',
     );
   }
@@ -594,7 +618,10 @@ class LocalNotificationServiceImpl implements LocalNotificationService {
     await scheduleDailyQuranReminder(enabled: dailyQuranReminder);
     await scheduleDailyHopeReminder(enabled: dailyHopeReminder);
     await scheduleNightPrayerReminder(enabled: nightPrayerReminder);
-    await schedulePrePrayerReminders(enabled: prePrayerReminders);
+    await schedulePrePrayerReminders(
+      enabled: prePrayerReminders,
+      prefs: prefs,
+    );
     await scheduleRotatingQuranNotifications(
       enabled: rotatingQuranNotifications,
       prefs: prefs,

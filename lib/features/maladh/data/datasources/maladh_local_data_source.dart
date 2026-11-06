@@ -1,6 +1,6 @@
 import 'package:sakina_app/core/services/storage/preferences_service.dart';
 import 'package:sakina_app/features/maladh/data/models/maladh_header_model.dart';
-import 'package:sakina_app/features/maladh/domain/services/cairo_prayer_times_calculator.dart';
+import 'package:sakina_app/features/maladh/domain/services/global_prayer_times_calculator.dart';
 
 abstract interface class MaladhLocalDataSource {
   Future<MaladhHeaderModel> getHeaderData();
@@ -39,7 +39,10 @@ class MaladhLocalDataSourceImpl implements MaladhLocalDataSource {
       greetingSubtitle = 'وَالمُسْتَغْفِرِينَ بِالأَسْحَارِ 🕊️';
     }
 
-    final prayerInfo = CairoPrayerTimesCalculator.calculate(now);
+    final prayerInfo = GlobalPrayerTimesCalculator.calculate(
+      customNow: now,
+      prefs: preferencesService,
+    );
     final String nextPrayerName = prayerInfo.nextPrayerName;
     final String nextPrayerRemaining = _formatRemainingTime(prayerInfo.remainingToNext.inMinutes);
 

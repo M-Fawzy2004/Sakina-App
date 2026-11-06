@@ -9,6 +9,23 @@ class PrayerScheduleInfo extends Equatable {
   final Duration remainingToNext;
   final int nextPrayerIndex; // 0: Fajr, 1: Dhuhr, 2: Asr, 3: Maghrib, 4: Isha
 
+  final DateTime? fajrTime;
+  final DateTime? sunriseTime;
+  final DateTime? dhuhrTime;
+  final DateTime? asrTime;
+  final DateTime? maghribTime;
+  final DateTime? ishaTime;
+
+  final String fajrFormatted;
+  final String sunriseFormatted;
+  final String dhuhrFormatted;
+  final String asrFormatted;
+  final String maghribFormatted;
+  final String ishaFormatted;
+
+  final String cityName;
+  final String countryName;
+
   const PrayerScheduleInfo({
     required this.nextPrayerName,
     required this.nextPrayerTime,
@@ -16,6 +33,20 @@ class PrayerScheduleInfo extends Equatable {
     required this.currentPrayerTime,
     required this.remainingToNext,
     required this.nextPrayerIndex,
+    this.fajrTime,
+    this.sunriseTime,
+    this.dhuhrTime,
+    this.asrTime,
+    this.maghribTime,
+    this.ishaTime,
+    this.fajrFormatted = '4:41',
+    this.sunriseFormatted = '6:10',
+    this.dhuhrFormatted = '11:40',
+    this.asrFormatted = '2:43',
+    this.maghribFormatted = '5:07',
+    this.ishaFormatted = '6:26',
+    this.cityName = 'القاهرة',
+    this.countryName = 'مصر',
   });
 
   @override
@@ -26,6 +57,14 @@ class PrayerScheduleInfo extends Equatable {
         currentPrayerTime,
         remainingToNext,
         nextPrayerIndex,
+        fajrFormatted,
+        sunriseFormatted,
+        dhuhrFormatted,
+        asrFormatted,
+        maghribFormatted,
+        ishaFormatted,
+        cityName,
+        countryName,
       ];
 }
 
@@ -49,9 +88,9 @@ class CairoPrayerTimesCalculator {
     if (now.isBefore(fajrToday)) {
       return PrayerScheduleInfo(
         nextPrayerName: 'الفَجْرُ',
-        nextPrayerTime: '04:41',
+        nextPrayerTime: '4:41',
         currentPrayerName: 'العِشَاءُ',
-        currentPrayerTime: '06:26',
+        currentPrayerTime: '6:26',
         remainingToNext: fajrToday.difference(now),
         nextPrayerIndex: 0,
       );
@@ -60,14 +99,14 @@ class CairoPrayerTimesCalculator {
         nextPrayerName: 'الظُّهْرُ',
         nextPrayerTime: '11:40',
         currentPrayerName: 'الفَجْرُ',
-        currentPrayerTime: '04:41',
+        currentPrayerTime: '4:41',
         remainingToNext: dhuhrToday.difference(now),
         nextPrayerIndex: 1,
       );
     } else if (now.isBefore(asrToday)) {
       return PrayerScheduleInfo(
         nextPrayerName: 'العَصْرُ',
-        nextPrayerTime: '02:43',
+        nextPrayerTime: '2:43',
         currentPrayerName: 'الظُّهْرُ',
         currentPrayerTime: '11:40',
         remainingToNext: asrToday.difference(now),
@@ -76,18 +115,18 @@ class CairoPrayerTimesCalculator {
     } else if (now.isBefore(maghribToday)) {
       return PrayerScheduleInfo(
         nextPrayerName: 'المَغْرِبُ',
-        nextPrayerTime: '05:07',
+        nextPrayerTime: '5:07',
         currentPrayerName: 'العَصْرُ',
-        currentPrayerTime: '02:43',
+        currentPrayerTime: '2:43',
         remainingToNext: maghribToday.difference(now),
         nextPrayerIndex: 3,
       );
     } else if (now.isBefore(ishaToday)) {
       return PrayerScheduleInfo(
         nextPrayerName: 'العِشَاءُ',
-        nextPrayerTime: '06:26',
+        nextPrayerTime: '6:26',
         currentPrayerName: 'المَغْرِبُ',
-        currentPrayerTime: '05:07',
+        currentPrayerTime: '5:07',
         remainingToNext: ishaToday.difference(now),
         nextPrayerIndex: 4,
       );
@@ -95,9 +134,9 @@ class CairoPrayerTimesCalculator {
       final fajrTomorrow = DateTime(y, m, d + 1, 4, 41);
       return PrayerScheduleInfo(
         nextPrayerName: 'الفَجْرُ',
-        nextPrayerTime: '04:41',
+        nextPrayerTime: '4:41',
         currentPrayerName: 'العِشَاءُ',
-        currentPrayerTime: '06:26',
+        currentPrayerTime: '6:26',
         remainingToNext: fajrTomorrow.difference(now),
         nextPrayerIndex: 0,
       );

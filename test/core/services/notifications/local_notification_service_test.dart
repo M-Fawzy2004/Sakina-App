@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:sakina_app/core/services/notifications/local_notification_service.dart';
 import 'package:sakina_app/core/services/storage/preferences_service.dart';
+import 'package:sakina_app/features/maladh/domain/services/prayer_location_catalog.dart';
 import 'package:sakina_app/features/settings/domain/services/settings_persistence_manager.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
@@ -240,6 +241,25 @@ void main() {
       verify(() => mockPlugin.cancel(id: LocalNotificationServiceImpl.idPrePrayerAsr)).called(1);
       verify(() => mockPlugin.cancel(id: LocalNotificationServiceImpl.idPrePrayerMaghrib)).called(1);
       verify(() => mockPlugin.cancel(id: LocalNotificationServiceImpl.idPrePrayerIsha)).called(1);
+    });
+
+    test('schedulePrePrayerReminders schedules using Yemen location when configured', () async {
+      final mockPrefs = MockPreferencesService();
+      when(() => mockPrefs.getString(PrayerLocationCatalog.keySelectedCityId))
+          .thenReturn('ye_sanaa');
+
+      await service.schedulePrePrayerReminders(enabled: true, prefs: mockPrefs);
+
+      verify(() => mockPlugin.zonedSchedule(
+            id: LocalNotificationServiceImpl.idPrePrayerFajr,
+            title: any(named: 'title'),
+            body: any(named: 'body'),
+            scheduledDate: any(named: 'scheduledDate'),
+            notificationDetails: any(named: 'notificationDetails'),
+            androidScheduleMode: any(named: 'androidScheduleMode'),
+            matchDateTimeComponents: any(named: 'matchDateTimeComponents'),
+            payload: 'pre_prayer_fajr',
+          )).called(1);
     });
 
     test('syncAllNotifications coordinates all reminder types', () async {

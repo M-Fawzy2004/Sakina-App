@@ -4,8 +4,9 @@ import 'package:iconsax/iconsax.dart';
 import 'package:sakina_app/core/theme/app_colors_scheme.dart';
 import 'package:sakina_app/features/settings/presentation/widgets/components/settings_section_card.dart';
 import 'package:sakina_app/features/settings/presentation/widgets/components/settings_switch_tile.dart';
+import 'package:sakina_app/features/settings/presentation/widgets/components/settings_tile_item.dart';
 
-/// Daily Dhikr & Reminders section: morning/evening dhikr, Quran daily portion, daily hope dose, night prayer.
+/// Daily Dhikr & Reminders section: morning/evening dhikr, Quran daily portion, daily hope dose, night prayer, worldwide prayer times.
 class SettingsNotificationsSection extends StatelessWidget {
   final bool morningEveningAzkar;
   final bool dailyQuranReminder;
@@ -13,6 +14,8 @@ class SettingsNotificationsSection extends StatelessWidget {
   final bool nightPrayerReminder;
   final bool prePrayerReminder;
   final bool rotatingQuranNotifications;
+  final String prayerLocationName;
+  final VoidCallback onPrayerLocationTap;
   final ValueChanged<bool> onMorningEveningChanged;
   final ValueChanged<bool> onDailyQuranChanged;
   final ValueChanged<bool> onDailyHopeChanged;
@@ -28,6 +31,8 @@ class SettingsNotificationsSection extends StatelessWidget {
     required this.nightPrayerReminder,
     required this.prePrayerReminder,
     required this.rotatingQuranNotifications,
+    required this.prayerLocationName,
+    required this.onPrayerLocationTap,
     required this.onMorningEveningChanged,
     required this.onDailyQuranChanged,
     required this.onDailyHopeChanged,
@@ -83,6 +88,21 @@ class SettingsNotificationsSection extends StatelessWidget {
           subtitle: 'نَفَحَاتُ الثُّلُثِ الأَخِيرِ مِنَ اللَّيْلِ وَالاسْتِغْفَارِ',
           value: nightPrayerReminder,
           onChanged: onNightPrayerChanged,
+        ),
+        Divider(
+          color: colors.borderHairline.withValues(alpha: 0.5),
+          height: 1.h,
+        ),
+        SettingsTileItem(
+          icon: Iconsax.global,
+          title: 'مَوْقِعُ مَوَاقِيتِ الصَّلَاةِ حَوْلَ العَالَم',
+          subtitle: prayerLocationName,
+          trailing: Icon(
+            Icons.chevron_left_rounded,
+            size: 20.r,
+            color: colors.textSecondary,
+          ),
+          onTap: onPrayerLocationTap,
         ),
         Divider(
           color: colors.borderHairline.withValues(alpha: 0.5),

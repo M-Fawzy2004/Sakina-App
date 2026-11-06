@@ -7,6 +7,9 @@ import 'package:sakina_app/core/services/storage/preferences_service.dart';
 import 'package:sakina_app/core/theme/app_colors_scheme.dart';
 import 'package:sakina_app/core/utils/app_top_snack_bar.dart';
 import 'package:sakina_app/core/utils/haptic_service.dart';
+import 'package:sakina_app/features/maladh/domain/entities/city_location.dart';
+import 'package:sakina_app/features/maladh/domain/services/prayer_location_catalog.dart';
+import 'package:sakina_app/features/maladh/presentation/widgets/components/prayer_location_selector_sheet.dart';
 import 'package:sakina_app/features/quran_reading/presentation/cubit/quran_cubit.dart';
 import 'package:sakina_app/features/settings/domain/services/settings_persistence_manager.dart';
 import 'package:sakina_app/features/settings/presentation/cubit/settings_cubit.dart';
@@ -52,6 +55,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _nightPrayerReminder = true;
   bool _prePrayerReminder = true;
   bool _rotatingQuranNotifications = true;
+  late CityLocation _prayerLocation;
 
   // Security & Inaba
   bool _inabaBiometricLock = true;
@@ -82,6 +86,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     _nightPrayerReminder = data.nightPrayerReminder;
     _prePrayerReminder = data.prePrayerReminder;
     _rotatingQuranNotifications = data.rotatingQuranNotifications;
+    _prayerLocation = PrayerLocationCatalog.findFromPreferences(prefs);
     _inabaBiometricLock = data.inabaLock;
     _stealthNotifications = data.stealthNotifications;
   }
@@ -150,6 +155,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
     await prefs.setString(SettingsPersistenceManager.keyReciterName, name);
     if (sl.isRegistered<QuranCubit>()) {
       sl<QuranCubit>().setReciter(id);
+    }
+  }
+
+  Future<void> _handleSelectPrayerLocation() async {
+    final picked = await PrayerLocationSelectorSheet.show(
+      context,
+      currentCity: _prayerLocation,
+    );
+    if (picked != null && mounted) {
+      setState(() => _prayerLocation = picked);
     }
   }
 
@@ -286,6 +301,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         nightPrayerReminder: _nightPrayerReminder,
                         prePrayerReminder: _prePrayerReminder,
                         rotatingQuranNotifications: _rotatingQuranNotifications,
+                        prayerLocationName: _prayerLocation.displayName,
+                        onPrayerLocationTap: _handleSelectPrayerLocation,
                         onMorningEveningChanged: (val) => _updateNotifPref(
                           SettingsPersistenceManager.keyMorningEveningAzkar,
                           val,
@@ -319,7 +336,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           val,
                           (v) => _prePrayerReminder = v,
                           'تنبيهات ما قبل الصلاة',
-                          (s) => s.schedulePrePrayerReminders(enabled: val),
+                          (s) => s.schedulePrePrayerReminders(
+                            enabled: val,
+                            prefs: sl<PreferencesService>(),
+                          ),
                         ),
                         onRotatingQuranChanged: (val) => _updateNotifPref(
                           SettingsPersistenceManager

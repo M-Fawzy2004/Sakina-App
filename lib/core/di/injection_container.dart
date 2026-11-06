@@ -5,6 +5,7 @@ import 'package:sakina_app/core/network/api_client.dart';
 import 'package:sakina_app/core/network/dio_client.dart';
 import 'package:sakina_app/core/network/network_info.dart';
 import 'package:sakina_app/core/services/audio/audio_player_handler.dart';
+import 'package:sakina_app/core/services/location/gps_location_service.dart';
 import 'package:sakina_app/core/services/notifications/local_notification_service.dart';
 import 'package:sakina_app/core/services/storage/database_helper.dart';
 import 'package:sakina_app/core/services/storage/preferences_service.dart';
@@ -128,6 +129,7 @@ Future<void> initServiceLocator() async {
   sl.registerLazySingleton<LocalNotificationService>(
     () => LocalNotificationServiceImpl(),
   );
+  sl.registerLazySingleton<GpsLocationService>(() => GpsLocationServiceImpl());
 
   // ---------------------------------------------------------------------------
   // 5. Modular Feature Dependencies
