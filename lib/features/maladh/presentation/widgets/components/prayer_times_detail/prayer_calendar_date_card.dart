@@ -46,11 +46,11 @@ class PrayerCalendarDateCard extends StatelessWidget {
                 child: Text(
                   dayName,
                   textAlign: TextAlign.start,
-                  style: GoogleFonts.cairo(
-                    fontSize: 24.sp,
-                    fontWeight: FontWeight.w900,
+                  style: GoogleFonts.almarai(
+                    fontSize: 22.sp,
+                    fontWeight: FontWeight.w800,
                     color: colors.textPrimary,
-                    height: 1.15,
+                    height: 1.2,
                   ),
                 ),
               ),
@@ -81,11 +81,11 @@ class PrayerCalendarDateCard extends StatelessWidget {
                 child: Text(
                   monthName,
                   textAlign: TextAlign.end,
-                  style: GoogleFonts.cairo(
-                    fontSize: 24.sp,
-                    fontWeight: FontWeight.w900,
+                  style: GoogleFonts.almarai(
+                    fontSize: 22.sp,
+                    fontWeight: FontWeight.w800,
                     color: colors.textPrimary,
-                    height: 1.15,
+                    height: 1.2,
                   ),
                 ),
               ),
@@ -144,9 +144,9 @@ class _DatePillChip extends StatelessWidget {
       child: Center(
         child: Text(
           label,
-          style: GoogleFonts.cairo(
-            fontSize: 15.sp,
-            fontWeight: FontWeight.w800,
+          style: GoogleFonts.almarai(
+            fontSize: 14.5.sp,
+            fontWeight: FontWeight.w700,
             color: colors.textPrimary,
             letterSpacing: 0.5,
           ),

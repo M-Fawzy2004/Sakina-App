@@ -58,14 +58,41 @@ class SurahReaderScreen extends StatefulWidget {
 }
 
 class _SurahReaderScreenState extends State<SurahReaderScreen> {
+  late SurahEntity _currentSurah;
+  int? _activeInitialAyahNumber;
+  int? _activeInitialPageNumber;
+
   @override
   void initState() {
     super.initState();
+    _currentSurah = widget.surah;
+    _activeInitialAyahNumber = widget.initialAyahNumber;
+    _activeInitialPageNumber = widget.initialPageNumber;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
-        context.read<QuranCubit>().openSurahReader(widget.surah);
+        context.read<QuranCubit>().openSurahReader(_currentSurah);
       }
     });
+  }
+
+  @override
+  void didUpdateWidget(covariant SurahReaderScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.surah.id != widget.surah.id) {
+      _currentSurah = widget.surah;
+      _activeInitialAyahNumber = widget.initialAyahNumber;
+      _activeInitialPageNumber = widget.initialPageNumber;
+      context.read<QuranCubit>().openSurahReader(_currentSurah);
+    }
+  }
+
+  void _onSurahChanged(SurahEntity newSurah) {
+    setState(() {
+      _currentSurah = newSurah;
+      _activeInitialAyahNumber = null;
+      _activeInitialPageNumber = null;
+    });
+    context.read<QuranCubit>().openSurahReader(newSurah);
   }
 
   @override
@@ -80,21 +107,22 @@ class _SurahReaderScreenState extends State<SurahReaderScreen> {
             return const QuranShimmer();
           }
 
-          final activeSurah = state.activeReadingSurah ?? widget.surah;
+          final activeSurah = state.activeReadingSurah ?? _currentSurah;
           final verses = state.activeVerses;
 
           if (verses.isEmpty ||
-              (state.activeReadingSurah != null &&
-                  state.activeReadingSurah!.id != widget.surah.id)) {
+              state.activeReadingSurah == null ||
+              state.activeReadingSurah!.id != _currentSurah.id) {
             return const QuranShimmer();
           }
 
           return QuranReaderView(
+            key: ValueKey('quran_reader_${activeSurah.id}'),
             surah: activeSurah,
             verses: verses,
             allSurahs: state.allSurahs,
-            initialAyahNumber: widget.initialAyahNumber,
-            initialPageNumber: widget.initialPageNumber,
+            initialAyahNumber: _activeInitialAyahNumber,
+            initialPageNumber: _activeInitialPageNumber,
             recitingAyahNumber: state.recitingAyahNumber,
             isAyahAudioPlaying: state.isAyahAudioPlaying,
             isAyahAudioBuffering: state.isAyahAudioBuffering,
@@ -105,7 +133,7 @@ class _SurahReaderScreenState extends State<SurahReaderScreen> {
               );
             },
             onStopAyah: () => cubit.stopAyahAudio(),
-            onSurahChanged: (newSurah) => cubit.openSurahReader(newSurah),
+            onSurahChanged: _onSurahChanged,
             onClose: () {
               cubit.closeSurahReader();
               Navigator.of(context).pop();

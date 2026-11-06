@@ -176,9 +176,9 @@ class _PrayerItemRow extends StatelessWidget {
               alignment: AlignmentDirectional.centerStart,
               child: Text(
                 data.name,
-                style: GoogleFonts.cairo(
-                  fontSize: 19.sp,
-                  fontWeight: FontWeight.w900,
+                style: GoogleFonts.almarai(
+                  fontSize: 18.sp,
+                  fontWeight: FontWeight.w700,
                   color: primaryColor,
                   height: 1.2,
                 ),
@@ -225,9 +225,9 @@ class _PrayerItemRow extends StatelessWidget {
               children: [
                 Text(
                   data.timeFormatted,
-                  style: GoogleFonts.cairo(
-                    fontSize: 18.sp,
-                    fontWeight: FontWeight.w900,
+                  style: GoogleFonts.almarai(
+                    fontSize: 17.sp,
+                    fontWeight: FontWeight.w700,
                     color: primaryColor,
                     letterSpacing: 0.3,
                     height: 1.15,
@@ -238,8 +238,8 @@ class _PrayerItemRow extends StatelessWidget {
                   data.subLabel,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.cairo(
-                    fontSize: 12.5.sp,
+                  style: GoogleFonts.almarai(
+                    fontSize: 12.sp,
                     fontWeight: FontWeight.w700,
                     color: secondaryColor,
                   ),

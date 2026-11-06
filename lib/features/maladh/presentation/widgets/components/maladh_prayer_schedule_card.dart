@@ -161,7 +161,7 @@ class _MaladhPrayerScheduleCardState extends State<MaladhPrayerScheduleCard> {
                         Flexible(
                           child: Text(
                             _currentCity.displayName,
-                            style: GoogleFonts.cairo(
+                            style: GoogleFonts.almarai(
                               fontSize: 11.5.sp,
                               fontWeight: FontWeight.w700,
                               color: colors.textPrimary,
@@ -214,7 +214,7 @@ class _MaladhPrayerScheduleCardState extends State<MaladhPrayerScheduleCard> {
                           SizedBox(width: 4.w),
                           Text(
                             _isDetectingGps ? 'جارٍ التحديد...' : 'تحديد بالـ GPS',
-                            style: GoogleFonts.cairo(
+                            style: GoogleFonts.almarai(
                               fontSize: 10.5.sp,
                               fontWeight: FontWeight.w700,
                               color: colors.accentGold,
@@ -241,10 +241,10 @@ class _MaladhPrayerScheduleCardState extends State<MaladhPrayerScheduleCard> {
                         children: [
                           Text(
                             'تغيير',
-                            style: GoogleFonts.cairo(
+                            style: GoogleFonts.almarai(
                               fontSize: 10.5.sp,
                               color: colors.textSecondary,
-                              fontWeight: FontWeight.w600,
+                              fontWeight: FontWeight.w700,
                             ),
                           ),
                           Icon(
@@ -385,10 +385,10 @@ class _SinglePrayerSlot extends StatelessWidget {
           children: [
             Text(
               name,
-              style: GoogleFonts.cairo(
+              style: GoogleFonts.almarai(
                 color: subtitleColor,
                 fontSize: 11.sp,
-                fontWeight: isNext ? FontWeight.w800 : FontWeight.w600,
+                fontWeight: isNext ? FontWeight.w800 : FontWeight.w700,
               ),
               maxLines: 1,
             ),
@@ -397,7 +397,7 @@ class _SinglePrayerSlot extends StatelessWidget {
             SizedBox(height: 5.h),
             Text(
               time,
-              style: GoogleFonts.cairo(
+              style: GoogleFonts.almarai(
                 color: primaryColor,
                 fontSize: 12.sp,
                 fontWeight: isNext ? FontWeight.w800 : FontWeight.w700,
@@ -480,16 +480,16 @@ class _SupplementaryTimeItem extends StatelessWidget {
       children: [
         Text(
           name,
-          style: GoogleFonts.cairo(
+          style: GoogleFonts.almarai(
             color: colors.textSecondary,
             fontSize: 10.sp,
-            fontWeight: FontWeight.w500,
+            fontWeight: FontWeight.w600,
           ),
         ),
         SizedBox(height: 2.h),
         Text(
           time,
-          style: GoogleFonts.cairo(
+          style: GoogleFonts.almarai(
             color: colors.textPrimary,
             fontSize: 11.sp,
             fontWeight: FontWeight.w700,

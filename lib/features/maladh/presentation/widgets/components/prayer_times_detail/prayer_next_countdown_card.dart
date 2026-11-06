@@ -110,22 +110,22 @@ class _PrayerNextCountdownCardState extends State<PrayerNextCountdownCard> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'الصَّلَاةُ القَادِمَة',
-                  style: GoogleFonts.cairo(
-                    fontSize: 13.5.sp,
+                  'الصلاة القادمة',
+                  style: GoogleFonts.almarai(
+                    fontSize: 13.sp,
                     fontWeight: FontWeight.w700,
                     color: accentCyan,
                     height: 1.2,
                   ),
                 ),
-                SizedBox(height: 2.h),
+                SizedBox(height: 3.h),
                 Text(
                   nextName,
-                  style: GoogleFonts.cairo(
-                    fontSize: 28.sp,
-                    fontWeight: FontWeight.w900,
+                  style: GoogleFonts.almarai(
+                    fontSize: 26.sp,
+                    fontWeight: FontWeight.w800,
                     color: colors.textPrimary,
-                    height: 1.15,
+                    height: 1.2,
                   ),
                 ),
               ],
@@ -167,9 +167,9 @@ class _PrayerNextCountdownCardState extends State<PrayerNextCountdownCard> {
               children: [
                 Text(
                   nextTime,
-                  style: GoogleFonts.cairo(
-                    fontSize: 26.sp,
-                    fontWeight: FontWeight.w900,
+                  style: GoogleFonts.almarai(
+                    fontSize: 24.sp,
+                    fontWeight: FontWeight.w800,
                     color: colors.textPrimary,
                     letterSpacing: 0.3,
                     height: 1.15,
@@ -178,9 +178,9 @@ class _PrayerNextCountdownCardState extends State<PrayerNextCountdownCard> {
                 SizedBox(height: 4.h),
                 Text(
                   _formatTicker(_remaining),
-                  style: GoogleFonts.cairo(
-                    fontSize: 18.sp,
-                    fontWeight: FontWeight.w800,
+                  style: GoogleFonts.almarai(
+                    fontSize: 17.sp,
+                    fontWeight: FontWeight.w700,
                     color: accentCyan,
                     letterSpacing: 0.8,
                     height: 1.2,

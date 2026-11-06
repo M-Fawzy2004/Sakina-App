@@ -5,12 +5,12 @@ void main() {
   group('PrayerDateFormatter Tests', () {
     test('computes Arabic day name accurately for Friday', () {
       final friday = DateTime(2026, 11, 6); // Friday
-      expect(PrayerDateFormatter.getDayNameArabic(friday), 'الجُمُعَةِ');
+      expect(PrayerDateFormatter.getDayNameArabic(friday), 'الجمعة');
     });
 
     test('computes Arabic Gregorian month name accurately for November', () {
       final november = DateTime(2026, 11, 6);
-      expect(PrayerDateFormatter.getGregorianMonthNameArabic(november), 'نُوفَمْبِر');
+      expect(PrayerDateFormatter.getGregorianMonthNameArabic(november), 'نوفمبر');
     });
 
     test('formats Gregorian date numerically', () {

@@ -70,9 +70,9 @@ class PrayerTimesDetailHeader extends StatelessWidget {
                 Flexible(
                   child: Text(
                     cityName,
-                    style: GoogleFonts.cairo(
-                      fontSize: 19.sp,
-                      fontWeight: FontWeight.w800,
+                    style: GoogleFonts.almarai(
+                      fontSize: 18.sp,
+                      fontWeight: FontWeight.w700,
                       color: colors.textPrimary,
                     ),
                     maxLines: 1,

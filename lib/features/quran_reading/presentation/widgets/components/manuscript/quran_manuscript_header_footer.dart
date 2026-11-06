@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:sakina_app/core/theme/app_colors.dart';
 import 'package:sakina_app/core/theme/app_text_styles.dart';
@@ -85,8 +86,8 @@ class QuranNextSectionFooter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final title = (isLastPageOfSurah && nextSurahName != null)
-        ? 'السُّورَةُ التَّالِيَة: سُورَةُ $nextSurahName'
-        : 'الصَّفْحَةُ التَّالِيَة ($nextPageNumber مِنْ $totalPages)';
+        ? 'السورة التالية: سورة $nextSurahName'
+        : 'الصفحة التالية ($nextPageNumber من $totalPages)';
 
     return Center(
       child: Material(
@@ -108,12 +109,16 @@ class QuranNextSectionFooter extends StatelessWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  title,
-                  style: AppTextStyles.caption.copyWith(
-                    color: accentColor,
-                    fontSize: 12.sp,
-                    fontWeight: FontWeight.w700,
+                Flexible(
+                  child: Text(
+                    title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.almarai(
+                      color: accentColor,
+                      fontSize: 12.5.sp,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
                 SizedBox(width: 8.w),

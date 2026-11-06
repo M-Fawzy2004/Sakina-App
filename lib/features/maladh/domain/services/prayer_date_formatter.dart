@@ -4,28 +4,28 @@ import 'package:intl/intl.dart';
 /// for celestial cards and prayer schedules.
 abstract final class PrayerDateFormatter {
   static const List<String> _arabicDaysOfWeek = [
-    'الإِثْنَيْنِ',
-    'الثُّلَاثَاءِ',
-    'الأَرْبِعَاءِ',
-    'الخَمِيسِ',
-    'الجُمُعَةِ',
-    'السَّبْتِ',
-    'الأَحَدِ',
+    'الإثنين',
+    'الثلاثاء',
+    'الأربعاء',
+    'الخميس',
+    'الجمعة',
+    'السبت',
+    'الأحد',
   ];
 
   static const List<String> _arabicGregorianMonths = [
-    'يَنَايِر',
-    'فِبْرَايِر',
-    'مَارِس',
-    'أَبْرِيل',
-    'مَايُو',
-    'يُونْيُو',
-    'يُولْيُو',
-    'أَغُسْطُس',
-    'سِبْتَمْبِر',
-    'أُكْتُوبِر',
-    'نُوفَمْبِر',
-    'دِيسَمْبِر',
+    'يناير',
+    'فبراير',
+    'مارس',
+    'أبريل',
+    'مايو',
+    'يونيو',
+    'يوليو',
+    'أغسطس',
+    'سبتمبر',
+    'أكتوبر',
+    'نوفمبر',
+    'ديسمبر',
   ];
 
   static const List<String> _hijriMonthNames = [

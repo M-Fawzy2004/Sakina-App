@@ -59,7 +59,7 @@ void main() {
     expect(find.text('العشاء'), findsOneWidget);
 
     // 3. Verify Next Prayer Section
-    expect(find.text('الصَّلَاةُ القَادِمَة'), findsOneWidget);
+    expect(find.text('الصلاة القادمة'), findsOneWidget);
 
     // 4. Verify user-requested exclusions: MUST NOT render "مضى على أذان" or "أوقات النهي"
     expect(find.textContaining('مضى على'), findsNothing);

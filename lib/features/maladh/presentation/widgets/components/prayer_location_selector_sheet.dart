@@ -231,7 +231,7 @@ class _PrayerLocationSelectorSheetState
                       children: [
                         Text(
                           'تَحْدِيدُ مَوْقِعِ المَوَاقِيتِ حَوْلَ العَالَم',
-                          style: GoogleFonts.cairo(
+                          style: GoogleFonts.almarai(
                             fontSize: 15.sp,
                             fontWeight: FontWeight.w800,
                             color: colors.textPrimary,
@@ -240,9 +240,9 @@ class _PrayerLocationSelectorSheetState
                         SizedBox(height: 2.h),
                         Text(
                           'حِسَابٌ فَلَكِيٌّ دَقِيقٌ لِلصَّلَوَاتِ الخَمْسِ وَالتَّنْبِيهَاتِ بِدُونِ إِنْتَرْنِت',
-                          style: GoogleFonts.cairo(
+                          style: GoogleFonts.almarai(
                             fontSize: 11.sp,
-                            fontWeight: FontWeight.w500,
+                            fontWeight: FontWeight.w400,
                             color: colors.textSecondary,
                           ),
                         ),
@@ -300,7 +300,7 @@ class _PrayerLocationSelectorSheetState
                               : 'تَحْدِيدُ المَوْقِعِ تِلْقَائِيًّا عَبْرَ الأَقْمَارِ الصِّنَاعِيَّةِ (GPS)',
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: GoogleFonts.cairo(
+                          style: GoogleFonts.almarai(
                             fontSize: 12.sp,
                             fontWeight: FontWeight.w700,
                             color: colors.accentGold,
@@ -330,13 +330,13 @@ class _PrayerLocationSelectorSheetState
                 ),
                 child: TextField(
                   controller: _searchController,
-                  style: GoogleFonts.cairo(
+                  style: GoogleFonts.almarai(
                     fontSize: 13.sp,
                     color: colors.textPrimary,
                   ),
                   decoration: InputDecoration(
-                    hintText: 'ابْحَثْ عَنِ الدَّوْلَةِ أَوِ المَدِينَةِ (صنعاء، مكة، القاهرة...)...',
-                    hintStyle: GoogleFonts.cairo(
+                    hintText: 'ابحث عن الدولة أو المدينة (صنعاء، مكة، القاهرة...)...',
+                    hintStyle: GoogleFonts.almarai(
                       fontSize: 12.sp,
                       color: colors.textSecondary.withValues(alpha: 0.7),
                     ),
@@ -369,8 +369,8 @@ class _PrayerLocationSelectorSheetState
               child: _filteredCities.isEmpty
                   ? Center(
                       child: Text(
-                        'لَا تُوجَدُ مَدِينَةٌ تُطَابِقُ بَحْثَكَ',
-                        style: GoogleFonts.cairo(
+                        'لا توجد مدينة تطابق بحثك',
+                        style: GoogleFonts.almarai(
                           fontSize: 13.sp,
                           color: colors.textSecondary,
                         ),
@@ -442,10 +442,10 @@ class _PrayerLocationSelectorSheetState
                                         children: [
                                           Text(
                                             city.cityNameArabic,
-                                            style: GoogleFonts.cairo(
+                                            style: GoogleFonts.almarai(
                                               fontSize: 14.sp,
                                               fontWeight: isSelected
-                                                  ? FontWeight.w800
+                                                  ? FontWeight.w700
                                                   : FontWeight.w600,
                                               color: isSelected
                                                   ? colors.accentGold
@@ -455,7 +455,7 @@ class _PrayerLocationSelectorSheetState
                                           SizedBox(width: 6.w),
                                           Text(
                                             '• ${city.countryNameArabic}',
-                                            style: GoogleFonts.cairo(
+                                            style: GoogleFonts.almarai(
                                               fontSize: 12.sp,
                                               color: colors.textSecondary,
                                             ),
@@ -465,7 +465,7 @@ class _PrayerLocationSelectorSheetState
                                       SizedBox(height: 2.h),
                                       Text(
                                         _getMethodLabel(city.calculationMethod),
-                                        style: GoogleFonts.cairo(
+                                        style: GoogleFonts.almarai(
                                           fontSize: 10.sp,
                                           color: colors.textSecondary
                                               .withValues(alpha: 0.65),
@@ -493,7 +493,7 @@ class _PrayerLocationSelectorSheetState
                                   ),
                                   child: Text(
                                     'UTC${city.utcOffsetHours >= 0 ? '+' : ''}${city.utcOffsetHours.toInt()}',
-                                    style: GoogleFonts.cairo(
+                                    style: GoogleFonts.almarai(
                                       fontSize: 10.sp,
                                       fontWeight: FontWeight.w700,
                                       color: colors.textSecondary,
