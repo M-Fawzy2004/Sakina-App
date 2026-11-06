@@ -130,6 +130,7 @@ void main() {
       await tester.scrollUntilVisible(find.text('التَّذْكِيرَاتُ وَالوِرْدُ اليَوْمِيُّ'), 150.0);
       await tester.pumpAndSettle();
       expect(find.text('التَّذْكِيرَاتُ وَالوِرْدُ اليَوْمِيُّ'), findsOneWidget);
+      expect(find.text('تَنْبِيهَاتُ الصَّلَوَاتِ (قَبْلَ الأَذَانِ بِـ ٥ دَقَائِق)'), findsOneWidget);
 
       await tester.scrollUntilVisible(find.text('الأَمَانُ وَخُصُوصِيَّةُ الإِنَابَةِ'), 150.0);
       await tester.pumpAndSettle();

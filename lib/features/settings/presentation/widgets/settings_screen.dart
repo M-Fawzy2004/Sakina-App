@@ -50,6 +50,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _dailyQuranReminder = true;
   bool _dailyHopeReminder = true;
   bool _nightPrayerReminder = true;
+  bool _prePrayerReminder = true;
   bool _rotatingQuranNotifications = true;
 
   // Security & Inaba
@@ -79,6 +80,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     _dailyQuranReminder = data.dailyQuranReminder;
     _dailyHopeReminder = data.dailyHopeReminder;
     _nightPrayerReminder = data.nightPrayerReminder;
+    _prePrayerReminder = data.prePrayerReminder;
     _rotatingQuranNotifications = data.rotatingQuranNotifications;
     _inabaBiometricLock = data.inabaLock;
     _stealthNotifications = data.stealthNotifications;
@@ -282,6 +284,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         dailyQuranReminder: _dailyQuranReminder,
                         dailyHopeReminder: _dailyHopeReminder,
                         nightPrayerReminder: _nightPrayerReminder,
+                        prePrayerReminder: _prePrayerReminder,
                         rotatingQuranNotifications: _rotatingQuranNotifications,
                         onMorningEveningChanged: (val) => _updateNotifPref(
                           SettingsPersistenceManager.keyMorningEveningAzkar,
@@ -310,6 +313,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           (v) => _nightPrayerReminder = v,
                           'تذكير قيام الليل والأسحار',
                           (s) => s.scheduleNightPrayerReminder(enabled: val),
+                        ),
+                        onPrePrayerChanged: (val) => _updateNotifPref(
+                          SettingsPersistenceManager.keyPrePrayerReminder,
+                          val,
+                          (v) => _prePrayerReminder = v,
+                          'تنبيهات ما قبل الصلاة',
+                          (s) => s.schedulePrePrayerReminders(enabled: val),
                         ),
                         onRotatingQuranChanged: (val) => _updateNotifPref(
                           SettingsPersistenceManager

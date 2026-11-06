@@ -173,12 +173,83 @@ void main() {
           .called(1);
     });
 
-    test('syncAllNotifications coordinates all 4 reminder types', () async {
+    test('schedulePrePrayerReminders schedules 5 daily pre-prayer notifications when enabled', () async {
+      await service.schedulePrePrayerReminders(enabled: true);
+
+      verify(() => mockPlugin.zonedSchedule(
+            id: LocalNotificationServiceImpl.idPrePrayerFajr,
+            title: any(named: 'title'),
+            body: any(named: 'body'),
+            scheduledDate: any(named: 'scheduledDate'),
+            notificationDetails: any(named: 'notificationDetails'),
+            androidScheduleMode: any(named: 'androidScheduleMode'),
+            matchDateTimeComponents: any(named: 'matchDateTimeComponents'),
+            payload: 'pre_prayer_fajr',
+          )).called(1);
+
+      verify(() => mockPlugin.zonedSchedule(
+            id: LocalNotificationServiceImpl.idPrePrayerDhuhr,
+            title: any(named: 'title'),
+            body: any(named: 'body'),
+            scheduledDate: any(named: 'scheduledDate'),
+            notificationDetails: any(named: 'notificationDetails'),
+            androidScheduleMode: any(named: 'androidScheduleMode'),
+            matchDateTimeComponents: any(named: 'matchDateTimeComponents'),
+            payload: 'pre_prayer_dhuhr',
+          )).called(1);
+
+      verify(() => mockPlugin.zonedSchedule(
+            id: LocalNotificationServiceImpl.idPrePrayerAsr,
+            title: any(named: 'title'),
+            body: any(named: 'body'),
+            scheduledDate: any(named: 'scheduledDate'),
+            notificationDetails: any(named: 'notificationDetails'),
+            androidScheduleMode: any(named: 'androidScheduleMode'),
+            matchDateTimeComponents: any(named: 'matchDateTimeComponents'),
+            payload: 'pre_prayer_asr',
+          )).called(1);
+
+      verify(() => mockPlugin.zonedSchedule(
+            id: LocalNotificationServiceImpl.idPrePrayerMaghrib,
+            title: any(named: 'title'),
+            body: any(named: 'body'),
+            scheduledDate: any(named: 'scheduledDate'),
+            notificationDetails: any(named: 'notificationDetails'),
+            androidScheduleMode: any(named: 'androidScheduleMode'),
+            matchDateTimeComponents: any(named: 'matchDateTimeComponents'),
+            payload: 'pre_prayer_maghrib',
+          )).called(1);
+
+      verify(() => mockPlugin.zonedSchedule(
+            id: LocalNotificationServiceImpl.idPrePrayerIsha,
+            title: any(named: 'title'),
+            body: any(named: 'body'),
+            scheduledDate: any(named: 'scheduledDate'),
+            notificationDetails: any(named: 'notificationDetails'),
+            androidScheduleMode: any(named: 'androidScheduleMode'),
+            matchDateTimeComponents: any(named: 'matchDateTimeComponents'),
+            payload: 'pre_prayer_isha',
+          )).called(1);
+    });
+
+    test('schedulePrePrayerReminders cancels all 5 notifications when disabled', () async {
+      await service.schedulePrePrayerReminders(enabled: false);
+
+      verify(() => mockPlugin.cancel(id: LocalNotificationServiceImpl.idPrePrayerFajr)).called(1);
+      verify(() => mockPlugin.cancel(id: LocalNotificationServiceImpl.idPrePrayerDhuhr)).called(1);
+      verify(() => mockPlugin.cancel(id: LocalNotificationServiceImpl.idPrePrayerAsr)).called(1);
+      verify(() => mockPlugin.cancel(id: LocalNotificationServiceImpl.idPrePrayerMaghrib)).called(1);
+      verify(() => mockPlugin.cancel(id: LocalNotificationServiceImpl.idPrePrayerIsha)).called(1);
+    });
+
+    test('syncAllNotifications coordinates all reminder types', () async {
       await service.syncAllNotifications(
         morningEveningAzkar: true,
         dailyQuranReminder: false,
         dailyHopeReminder: true,
         nightPrayerReminder: false,
+        prePrayerReminders: false,
+        rotatingQuranNotifications: false,
       );
 
       verify(() => mockPlugin.zonedSchedule(
@@ -238,6 +309,7 @@ void main() {
         dailyQuranReminder: true,
         dailyHopeReminder: true,
         nightPrayerReminder: true,
+        prePrayerReminders: true,
         rotatingQuranNotifications: false,
       );
 
@@ -247,8 +319,8 @@ void main() {
         unicode: true,
       );
 
-      expect(capturedTitles.length, 5); // 2 azkar + 1 quran + 1 hope + 1 night
-      expect(capturedBodies.length, 5);
+      expect(capturedTitles.length, 10); // 2 azkar + 1 quran + 1 hope + 1 night + 5 pre-prayer
+      expect(capturedBodies.length, 10);
 
       for (final title in capturedTitles) {
         expect(emojiRegex.hasMatch(title), isFalse,
@@ -347,6 +419,7 @@ void main() {
       verify(() => mockPrefs.setBool(SettingsPersistenceManager.keyDailyQuranReminder, true)).called(1);
       verify(() => mockPrefs.setBool(SettingsPersistenceManager.keyDailyHopeReminder, true)).called(1);
       verify(() => mockPrefs.setBool(SettingsPersistenceManager.keyNightPrayerReminder, true)).called(1);
+      verify(() => mockPrefs.setBool(SettingsPersistenceManager.keyPrePrayerReminder, true)).called(1);
       verify(() => mockPrefs.setBool(SettingsPersistenceManager.keyRotatingQuranNotifications, true)).called(1);
     });
 
@@ -369,6 +442,7 @@ void main() {
       verify(() => mockPrefs.setBool(SettingsPersistenceManager.keyDailyQuranReminder, false)).called(1);
       verify(() => mockPrefs.setBool(SettingsPersistenceManager.keyDailyHopeReminder, false)).called(1);
       verify(() => mockPrefs.setBool(SettingsPersistenceManager.keyNightPrayerReminder, false)).called(1);
+      verify(() => mockPrefs.setBool(SettingsPersistenceManager.keyPrePrayerReminder, false)).called(1);
       verify(() => mockPrefs.setBool(SettingsPersistenceManager.keyRotatingQuranNotifications, false)).called(1);
       verify(() => mockPlugin.cancelAll()).called(1);
     });

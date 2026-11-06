@@ -19,6 +19,7 @@ abstract class LocalNotificationService {
   Future<void> scheduleDailyQuranReminder({required bool enabled});
   Future<void> scheduleDailyHopeReminder({required bool enabled});
   Future<void> scheduleNightPrayerReminder({required bool enabled});
+  Future<void> schedulePrePrayerReminders({required bool enabled});
   Future<void> scheduleRotatingQuranNotifications({
     required bool enabled,
     PreferencesService? prefs,
@@ -28,6 +29,7 @@ abstract class LocalNotificationService {
     required bool dailyQuranReminder,
     required bool dailyHopeReminder,
     required bool nightPrayerReminder,
+    bool prePrayerReminders = true,
     bool rotatingQuranNotifications = true,
     PreferencesService? prefs,
   });
@@ -57,6 +59,12 @@ class LocalNotificationServiceImpl implements LocalNotificationService {
   static const int idDailyQuran = 103;
   static const int idDailyHope = 104;
   static const int idNightPrayer = 105;
+
+  static const int idPrePrayerFajr = 201;
+  static const int idPrePrayerDhuhr = 202;
+  static const int idPrePrayerAsr = 203;
+  static const int idPrePrayerMaghrib = 204;
+  static const int idPrePrayerIsha = 205;
 
   static const int idRotatingQuranBase = 300;
   static const int rotatingDaysAhead = 7;
@@ -189,6 +197,10 @@ class LocalNotificationServiceImpl implements LocalNotificationService {
         true,
       );
       await prefs.setBool(
+        SettingsPersistenceManager.keyPrePrayerReminder,
+        true,
+      );
+      await prefs.setBool(
         SettingsPersistenceManager.keyRotatingQuranNotifications,
         true,
       );
@@ -198,6 +210,7 @@ class LocalNotificationServiceImpl implements LocalNotificationService {
         dailyQuranReminder: true,
         dailyHopeReminder: true,
         nightPrayerReminder: true,
+        prePrayerReminders: true,
         rotatingQuranNotifications: true,
         prefs: prefs,
       );
@@ -220,6 +233,10 @@ class LocalNotificationServiceImpl implements LocalNotificationService {
       );
       await prefs.setBool(
         SettingsPersistenceManager.keyNightPrayerReminder,
+        false,
+      );
+      await prefs.setBool(
+        SettingsPersistenceManager.keyPrePrayerReminder,
         false,
       );
       await prefs.setBool(
@@ -398,6 +415,73 @@ class LocalNotificationServiceImpl implements LocalNotificationService {
   }
 
   @override
+  Future<void> schedulePrePrayerReminders({required bool enabled}) async {
+    if (!enabled) {
+      await cancel(idPrePrayerFajr);
+      await cancel(idPrePrayerDhuhr);
+      await cancel(idPrePrayerAsr);
+      await cancel(idPrePrayerMaghrib);
+      await cancel(idPrePrayerIsha);
+      return;
+    }
+
+    // Fajr (04:41) - 5 mins = 04:36
+    await _scheduleDaily(
+      id: idPrePrayerFajr,
+      title: 'اقترب موعد أذان الفجر',
+      body:
+          'بقيت خمس دقائق على أذان الفجر؛ تهيأ للوقوف بين يدي الله والوضوء لصلاة الفجر المباركة.',
+      hour: 4,
+      minute: 36,
+      payload: 'pre_prayer_fajr',
+    );
+
+    // Dhuhr (11:40) - 5 mins = 11:35
+    await _scheduleDaily(
+      id: idPrePrayerDhuhr,
+      title: 'اقترب موعد أذان الظهر',
+      body:
+          'بقيت خمس دقائق على أذان الظهر؛ أقبل على صلاتك وتهيأ لإراحة فؤادك بين يدي ربك.',
+      hour: 11,
+      minute: 35,
+      payload: 'pre_prayer_dhuhr',
+    );
+
+    // Asr (14:43) - 5 mins = 14:38
+    await _scheduleDaily(
+      id: idPrePrayerAsr,
+      title: 'اقترب موعد أذان العصر',
+      body:
+          'بقيت خمس دقائق على أذان العصر؛ حافظ على الصلاة الوسطى وأقبل على لقاء الله بقلب خاشع.',
+      hour: 14,
+      minute: 38,
+      payload: 'pre_prayer_asr',
+    );
+
+    // Maghrib (17:07) - 5 mins = 17:02
+    await _scheduleDaily(
+      id: idPrePrayerMaghrib,
+      title: 'اقترب موعد أذان المغرب',
+      body:
+          'بقيت خمس دقائق على أذان المغرب؛ اختم نهارك بذكر الله وتهيأ لأداء الفريضة.',
+      hour: 17,
+      minute: 2,
+      payload: 'pre_prayer_maghrib',
+    );
+
+    // Isha (18:26) - 5 mins = 18:21
+    await _scheduleDaily(
+      id: idPrePrayerIsha,
+      title: 'اقترب موعد أذان العشاء',
+      body:
+          'بقيت خمس دقائق على أذان العشاء؛ أقبل على صلاتك واختم يومك بالطاعة والسكينة.',
+      hour: 18,
+      minute: 21,
+      payload: 'pre_prayer_isha',
+    );
+  }
+
+  @override
   Future<void> scheduleRotatingQuranNotifications({
     required bool enabled,
     PreferencesService? prefs,
@@ -502,6 +586,7 @@ class LocalNotificationServiceImpl implements LocalNotificationService {
     required bool dailyQuranReminder,
     required bool dailyHopeReminder,
     required bool nightPrayerReminder,
+    bool prePrayerReminders = true,
     bool rotatingQuranNotifications = true,
     PreferencesService? prefs,
   }) async {
@@ -509,6 +594,7 @@ class LocalNotificationServiceImpl implements LocalNotificationService {
     await scheduleDailyQuranReminder(enabled: dailyQuranReminder);
     await scheduleDailyHopeReminder(enabled: dailyHopeReminder);
     await scheduleNightPrayerReminder(enabled: nightPrayerReminder);
+    await schedulePrePrayerReminders(enabled: prePrayerReminders);
     await scheduleRotatingQuranNotifications(
       enabled: rotatingQuranNotifications,
       prefs: prefs,

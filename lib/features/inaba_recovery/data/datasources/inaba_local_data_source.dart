@@ -126,13 +126,22 @@ class InabaLocalDataSourceImpl implements InabaLocalDataSource {
   @override
   Future<List<DailyHopeDoseModel>> getHopeDoses() async {
     final raw = _prefs.getString(_keyHopeDoses);
+    final seeds = InabaSeedData.hopeDoses;
     if (raw != null && raw.isNotEmpty) {
       try {
-        final list = jsonDecode(raw) as List<dynamic>;
-        return list.map((item) => DailyHopeDoseModel.fromJson(item as Map<String, dynamic>)).toList();
+        final list = (jsonDecode(raw) as List<dynamic>)
+            .map((item) => DailyHopeDoseModel.fromJson(item as Map<String, dynamic>))
+            .toList();
+        if (seeds.length > list.length) {
+          final existingIds = list.map((d) => d.id).toSet();
+          final newItems = seeds.where((s) => !existingIds.contains(s.id)).toList();
+          final merged = [...list, ...newItems];
+          await _saveHopeDoses(merged);
+          return merged;
+        }
+        return list;
       } catch (_) {}
     }
-    final seeds = InabaSeedData.hopeDoses;
     await _saveHopeDoses(seeds);
     return seeds;
   }

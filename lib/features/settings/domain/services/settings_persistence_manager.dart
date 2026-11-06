@@ -15,6 +15,7 @@ abstract final class SettingsPersistenceManager {
   static const String keyDailyQuranReminder = 'sakina_reminder_daily_quran';
   static const String keyDailyHopeReminder = 'sakina_reminder_daily_hope';
   static const String keyNightPrayerReminder = 'sakina_reminder_night_prayer';
+  static const String keyPrePrayerReminder = 'sakina_reminder_pre_prayer';
   static const String keyRotatingQuranNotifications =
       'sakina_reminder_rotating_quran';
   static const String keyShownQuranNotificationIds =
@@ -39,6 +40,7 @@ abstract final class SettingsPersistenceManager {
     bool dailyQuranReminder,
     bool dailyHopeReminder,
     bool nightPrayerReminder,
+    bool prePrayerReminder,
     bool rotatingQuranNotifications,
     bool inabaLock,
     bool stealthNotifications,
@@ -58,6 +60,7 @@ abstract final class SettingsPersistenceManager {
       dailyQuranReminder: prefs.getBool(keyDailyQuranReminder) ?? true,
       dailyHopeReminder: prefs.getBool(keyDailyHopeReminder) ?? true,
       nightPrayerReminder: prefs.getBool(keyNightPrayerReminder) ?? true,
+      prePrayerReminder: prefs.getBool(keyPrePrayerReminder) ?? true,
       rotatingQuranNotifications:
           prefs.getBool(keyRotatingQuranNotifications) ?? true,
       inabaLock: prefs.getBool(keyInabaLock) ?? true,
@@ -78,6 +81,7 @@ abstract final class SettingsPersistenceManager {
     await prefs.remove(keyDailyQuranReminder);
     await prefs.remove(keyDailyHopeReminder);
     await prefs.remove(keyNightPrayerReminder);
+    await prefs.remove(keyPrePrayerReminder);
     await prefs.remove(keyRotatingQuranNotifications);
     await prefs.remove(keyShownQuranNotificationIds);
     await prefs.remove(keyNotificationPermissionPrompted);

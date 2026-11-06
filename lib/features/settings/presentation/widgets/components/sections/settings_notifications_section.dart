@@ -11,11 +11,13 @@ class SettingsNotificationsSection extends StatelessWidget {
   final bool dailyQuranReminder;
   final bool dailyHopeReminder;
   final bool nightPrayerReminder;
+  final bool prePrayerReminder;
   final bool rotatingQuranNotifications;
   final ValueChanged<bool> onMorningEveningChanged;
   final ValueChanged<bool> onDailyQuranChanged;
   final ValueChanged<bool> onDailyHopeChanged;
   final ValueChanged<bool> onNightPrayerChanged;
+  final ValueChanged<bool> onPrePrayerChanged;
   final ValueChanged<bool> onRotatingQuranChanged;
 
   const SettingsNotificationsSection({
@@ -24,11 +26,13 @@ class SettingsNotificationsSection extends StatelessWidget {
     required this.dailyQuranReminder,
     required this.dailyHopeReminder,
     required this.nightPrayerReminder,
+    required this.prePrayerReminder,
     required this.rotatingQuranNotifications,
     required this.onMorningEveningChanged,
     required this.onDailyQuranChanged,
     required this.onDailyHopeChanged,
     required this.onNightPrayerChanged,
+    required this.onPrePrayerChanged,
     required this.onRotatingQuranChanged,
   });
 
@@ -79,6 +83,17 @@ class SettingsNotificationsSection extends StatelessWidget {
           subtitle: 'نَفَحَاتُ الثُّلُثِ الأَخِيرِ مِنَ اللَّيْلِ وَالاسْتِغْفَارِ',
           value: nightPrayerReminder,
           onChanged: onNightPrayerChanged,
+        ),
+        Divider(
+          color: colors.borderHairline.withValues(alpha: 0.5),
+          height: 1.h,
+        ),
+        SettingsSwitchTile(
+          icon: Iconsax.clock,
+          title: 'تَنْبِيهَاتُ الصَّلَوَاتِ (قَبْلَ الأَذَانِ بِـ ٥ دَقَائِق)',
+          subtitle: 'تَهَيَّأْ لِلْوُقُوفِ بَيْنَ يَدَيْ اللهِ وَإِسْبَاغِ الوُضُوءِ لِكُلِّ صَلَاة',
+          value: prePrayerReminder,
+          onChanged: onPrePrayerChanged,
         ),
         Divider(
           color: colors.borderHairline.withValues(alpha: 0.5),

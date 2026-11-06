@@ -59,6 +59,7 @@ void main() async {
               dailyQuranReminder: data.dailyQuranReminder,
               dailyHopeReminder: data.dailyHopeReminder,
               nightPrayerReminder: data.nightPrayerReminder,
+              prePrayerReminders: data.prePrayerReminder,
               rotatingQuranNotifications: data.rotatingQuranNotifications,
               prefs: prefs,
             ),

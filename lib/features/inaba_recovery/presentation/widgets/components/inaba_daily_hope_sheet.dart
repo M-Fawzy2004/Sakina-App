@@ -291,39 +291,6 @@ class _InabaDailyHopeSheetState extends State<InabaDailyHopeSheet> {
                         color: colors.textSecondary,
                       ),
                     ),
-                    SizedBox(width: 8.w),
-
-                    // Bookmark Button
-                    IconButton(
-                      tooltip:
-                          activeDose?.isSaved == true ? 'محفوظة' : 'حفظ',
-                      style: IconButton.styleFrom(
-                        backgroundColor: colors.surfaceElevated,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14.r),
-                          side: BorderSide(
-                            color: activeDose?.isSaved == true
-                                ? colors.accentGold
-                                : colors.borderHairline,
-                            width: 1.r,
-                          ),
-                        ),
-                        padding: EdgeInsets.all(11.r),
-                      ),
-                      onPressed: () {
-                        HapticFeedback.selectionClick();
-                        cubit.toggleSaveCurrentHopeDose();
-                      },
-                      icon: Icon(
-                        activeDose?.isSaved == true
-                            ? Iconsax.archive_tick
-                            : Iconsax.archive_1,
-                        size: 19.r,
-                        color: activeDose?.isSaved == true
-                            ? colors.accentGold
-                            : colors.textSecondary,
-                      ),
-                    ),
                   ],
                 ),
               ],
