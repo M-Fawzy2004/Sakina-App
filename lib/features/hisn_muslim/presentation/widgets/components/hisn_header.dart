@@ -25,19 +25,19 @@ class HisnHeader extends StatelessWidget {
       child: Row(
         children: [
           InkWell(
-            borderRadius: BorderRadius.circular(14.r),
+            customBorder: const CircleBorder(),
             onTap: () {
               HapticService.selectionClick();
               onBackTap();
             },
             child: Container(
-              width: 42.r,
-              height: 42.r,
+              width: 44.r,
+              height: 44.r,
               decoration: BoxDecoration(
-                color: colors.surfaceElevated,
-                borderRadius: BorderRadius.circular(14.r),
+                color: colors.cardSurface,
+                shape: BoxShape.circle,
                 border: Border.all(
-                  color: colors.borderHairline,
+                  color: colors.borderHairline.withValues(alpha: 0.8),
                   width: 1.r,
                 ),
               ),

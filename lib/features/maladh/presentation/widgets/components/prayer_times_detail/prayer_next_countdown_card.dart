@@ -7,7 +7,7 @@ import 'package:sakina_app/core/theme/app_colors_scheme.dart';
 import 'package:sakina_app/features/maladh/domain/services/cairo_prayer_times_calculator.dart';
 
 /// Next prayer card displaying the upcoming prayer name, adhan time,
-/// and live countdown ticker formatted to the second.
+/// and live countdown ticker formatted to the second with spacious luxury proportions.
 class PrayerNextCountdownCard extends StatefulWidget {
   final PrayerScheduleInfo scheduleInfo;
 
@@ -89,63 +89,68 @@ class _PrayerNextCountdownCardState extends State<PrayerNextCountdownCard> {
     const accentCyan = Color(0xFF38BDF8);
 
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 6.h),
-      padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 16.h),
+      margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+      padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 22.h),
       decoration: BoxDecoration(
         color: colors.cardSurface,
-        borderRadius: BorderRadius.circular(18.r),
+        borderRadius: BorderRadius.circular(22.r),
         border: Border.all(
-          color: colors.borderHairline.withValues(alpha: 0.6),
-          width: 0.8.r,
+          color: colors.borderHairline.withValues(alpha: 0.7),
+          width: 1.r,
         ),
       ),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // 1. Left Section: Prayer Adhan Time & Live Countdown Ticker
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                nextTime,
-                style: GoogleFonts.cairo(
-                  fontSize: 22.sp,
-                  fontWeight: FontWeight.w800,
-                  color: colors.textPrimary,
-                  letterSpacing: 0.2,
+          // 1. Right Section (in RTL): "الصلاة القادمة" & Large Prayer Name
+          Expanded(
+            flex: 4,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'الصَّلَاةُ القَادِمَة',
+                  style: GoogleFonts.cairo(
+                    fontSize: 13.5.sp,
+                    fontWeight: FontWeight.w700,
+                    color: accentCyan,
+                    height: 1.2,
+                  ),
                 ),
-              ),
-              SizedBox(height: 2.h),
-              Text(
-                _formatTicker(_remaining),
-                style: GoogleFonts.cairo(
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.w700,
-                  color: accentCyan,
-                  letterSpacing: 0.6,
+                SizedBox(height: 2.h),
+                Text(
+                  nextName,
+                  style: GoogleFonts.cairo(
+                    fontSize: 28.sp,
+                    fontWeight: FontWeight.w900,
+                    color: colors.textPrimary,
+                    height: 1.15,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
 
-          // 2. Center Disc with Prayer Icon
+          // 2. Center Section (in RTL): Icon in circular disc
           Expanded(
+            flex: 3,
             child: Center(
               child: Container(
-                width: 44.r,
-                height: 44.r,
+                width: 54.r,
+                height: 54.r,
                 decoration: BoxDecoration(
                   color: accentCyan.withValues(alpha: 0.12),
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: accentCyan.withValues(alpha: 0.3),
-                    width: 0.8.r,
+                    color: accentCyan.withValues(alpha: 0.35),
+                    width: 1.r,
                   ),
                 ),
                 child: Center(
                   child: Icon(
                     icon,
-                    size: 22.r,
+                    size: 26.r,
                     color: accentCyan,
                   ),
                 ),
@@ -153,33 +158,39 @@ class _PrayerNextCountdownCardState extends State<PrayerNextCountdownCard> {
             ),
           ),
 
-          // 3. Right Section: "الصلاة القادمة" & Large Prayer Name
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'الصَّلَاةُ القَادِمَة',
-                style: GoogleFonts.cairo(
-                  fontSize: 12.sp,
-                  fontWeight: FontWeight.w700,
-                  color: accentCyan,
+          // 3. Left Section (in RTL): Prayer Adhan Time & Live Countdown Ticker
+          Expanded(
+            flex: 4,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  nextTime,
+                  style: GoogleFonts.cairo(
+                    fontSize: 26.sp,
+                    fontWeight: FontWeight.w900,
+                    color: colors.textPrimary,
+                    letterSpacing: 0.3,
+                    height: 1.15,
+                  ),
                 ),
-              ),
-              SizedBox(height: 2.h),
-              Text(
-                nextName,
-                style: GoogleFonts.cairo(
-                  fontSize: 22.sp,
-                  fontWeight: FontWeight.w800,
-                  color: colors.textPrimary,
+                SizedBox(height: 4.h),
+                Text(
+                  _formatTicker(_remaining),
+                  style: GoogleFonts.cairo(
+                    fontSize: 18.sp,
+                    fontWeight: FontWeight.w800,
+                    color: accentCyan,
+                    letterSpacing: 0.8,
+                    height: 1.2,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ],
       ),
     );
   }
 }
-

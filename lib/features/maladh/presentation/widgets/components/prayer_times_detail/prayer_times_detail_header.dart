@@ -26,21 +26,21 @@ class PrayerTimesDetailHeader extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
       child: Row(
         children: [
-          // 1. Back Button
+          // 1. Back Button (Circular)
           InkWell(
-            borderRadius: BorderRadius.circular(14.r),
+            customBorder: const CircleBorder(),
             onTap: () {
               HapticService.selectionClick();
               onBackTap();
             },
             child: Container(
-              width: 42.r,
-              height: 42.r,
+              width: 44.r,
+              height: 44.r,
               decoration: BoxDecoration(
-                color: colors.surfaceElevated,
-                borderRadius: BorderRadius.circular(14.r),
+                color: colors.cardSurface,
+                shape: BoxShape.circle,
                 border: Border.all(
-                  color: colors.borderHairline,
+                  color: colors.borderHairline.withValues(alpha: 0.8),
                   width: 1.r,
                 ),
               ),
@@ -63,7 +63,7 @@ class PrayerTimesDetailHeader extends StatelessWidget {
               children: [
                 Icon(
                   Iconsax.location5,
-                  size: 16.r,
+                  size: 18.r,
                   color: colors.accentGold,
                 ),
                 SizedBox(width: 6.w),
@@ -71,7 +71,7 @@ class PrayerTimesDetailHeader extends StatelessWidget {
                   child: Text(
                     cityName,
                     style: GoogleFonts.cairo(
-                      fontSize: 18.sp,
+                      fontSize: 19.sp,
                       fontWeight: FontWeight.w800,
                       color: colors.textPrimary,
                     ),
@@ -85,28 +85,28 @@ class PrayerTimesDetailHeader extends StatelessWidget {
 
           SizedBox(width: 12.w),
 
-          // 3. Location Selector Action
+          // 3. Location Selector Action (Circular)
           InkWell(
-            borderRadius: BorderRadius.circular(14.r),
+            customBorder: const CircleBorder(),
             onTap: () {
               HapticService.selectionClick();
               onLocationTap();
             },
             child: Container(
-              width: 42.r,
-              height: 42.r,
+              width: 44.r,
+              height: 44.r,
               decoration: BoxDecoration(
-                color: colors.surfaceElevated,
-                borderRadius: BorderRadius.circular(14.r),
+                color: colors.cardSurface,
+                shape: BoxShape.circle,
                 border: Border.all(
-                  color: colors.borderHairline,
+                  color: colors.borderHairline.withValues(alpha: 0.8),
                   width: 1.r,
                 ),
               ),
               child: Center(
                 child: Icon(
                   Iconsax.global,
-                  size: 19.r,
+                  size: 20.r,
                   color: colors.accentGold,
                 ),
               ),

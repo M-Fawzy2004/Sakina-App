@@ -6,7 +6,7 @@ import 'package:sakina_app/core/theme/app_colors_scheme.dart';
 import 'package:sakina_app/features/maladh/domain/services/cairo_prayer_times_calculator.dart';
 
 /// Detailed 6-slot prayer times card displaying Fajr, Sunrise, Dhuhr, Asr,
-/// Maghrib, and Isha with calculated Iqamah times and active prayer indicators.
+/// Maghrib, and Isha with calculated Iqamah times and spacious, luxury proportions.
 class PrayerTimesFullListCard extends StatelessWidget {
   final PrayerScheduleInfo scheduleInfo;
   final DateTime now;
@@ -98,13 +98,13 @@ class PrayerTimesFullListCard extends StatelessWidget {
     ];
 
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 6.h),
+      margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
       decoration: BoxDecoration(
         color: colors.cardSurface,
-        borderRadius: BorderRadius.circular(18.r),
+        borderRadius: BorderRadius.circular(22.r),
         border: Border.all(
-          color: colors.borderHairline.withValues(alpha: 0.6),
-          width: 0.8.r,
+          color: colors.borderHairline.withValues(alpha: 0.7),
+          width: 1.r,
         ),
       ),
       clipBehavior: Clip.antiAlias,
@@ -120,8 +120,8 @@ class PrayerTimesFullListCard extends StatelessWidget {
               _PrayerItemRow(data: item),
               if (!isLast)
                 Container(
-                  height: 0.8.h,
-                  color: colors.borderHairline.withValues(alpha: 0.35),
+                  height: 1.h,
+                  color: colors.borderHairline.withValues(alpha: 0.4),
                 ),
             ],
           );
@@ -158,70 +158,57 @@ class _PrayerItemRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.colors;
     final highlightBg = data.isNext
-        ? colors.accentGold.withValues(alpha: 0.08)
+        ? colors.accentGold.withValues(alpha: 0.12)
         : Colors.transparent;
     final primaryColor = data.isNext ? colors.accentGold : colors.textPrimary;
     final secondaryColor = colors.textSecondary;
 
     return Container(
       color: highlightBg,
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+      padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 17.h),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // 1. Left side: Time in 12-hour format with ص/م and sub-label
-          Flexible(
-            flex: 4,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  data.timeFormatted,
-                  style: GoogleFonts.cairo(
-                    fontSize: 15.sp,
-                    fontWeight: FontWeight.w800,
-                    color: primaryColor,
-                    letterSpacing: 0.2,
-                  ),
+          // 1. Right side (in RTL): Prayer Name
+          Expanded(
+            flex: 3,
+            child: Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: Text(
+                data.name,
+                style: GoogleFonts.cairo(
+                  fontSize: 19.sp,
+                  fontWeight: FontWeight.w900,
+                  color: primaryColor,
+                  height: 1.2,
                 ),
-                SizedBox(height: 2.h),
-                Text(
-                  data.subLabel,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.cairo(
-                    fontSize: 10.5.sp,
-                    fontWeight: FontWeight.w600,
-                    color: secondaryColor,
-                  ),
-                ),
-              ],
+              ),
             ),
           ),
 
-          // 2. Center: Icon in circular disc
-          Flexible(
+          // 2. Center (in RTL): Icon in circular disc
+          Expanded(
             flex: 2,
             child: Center(
               child: Container(
-                width: 34.r,
-                height: 34.r,
+                width: 44.r,
+                height: 44.r,
                 decoration: BoxDecoration(
                   color: data.isNext
-                      ? colors.accentGold.withValues(alpha: 0.15)
+                      ? colors.accentGold.withValues(alpha: 0.18)
                       : colors.surfaceElevated,
                   shape: BoxShape.circle,
                   border: Border.all(
                     color: data.isNext
-                        ? colors.accentGold.withValues(alpha: 0.35)
-                        : colors.borderHairline.withValues(alpha: 0.6),
-                    width: 0.8.r,
+                        ? colors.accentGold.withValues(alpha: 0.4)
+                        : colors.borderHairline.withValues(alpha: 0.7),
+                    width: 1.r,
                   ),
                 ),
                 child: Center(
                   child: Icon(
                     data.icon,
-                    size: 17.r,
+                    size: 22.r,
                     color: data.isNext ? colors.accentGold : colors.textSecondary,
                   ),
                 ),
@@ -229,19 +216,35 @@ class _PrayerItemRow extends StatelessWidget {
             ),
           ),
 
-          // 3. Right side: Prayer Name
-          Flexible(
-            flex: 3,
-            child: Align(
-              alignment: AlignmentDirectional.centerEnd,
-              child: Text(
-                data.name,
-                style: GoogleFonts.cairo(
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.w800,
-                  color: primaryColor,
+          // 3. Left side (in RTL): Time in 12-hour format with ص/م and Iqamah
+          Expanded(
+            flex: 4,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  data.timeFormatted,
+                  style: GoogleFonts.cairo(
+                    fontSize: 18.sp,
+                    fontWeight: FontWeight.w900,
+                    color: primaryColor,
+                    letterSpacing: 0.3,
+                    height: 1.15,
+                  ),
                 ),
-              ),
+                SizedBox(height: 3.h),
+                Text(
+                  data.subLabel,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.cairo(
+                    fontSize: 12.5.sp,
+                    fontWeight: FontWeight.w700,
+                    color: secondaryColor,
+                  ),
+                ),
+              ],
             ),
           ),
         ],

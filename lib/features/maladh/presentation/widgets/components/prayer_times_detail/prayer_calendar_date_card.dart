@@ -6,7 +6,7 @@ import 'package:sakina_app/core/theme/app_colors_scheme.dart';
 import 'package:sakina_app/features/maladh/domain/services/prayer_date_formatter.dart';
 
 /// Celestial date and calendar banner displaying current day, month, moon crest,
-/// and matching dual Hijri/Gregorian numeric pills.
+/// and matching dual Hijri/Gregorian numeric pills with generous, luxury proportions.
 class PrayerCalendarDateCard extends StatelessWidget {
   final DateTime now;
 
@@ -24,90 +24,92 @@ class PrayerCalendarDateCard extends StatelessWidget {
     final hijri = PrayerDateFormatter.computeHijri(now);
 
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 6.h),
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
+      margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+      padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
       decoration: BoxDecoration(
         color: colors.cardSurface,
-        borderRadius: BorderRadius.circular(18.r),
+        borderRadius: BorderRadius.circular(22.r),
         border: Border.all(
-          color: colors.borderHairline.withValues(alpha: 0.6),
-          width: 0.8.r,
+          color: colors.borderHairline.withValues(alpha: 0.7),
+          width: 1.r,
         ),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // 1. Celestial Header Row: [Month Name] • [Moon Icon] • [Day Name]
+          // 1. Celestial Header Row in RTL: [Day Name (Right)] • [Moon Disc (Center)] • [Month Name (Left)]
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              // Gregorian Month Name
+              // Day of the Week (Right in RTL)
               Expanded(
                 child: Text(
-                  monthName,
+                  dayName,
                   textAlign: TextAlign.start,
                   style: GoogleFonts.cairo(
-                    fontSize: 20.sp,
-                    fontWeight: FontWeight.w800,
+                    fontSize: 24.sp,
+                    fontWeight: FontWeight.w900,
                     color: colors.textPrimary,
+                    height: 1.15,
                   ),
                 ),
               ),
 
               // Crescent Moon Center Disc
               Container(
-                width: 38.r,
-                height: 38.r,
+                width: 48.r,
+                height: 48.r,
                 decoration: BoxDecoration(
                   color: colors.accentGold.withValues(alpha: 0.12),
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: colors.accentGold.withValues(alpha: 0.3),
-                    width: 0.8.r,
+                    color: colors.accentGold.withValues(alpha: 0.35),
+                    width: 1.r,
                   ),
                 ),
                 child: Center(
                   child: Icon(
                     FlutterIslamicIcons.solidCrescentMoon,
-                    size: 18.r,
+                    size: 24.r,
                     color: colors.accentGold,
                   ),
                 ),
               ),
 
-              // Day of the Week
+              // Gregorian Month Name (Left in RTL)
               Expanded(
                 child: Text(
-                  dayName,
+                  monthName,
                   textAlign: TextAlign.end,
                   style: GoogleFonts.cairo(
-                    fontSize: 20.sp,
-                    fontWeight: FontWeight.w800,
+                    fontSize: 24.sp,
+                    fontWeight: FontWeight.w900,
                     color: colors.textPrimary,
+                    height: 1.15,
                   ),
                 ),
               ),
             ],
           ),
 
-          SizedBox(height: 12.h),
+          SizedBox(height: 16.h),
 
-          // 2. Dual Rounded Date Chips (Gregorian & Hijri)
+          // 2. Dual Rounded Date Chips in RTL: [Hijri (Right)] • [Gregorian (Left)]
           Row(
             children: [
-              // Gregorian Numeric Pill
-              Expanded(
-                child: _DatePillChip(
-                  label: gregorianNumeric,
-                ),
-              ),
-
-              SizedBox(width: 12.w),
-
-              // Hijri Numeric Pill
+              // Hijri Numeric Pill (Right in RTL)
               Expanded(
                 child: _DatePillChip(
                   label: hijri.formattedNumeric,
+                ),
+              ),
+
+              SizedBox(width: 14.w),
+
+              // Gregorian Numeric Pill (Left in RTL)
+              Expanded(
+                child: _DatePillChip(
+                  label: gregorianNumeric,
                 ),
               ),
             ],
@@ -130,27 +132,26 @@ class _DatePillChip extends StatelessWidget {
     final colors = context.colors;
 
     return Container(
-      height: 36.h,
+      height: 44.h,
       decoration: BoxDecoration(
         color: colors.surfaceElevated,
-        borderRadius: BorderRadius.circular(12.r),
+        borderRadius: BorderRadius.circular(14.r),
         border: Border.all(
-          color: colors.borderHairline.withValues(alpha: 0.7),
-          width: 0.8.r,
+          color: colors.borderHairline.withValues(alpha: 0.8),
+          width: 1.r,
         ),
       ),
       child: Center(
         child: Text(
           label,
           style: GoogleFonts.cairo(
-            fontSize: 13.sp,
-            fontWeight: FontWeight.w700,
+            fontSize: 15.sp,
+            fontWeight: FontWeight.w800,
             color: colors.textPrimary,
-            letterSpacing: 0.4,
+            letterSpacing: 0.5,
           ),
         ),
       ),
     );
   }
 }
-
