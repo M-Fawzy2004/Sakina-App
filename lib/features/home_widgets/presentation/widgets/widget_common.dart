@@ -128,12 +128,16 @@ class WidgetTitle extends StatelessWidget {
       children: [
         Icon(icon, color: AppColors.champagneGold, size: iconSize),
         const SizedBox(width: 5),
-        Text(
-          text,
-          style: GoogleFonts.almarai(
-            fontSize: fontSize,
-            color: AppColors.champagneGold,
-            fontWeight: FontWeight.bold,
+        Flexible(
+          child: Text(
+            text,
+            style: GoogleFonts.almarai(
+              fontSize: fontSize,
+              color: AppColors.champagneGold,
+              fontWeight: FontWeight.bold,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
         ),
       ],

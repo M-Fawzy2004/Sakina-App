@@ -33,16 +33,19 @@ class TasbeehSmallWidgetView extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const WidgetTitle(
-                      icon: Icons.blur_circular_rounded,
-                      text: 'التسبيح اليومي',
-                      fontSize: 10,
-                      iconSize: 12,
+                    const Flexible(
+                      child: WidgetTitle(
+                        icon: Icons.blur_circular_rounded,
+                        text: 'التسبيح اليومي',
+                        fontSize: 9.5,
+                        iconSize: 11,
+                      ),
                     ),
                     if (data.shortTitle.isNotEmpty) ...[
                       const SizedBox(width: 4),
-                      Expanded(
+                      Flexible(
                         child: Text(
                           data.shortTitle,
                           textAlign: TextAlign.end,

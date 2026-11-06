@@ -74,12 +74,12 @@ class _TimeText extends StatelessWidget {
 class _PrayerHeader extends StatelessWidget {
   final String cityName;
   final String hijriDate;
-  final double fontSize;
+  static const double fontSize = 12;
 
   const _PrayerHeader({
     required this.cityName,
     required this.hijriDate,
-  }) : fontSize = 12;
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -89,7 +89,7 @@ class _PrayerHeader extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(
+              const Icon(
                 Icons.location_on_rounded,
                 color: AppColors.champagneGold,
                 size: fontSize + 2,
@@ -465,86 +465,105 @@ class PrayerSmallWidgetView extends StatelessWidget {
           width: 170,
           height: 170,
           child: WidgetFrame(
-            padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
+            padding: const EdgeInsets.fromLTRB(10, 9, 10, 8),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Expanded(
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(
-                            Icons.location_on_rounded,
-                            color: AppColors.champagneGold,
-                            size: 12,
-                          ),
-                          const SizedBox(width: 3),
-                          Flexible(
-                            child: Text(
-                              data.cityName,
-                              style: GoogleFonts.almarai(
-                                fontSize: 10.5,
-                                color: AppColors.pureChalk,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
+                    const Flexible(
+                      child: WidgetTitle(
+                        icon: Icons.access_time_filled_rounded,
+                        text: 'الصلاة القادمة',
+                        fontSize: 9.5,
+                        iconSize: 11,
                       ),
                     ),
                     const SizedBox(width: 4),
-                    const WidgetBrandMark(fontSize: 9.5),
+                    if (data.cityName.isNotEmpty)
+                      Flexible(
+                        child: Text(
+                          data.cityName,
+                          style: GoogleFonts.almarai(
+                            fontSize: 9,
+                            color: AppColors.mutedSilver,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
                   ],
                 ),
-                Column(
-                  children: [
-                    Text(
-                      'الصلاة القادمة',
-                      style: GoogleFonts.almarai(
-                        fontSize: 9.5,
-                        color: AppColors.champagneGold,
-                        fontWeight: FontWeight.bold,
-                      ),
+                const SizedBox(height: 5),
+                const OrnamentDivider(),
+                Expanded(
+                  child: Center(
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 36,
+                          height: 36,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: AppColors.champagneGold.withValues(alpha: 0.12),
+                            border: Border.all(
+                              color: AppColors.champagneGold.withValues(alpha: 0.5),
+                              width: 1,
+                            ),
+                          ),
+                          child: Icon(
+                            _prayerIcon(data.nextPrayerName),
+                            color: AppColors.champagneGold,
+                            size: 18,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                data.nextPrayerName,
+                                style: GoogleFonts.almarai(
+                                  fontSize: 18,
+                                  color: AppColors.pureChalk,
+                                  fontWeight: FontWeight.bold,
+                                  height: 1.15,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 2),
+                              _TimeText(
+                                time: data.nextPrayerTime,
+                                mainSize: 14,
+                                suffixSize: 8.5,
+                                color: AppColors.champagneGold,
+                                suffixColor: AppColors.champagneGold,
+                                inline: true,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 2),
-                    Text(
-                      data.nextPrayerName,
-                      style: GoogleFonts.almarai(
-                        fontSize: 26,
-                        color: AppColors.pureChalk,
-                        fontWeight: FontWeight.bold,
-                        height: 1.15,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 2),
-                    _TimeText(
-                      time: data.nextPrayerTime,
-                      mainSize: 16,
-                      suffixSize: 10,
-                      color: AppColors.champagneGold,
-                      suffixColor: AppColors.champagneGold,
-                      inline: true,
-                    ),
-                  ],
+                  ),
                 ),
-                Column(
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const OrnamentDivider(),
-                    const SizedBox(height: 6),
-                    Center(
+                    Flexible(
                       child: WidgetPill(
                         text: data.remainingCountdown,
-                        fontSize: 9.5,
+                        fontSize: 8.5,
                         filled: true,
                       ),
                     ),
+                    const SizedBox(width: 4),
+                    const WidgetBrandMark(fontSize: 8.5),
                   ],
                 ),
               ],

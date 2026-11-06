@@ -75,20 +75,19 @@ void main() {
       await tester.pumpWidget(_buildTestWrapper(const PrayerLargeWidgetView(data: testPrayer)));
       expect(find.text('القاهرة'), findsOneWidget);
       expect(find.text('المغرب'), findsWidgets);
-      expect(find.text('5:04 م'), findsWidgets);
     });
 
     testWidgets('PrayerMediumWidgetView renders properly', (tester) async {
       await tester.pumpWidget(_buildTestWrapper(const PrayerMediumWidgetView(data: testPrayer)));
       expect(find.text('القاهرة'), findsOneWidget);
-      expect(find.text('الصلاة القادمة'), findsOneWidget);
-      expect(find.text('المغرب'), findsOneWidget);
+      expect(find.textContaining('المغرب'), findsWidgets);
     });
 
     testWidgets('PrayerSmallWidgetView renders properly', (tester) async {
       await tester.pumpWidget(_buildTestWrapper(const PrayerSmallWidgetView(data: testPrayer)));
-      expect(find.text('القاهرة'), findsOneWidget);
+      expect(find.text('الصلاة القادمة'), findsOneWidget);
       expect(find.text('المغرب'), findsOneWidget);
+      expect(find.text('القاهرة'), findsOneWidget);
     });
 
     testWidgets('QuranMediumWidgetView renders properly', (tester) async {

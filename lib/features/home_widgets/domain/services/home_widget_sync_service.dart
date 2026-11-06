@@ -211,13 +211,13 @@ abstract final class HomeWidgetSyncService {
       final gregorianString =
           '${ArabicNumerals.format(now.day)} ${PrayerDateFormatter.getGregorianMonthNameArabic(now)} ${ArabicNumerals.format(now.year)}';
 
-      // A widget is a static image, so a ticking HH:MM:SS countdown would be
-      // frozen and wrong. Show hours:minutes only ("بعد 00:45").
+      // Countdown format with hours, minutes, and seconds (HH:MM:SS) like Maladh screen
       final rem = scheduleInfo.remainingToNext;
       final safeRem = rem.isNegative ? Duration.zero : rem;
       final hStr = safeRem.inHours.toString().padLeft(2, '0');
       final mStr = (safeRem.inMinutes % 60).toString().padLeft(2, '0');
-      final countdownStr = 'بعد $hStr:$mStr';
+      final sStr = (safeRem.inSeconds % 60).toString().padLeft(2, '0');
+      final countdownStr = '$hStr:$mStr:$sStr';
 
       final prayersList = [
         WidgetPrayerItem(
