@@ -4,11 +4,9 @@
     android:minHeight="110dp"
     android:targetCellWidth="2"
     android:targetCellHeight="2"
-    android:minResizeWidth="100dp"
-    android:minResizeHeight="100dp"
-    android:resizeMode="horizontal|vertical"
+    android:resizeMode="none"
     android:updatePeriodMillis="1800000"
     android:initialLayout="@layout/widget_hadith_small"
+    android:previewLayout="@layout/widget_hadith_small"
     android:description="@string/widget_hadith_desc"
     android:widgetCategory="home_screen" />
-

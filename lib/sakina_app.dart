@@ -20,12 +20,21 @@ class SakinaApp extends StatefulWidget {
 }
 
 class _SakinaAppState extends State<SakinaApp> with WidgetsBindingObserver {
+  Timer? _countdownTimer;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     HomeWidgetSyncService.initializeDeepLinks(appRouter);
-    _syncWidgets();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Future.delayed(const Duration(milliseconds: 600), () {
+        if (mounted) _syncWidgets();
+      });
+    });
+    _countdownTimer = Timer.periodic(const Duration(minutes: 1), (_) {
+      _syncWidgets();
+    });
   }
 
   @override
@@ -42,6 +51,8 @@ class _SakinaAppState extends State<SakinaApp> with WidgetsBindingObserver {
 
   @override
   void dispose() {
+    _countdownTimer?.cancel();
+    _countdownTimer = null;
     WidgetsBinding.instance.removeObserver(this);
     HomeWidgetSyncService.dispose();
     super.dispose();

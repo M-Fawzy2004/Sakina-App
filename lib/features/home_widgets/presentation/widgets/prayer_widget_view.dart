@@ -1,31 +1,254 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:sakina_app/core/theme/app_colors.dart';
 import 'package:sakina_app/features/home_widgets/domain/models/widget_models.dart';
+import 'package:sakina_app/features/home_widgets/presentation/widgets/widget_common.dart';
 
-// ─── Shared design tokens ────────────────────────────────────────────────────
-const _kBg = Color(0xFF0C1120);
-const _kCard = Color(0xFF141B2D);
-const _kGold = Color(0xFFD4AF37);
-const _kText = Colors.white;
-const _kSubText = Color(0xFF94A3B8);
-const _kBlue = Color(0xFF38BDF8);
-const _kBorder = Color(0x1FD4AF37);
-const _kNextHighlight = Color(0x22D4AF37);
+// ─── PRIVATE ATOMIC COMPONENTS ────────────────────────────────────────────────
 
-TextStyle _almarai({
-  double size = 13,
-  Color color = _kText,
-  FontWeight weight = FontWeight.w500,
-  double height = 1.4,
-}) =>
-    GoogleFonts.almarai(
-      fontSize: size,
-      color: color,
-      fontWeight: weight,
-      height: height,
+IconData _prayerIcon(String name) {
+  if (name.contains('فجر')) return Icons.brightness_low_rounded;
+  if (name.contains('شروق')) return Icons.wb_twilight_rounded;
+  if (name.contains('ظهر')) return Icons.light_mode_rounded;
+  if (name.contains('عصر')) return Icons.wb_sunny_outlined;
+  if (name.contains('مغرب')) return Icons.wb_twilight_rounded;
+  return Icons.nightlight_round;
+}
+
+class _TimeText extends StatelessWidget {
+  final String time;
+  final double mainSize;
+  final double suffixSize;
+  final Color color;
+  final Color suffixColor;
+  final bool inline;
+
+  const _TimeText({
+    required this.time,
+    required this.mainSize,
+    required this.suffixSize,
+    required this.color,
+    required this.suffixColor,
+    this.inline = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final t = splitTime12(time);
+    final main = Text(
+      t.main,
+      style: GoogleFonts.almarai(
+        fontSize: mainSize,
+        color: color,
+        fontWeight: FontWeight.bold,
+        height: 1.1,
+      ),
+      maxLines: 1,
     );
+    if (t.suffix.isEmpty) return main;
+    final suffix = Text(
+      t.suffix,
+      style: GoogleFonts.almarai(
+        fontSize: suffixSize,
+        color: suffixColor,
+        fontWeight: FontWeight.w600,
+        height: 1.1,
+      ),
+      maxLines: 1,
+    );
+    if (inline) {
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.baseline,
+        textBaseline: TextBaseline.alphabetic,
+        children: [main, const SizedBox(width: 3), suffix],
+      );
+    }
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [main, const SizedBox(height: 1), suffix],
+    );
+  }
+}
+
+class _PrayerHeader extends StatelessWidget {
+  final String cityName;
+  final String hijriDate;
+  final double fontSize;
+
+  const _PrayerHeader({
+    required this.cityName,
+    required this.hijriDate,
+  }) : fontSize = 12;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.location_on_rounded,
+                color: AppColors.champagneGold,
+                size: fontSize + 2,
+              ),
+              const SizedBox(width: 4),
+              Flexible(
+                child: Text(
+                  cityName,
+                  style: GoogleFonts.almarai(
+                    fontSize: fontSize,
+                    color: AppColors.pureChalk,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(width: 6),
+        Flexible(
+          child: Text(
+            hijriDate,
+            style: GoogleFonts.almarai(
+              fontSize: fontSize - 1.5,
+              color: AppColors.champagneGold,
+              fontWeight: FontWeight.bold,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// One column of the horizontal (4×2) layout.
+class _PrayerColumn extends StatelessWidget {
+  final WidgetPrayerItem prayer;
+
+  const _PrayerColumn({required this.prayer});
+
+  @override
+  Widget build(BuildContext context) {
+    final isNext = prayer.isNext;
+    final accent = isNext ? AppColors.champagneGold : AppColors.pureChalk;
+
+    return Expanded(
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 2),
+        decoration: BoxDecoration(
+          color: isNext
+              ? AppColors.champagneGold.withValues(alpha: 0.12)
+              : AppColors.transparent,
+          borderRadius: BorderRadius.circular(13),
+          border: isNext
+              ? Border.all(
+                  color: AppColors.champagneGold.withValues(alpha: 0.85),
+                  width: 1.2,
+                )
+              : null,
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              _prayerIcon(prayer.name),
+              size: 18,
+              color: isNext ? AppColors.champagneGold : AppColors.mutedSilver,
+            ),
+            const SizedBox(height: 5),
+            Text(
+              prayer.name,
+              style: GoogleFonts.almarai(
+                fontSize: 11,
+                color: accent,
+                fontWeight: FontWeight.bold,
+              ),
+              maxLines: 1,
+            ),
+            const SizedBox(height: 4),
+            _TimeText(
+              time: prayer.time,
+              mainSize: 12.5,
+              suffixSize: 8.5,
+              color: accent,
+              suffixColor:
+                  isNext ? AppColors.champagneGold : AppColors.mutedSilver,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// One row of the vertical (4×4) layout.
+class _PrayerRow extends StatelessWidget {
+  final WidgetPrayerItem prayer;
+
+  const _PrayerRow({required this.prayer});
+
+  @override
+  Widget build(BuildContext context) {
+    final isNext = prayer.isNext;
+    final accent = isNext ? AppColors.champagneGold : AppColors.pureChalk;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      decoration: BoxDecoration(
+        color: isNext
+            ? AppColors.champagneGold.withValues(alpha: 0.12)
+            : AppColors.transparent,
+        borderRadius: BorderRadius.circular(12),
+        border: isNext
+            ? Border.all(
+                color: AppColors.champagneGold.withValues(alpha: 0.8),
+                width: 1.1,
+              )
+            : null,
+      ),
+      child: Row(
+        children: [
+          Icon(
+            _prayerIcon(prayer.name),
+            size: 16,
+            color: isNext ? AppColors.champagneGold : AppColors.mutedSilver,
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              prayer.name,
+              style: GoogleFonts.almarai(
+                fontSize: 13.5,
+                color: accent,
+                fontWeight: FontWeight.bold,
+              ),
+              maxLines: 1,
+            ),
+          ),
+          _TimeText(
+            time: prayer.time,
+            mainSize: 13.5,
+            suffixSize: 9.5,
+            color: accent,
+            suffixColor:
+                isNext ? AppColors.champagneGold : AppColors.mutedSilver,
+            inline: true,
+          ),
+        ],
+      ),
+    );
+  }
+}
 
 // ─── PRAYER LARGE (4×4) ─────────────────────────────────────────────────────
+
 class PrayerLargeWidgetView extends StatelessWidget {
   final WidgetPrayerData data;
 
@@ -37,169 +260,120 @@ class PrayerLargeWidgetView extends StatelessWidget {
       textDirection: TextDirection.rtl,
       child: Material(
         type: MaterialType.transparency,
-        child: Container(
+        child: SizedBox(
           width: 360,
           height: 360,
-          color: _kBg,
-          padding: const EdgeInsets.fromLTRB(18, 16, 18, 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // ── Top Bar: City & Hijri Date ──────────────────────────────
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Row(
-                      children: [
-                        const Icon(
-                          Icons.location_on_rounded,
-                          color: _kGold,
-                          size: 15,
-                        ),
-                        const SizedBox(width: 4),
-                        Flexible(
-                          child: Text(
-                            data.cityName,
-                            style: _almarai(
-                                size: 13,
-                                color: _kText,
-                                weight: FontWeight.bold),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
+          child: WidgetFrame(
+            padding: const EdgeInsets.fromLTRB(14, 12, 14, 10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _PrayerHeader(
+                  cityName: data.cityName,
+                  hijriDate: data.hijriDate,
+                ),
+                const SizedBox(height: 8),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+                  decoration: BoxDecoration(
+                    color: AppColors.charcoalCard,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: AppColors.champagneGold.withValues(alpha: 0.5),
+                      width: 1,
                     ),
                   ),
-                  Text(
-                    data.hijriDate,
-                    style: _almarai(size: 11, color: _kGold),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10),
-
-              // ── Next Prayer Hero Card ────────────────────────────────────
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                decoration: BoxDecoration(
-                  color: _kCard,
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: _kGold.withAlpha(80)),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    // Left: label + name
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'الصلاة القادمة',
-                            style: _almarai(
-                                size: 10,
-                                color: _kBlue,
-                                weight: FontWeight.bold),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 44,
+                        height: 44,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color:
+                              AppColors.champagneGold.withValues(alpha: 0.12),
+                          border: Border.all(
+                            color:
+                                AppColors.champagneGold.withValues(alpha: 0.5),
+                            width: 1,
                           ),
-                          const SizedBox(height: 2),
-                          Text(
-                            data.nextPrayerName,
-                            style: _almarai(
-                                size: 20,
-                                color: _kText,
-                                weight: FontWeight.bold),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                        ),
+                        child: Icon(
+                          _prayerIcon(data.nextPrayerName),
+                          color: AppColors.champagneGold,
+                          size: 22,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              'الصلاة القادمة',
+                              style: GoogleFonts.almarai(
+                                fontSize: 10.5,
+                                color: AppColors.champagneGold,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 1),
+                            Text(
+                              data.nextPrayerName,
+                              style: GoogleFonts.almarai(
+                                fontSize: 22,
+                                color: AppColors.pureChalk,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          _TimeText(
+                            time: data.nextPrayerTime,
+                            mainSize: 18,
+                            suffixSize: 11,
+                            color: AppColors.champagneGold,
+                            suffixColor: AppColors.champagneGold,
+                            inline: true,
+                          ),
+                          const SizedBox(height: 5),
+                          WidgetPill(
+                            text: data.remainingCountdown,
+                            fontSize: 9.5,
+                            filled: true,
                           ),
                         ],
                       ),
-                    ),
-                    // Right: time + countdown
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Text(
-                          data.nextPrayerTime,
-                          style: _almarai(
-                              size: 20, color: _kGold, weight: FontWeight.bold),
-                        ),
-                        const SizedBox(height: 2),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: _kBlue.withAlpha(30),
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          child: Text(
-                            'متبقي ${data.remainingCountdown}',
-                            style: _almarai(
-                                size: 10,
-                                color: _kBlue,
-                                weight: FontWeight.bold),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 8),
+                const OrnamentDivider(),
+                const SizedBox(height: 6),
+                Expanded(
+                  child: Column(
+                    children: [
+                      for (final p in data.prayers)
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 1.5),
+                            child: _PrayerRow(prayer: p),
                           ),
                         ),
-                      ],
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-
-              const SizedBox(height: 10),
-
-              // ── Thin divider ─────────────────────────────────────────────
-              Container(height: 1, color: _kBorder),
-              const SizedBox(height: 6),
-
-              // ── Prayer List ──────────────────────────────────────────────
-              Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: data.prayers.map((prayer) {
-                    final isNext = prayer.isNext;
-                    return Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 5),
-                      decoration: BoxDecoration(
-                        color: isNext ? _kNextHighlight : Colors.transparent,
-                        borderRadius: BorderRadius.circular(10),
-                        border: isNext
-                            ? Border.all(color: _kGold.withAlpha(60))
-                            : null,
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            prayer.name,
-                            style: _almarai(
-                              size: 13,
-                              color: isNext ? _kGold : _kText,
-                              weight: isNext
-                                  ? FontWeight.bold
-                                  : FontWeight.w500,
-                            ),
-                          ),
-                          Text(
-                            prayer.time,
-                            style: _almarai(
-                              size: 13,
-                              color: isNext ? _kGold : _kSubText,
-                              weight: isNext
-                                  ? FontWeight.bold
-                                  : FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  }).toList(),
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -207,7 +381,8 @@ class PrayerLargeWidgetView extends StatelessWidget {
   }
 }
 
-// ─── PRAYER MEDIUM (4×2) ────────────────────────────────────────────────────
+// ─── PRAYER MEDIUM (4×2) — horizontal timetable ─────────────────────────────
+
 class PrayerMediumWidgetView extends StatelessWidget {
   final WidgetPrayerData data;
 
@@ -219,148 +394,53 @@ class PrayerMediumWidgetView extends StatelessWidget {
       textDirection: TextDirection.rtl,
       child: Material(
         type: MaterialType.transparency,
-        child: Container(
+        child: SizedBox(
           width: 360,
           height: 170,
-          color: _kBg,
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // ── City & Hijri ─────────────────────────────────────────────
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Row(
-                      children: [
-                        const Icon(Icons.location_on_rounded,
-                            color: _kGold, size: 13),
-                        const SizedBox(width: 3),
-                        Flexible(
-                          child: Text(
-                            data.cityName,
-                            style: _almarai(
-                                size: 12,
-                                color: _kText,
-                                weight: FontWeight.bold),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
-                    ),
+          child: WidgetFrame(
+            padding: const EdgeInsets.fromLTRB(10, 10, 10, 8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  child: _PrayerHeader(
+                    cityName: data.cityName,
+                    hijriDate: data.hijriDate,
                   ),
-                  Text(data.hijriDate,
-                      style: _almarai(size: 10, color: _kSubText)),
-                ],
-              ),
-              const SizedBox(height: 8),
-
-              // ── Two-column layout ────────────────────────────────────────
-              Expanded(
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    // Left: Next prayer (hero)
-                    Expanded(
-                      flex: 6,
-                      child: Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: _kCard,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: _kGold.withAlpha(80)),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              'الصلاة القادمة',
-                              style: _almarai(
-                                  size: 10,
-                                  color: _kBlue,
-                                  weight: FontWeight.bold),
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              data.nextPrayerName,
-                              style: _almarai(
-                                  size: 17,
-                                  color: _kGold,
-                                  weight: FontWeight.bold),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              data.nextPrayerTime,
-                              style: _almarai(
-                                  size: 13,
-                                  color: _kText,
-                                  weight: FontWeight.w600),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              'فاضل ${data.remainingCountdown}',
-                              style: _almarai(
-                                  size: 10,
-                                  color: _kBlue,
-                                  weight: FontWeight.bold),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-
-                    // Right: Previous prayer
-                    Expanded(
-                      flex: 4,
-                      child: Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: _kCard,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              'الصلاة السابقة',
-                              style: _almarai(size: 10, color: _kSubText),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              data.previousPrayerName,
-                              style: _almarai(
-                                  size: 14,
-                                  color: _kText,
-                                  weight: FontWeight.bold),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              data.previousPrayerTime,
-                              style: _almarai(size: 11, color: _kSubText),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
                 ),
-              ),
-            ],
+                const SizedBox(height: 7),
+                Expanded(
+                  child: Row(
+                    children: [
+                      for (final p in data.prayers) _PrayerColumn(prayer: p),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          'الأذان القادم: ${data.nextPrayerName} ${data.remainingCountdown}',
+                          style: GoogleFonts.almarai(
+                            fontSize: 9.5,
+                            color: AppColors.mutedSilver,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      const WidgetBrandMark(fontSize: 11),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -369,6 +449,7 @@ class PrayerMediumWidgetView extends StatelessWidget {
 }
 
 // ─── PRAYER SMALL (2×2) ─────────────────────────────────────────────────────
+
 class PrayerSmallWidgetView extends StatelessWidget {
   final WidgetPrayerData data;
 
@@ -380,75 +461,94 @@ class PrayerSmallWidgetView extends StatelessWidget {
       textDirection: TextDirection.rtl,
       child: Material(
         type: MaterialType.transparency,
-        child: Container(
+        child: SizedBox(
           width: 170,
           height: 170,
-          color: _kBg,
-          padding: const EdgeInsets.all(14),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              // City
-              Row(
-                children: [
-                  const Icon(Icons.location_on_rounded, color: _kGold, size: 12),
-                  const SizedBox(width: 3),
-                  Expanded(
-                    child: Text(
-                      data.cityName,
-                      style: _almarai(size: 10, color: _kSubText),
+          child: WidgetFrame(
+            padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(
+                            Icons.location_on_rounded,
+                            color: AppColors.champagneGold,
+                            size: 12,
+                          ),
+                          const SizedBox(width: 3),
+                          Flexible(
+                            child: Text(
+                              data.cityName,
+                              style: GoogleFonts.almarai(
+                                fontSize: 10.5,
+                                color: AppColors.pureChalk,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    const WidgetBrandMark(fontSize: 9.5),
+                  ],
+                ),
+                Column(
+                  children: [
+                    Text(
+                      'الصلاة القادمة',
+                      style: GoogleFonts.almarai(
+                        fontSize: 9.5,
+                        color: AppColors.champagneGold,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      data.nextPrayerName,
+                      style: GoogleFonts.almarai(
+                        fontSize: 26,
+                        color: AppColors.pureChalk,
+                        fontWeight: FontWeight.bold,
+                        height: 1.15,
+                      ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                  ),
-                ],
-              ),
-
-              // Prayer name & time
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'الصلاة القادمة',
-                    style:
-                        _almarai(size: 9, color: _kBlue, weight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    data.nextPrayerName,
-                    style:
-                        _almarai(size: 20, color: _kGold, weight: FontWeight.bold),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  Text(
-                    data.nextPrayerTime,
-                    style:
-                        _almarai(size: 15, color: _kText, weight: FontWeight.bold),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              ),
-
-              // Countdown pill
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                decoration: BoxDecoration(
-                  color: _kBlue.withAlpha(28),
-                  borderRadius: BorderRadius.circular(6),
+                    const SizedBox(height: 2),
+                    _TimeText(
+                      time: data.nextPrayerTime,
+                      mainSize: 16,
+                      suffixSize: 10,
+                      color: AppColors.champagneGold,
+                      suffixColor: AppColors.champagneGold,
+                      inline: true,
+                    ),
+                  ],
                 ),
-                child: Text(
-                  'متبقي ${data.remainingCountdown}',
-                  style: _almarai(
-                      size: 9.5, color: _kBlue, weight: FontWeight.bold),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                Column(
+                  children: [
+                    const OrnamentDivider(),
+                    const SizedBox(height: 6),
+                    Center(
+                      child: WidgetPill(
+                        text: data.remainingCountdown,
+                        fontSize: 9.5,
+                        filled: true,
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

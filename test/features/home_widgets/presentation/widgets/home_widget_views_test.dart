@@ -1,10 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sakina_app/features/home_widgets/domain/models/widget_models.dart';
 import 'package:sakina_app/features/home_widgets/presentation/widgets/hadith_widget_view.dart';
 import 'package:sakina_app/features/home_widgets/presentation/widgets/prayer_widget_view.dart';
 import 'package:sakina_app/features/home_widgets/presentation/widgets/quran_widget_view.dart';
 import 'package:sakina_app/features/home_widgets/presentation/widgets/tasbeeh_widget_view.dart';
+
+Widget _buildTestWrapper(Widget child) {
+  return ScreenUtilInit(
+    designSize: const Size(360, 360),
+    builder: (context, _) => MaterialApp(
+      home: Scaffold(body: child),
+    ),
+  );
+}
 
 void main() {
   group('Home Widget Views Render Tests', () {
@@ -47,117 +57,57 @@ void main() {
       shortTitle: 'التسبيح',
       virtue: 'حطت خطاياه وإن كانت مثل زبد البحر',
       targetCount: 33,
+      currentCount: 5,
     );
 
-    testWidgets('HadithLargeWidgetView renders properly', (tester) async {
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: Scaffold(
-            body: HadithLargeWidgetView(data: testHadith),
-          ),
-        ),
-      );
-      expect(find.text('حديث اليوم'), findsOneWidget);
-      expect(find.text('صحيح البخاري'), findsOneWidget);
-      expect(find.textContaining('إنما الأعمال بالنيات'), findsOneWidget);
-    });
-
     testWidgets('HadithMediumWidgetView renders properly', (tester) async {
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: Scaffold(
-            body: HadithMediumWidgetView(data: testHadith),
-          ),
-        ),
-      );
-      expect(find.text('حديث اليوم'), findsOneWidget);
+      await tester.pumpWidget(_buildTestWrapper(const HadithMediumWidgetView(data: testHadith)));
+      expect(find.text('حَدِيثُ اليَوْم'), findsOneWidget);
       expect(find.textContaining('إنما الأعمال بالنيات'), findsOneWidget);
     });
 
     testWidgets('HadithSmallWidgetView renders properly', (tester) async {
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: Scaffold(
-            body: HadithSmallWidgetView(data: testHadith),
-          ),
-        ),
-      );
+      await tester.pumpWidget(_buildTestWrapper(const HadithSmallWidgetView(data: testHadith)));
       expect(find.text('حديث اليوم'), findsOneWidget);
     });
 
     testWidgets('PrayerLargeWidgetView renders properly', (tester) async {
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: Scaffold(
-            body: PrayerLargeWidgetView(data: testPrayer),
-          ),
-        ),
-      );
+      await tester.pumpWidget(_buildTestWrapper(const PrayerLargeWidgetView(data: testPrayer)));
       expect(find.text('القاهرة'), findsOneWidget);
       expect(find.text('المغرب'), findsWidgets);
       expect(find.text('5:04 م'), findsWidgets);
     });
 
     testWidgets('PrayerMediumWidgetView renders properly', (tester) async {
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: Scaffold(
-            body: PrayerMediumWidgetView(data: testPrayer),
-          ),
-        ),
-      );
+      await tester.pumpWidget(_buildTestWrapper(const PrayerMediumWidgetView(data: testPrayer)));
       expect(find.text('القاهرة'), findsOneWidget);
       expect(find.text('الصلاة القادمة'), findsOneWidget);
-      expect(find.text('الصلاة السابقة'), findsOneWidget);
+      expect(find.text('المغرب'), findsOneWidget);
     });
 
     testWidgets('PrayerSmallWidgetView renders properly', (tester) async {
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: Scaffold(
-            body: PrayerSmallWidgetView(data: testPrayer),
-          ),
-        ),
-      );
+      await tester.pumpWidget(_buildTestWrapper(const PrayerSmallWidgetView(data: testPrayer)));
       expect(find.text('القاهرة'), findsOneWidget);
       expect(find.text('المغرب'), findsOneWidget);
     });
 
-    testWidgets('QuranLargeWidgetView renders properly', (tester) async {
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: Scaffold(
-            body: QuranLargeWidgetView(data: testQuran),
-          ),
-        ),
-      );
-      expect(find.text('آية اليوم'), findsOneWidget);
-      expect(find.text('وقفة تدبرية'), findsOneWidget);
+    testWidgets('QuranMediumWidgetView renders properly', (tester) async {
+      await tester.pumpWidget(_buildTestWrapper(const QuranMediumWidgetView(data: testQuran)));
+      expect(find.text('آيَةُ اليَوْم'), findsOneWidget);
+      expect(find.textContaining('سورة البقرة'), findsWidgets);
     });
 
-    testWidgets('QuranMediumWidgetView renders properly', (tester) async {
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: Scaffold(
-            body: QuranMediumWidgetView(data: testQuran),
-          ),
-        ),
-      );
+    testWidgets('QuranSmallWidgetView renders properly', (tester) async {
+      await tester.pumpWidget(_buildTestWrapper(const QuranSmallWidgetView(data: testQuran)));
       expect(find.text('آية اليوم'), findsOneWidget);
+      expect(find.textContaining('سورة البقرة'), findsWidgets);
     });
 
     testWidgets('TasbeehSmallWidgetView renders properly', (tester) async {
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: Scaffold(
-            body: TasbeehSmallWidgetView(data: testTasbeeh),
-          ),
-        ),
-      );
+      await tester.pumpWidget(_buildTestWrapper(const TasbeehSmallWidgetView(data: testTasbeeh)));
       expect(find.text('التسبيح اليومي'), findsOneWidget);
       expect(find.text('التسبيح'), findsOneWidget);
       expect(find.textContaining('سُبْحَانَ اللَّهِ'), findsOneWidget);
     });
   });
 }
-

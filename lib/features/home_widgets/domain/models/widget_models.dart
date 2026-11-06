@@ -93,15 +93,22 @@ class WidgetTasbeehData extends Equatable {
   final String shortTitle;
   final String virtue;
   final int targetCount;
+  final int currentCount;
 
   const WidgetTasbeehData({
     required this.phrase,
     required this.shortTitle,
     required this.virtue,
     required this.targetCount,
+    this.currentCount = 0,
   });
 
   @override
-  List<Object?> get props => [phrase, shortTitle, virtue, targetCount];
+  List<Object?> get props => [
+        phrase,
+        shortTitle,
+        virtue,
+        targetCount,
+        currentCount,
+      ];
 }
-

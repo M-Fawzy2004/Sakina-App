@@ -1,30 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:sakina_app/core/theme/app_colors.dart';
 import 'package:sakina_app/core/utils/arabic_numerals.dart';
 import 'package:sakina_app/features/home_widgets/domain/models/widget_models.dart';
-
-// ─── Shared design tokens ────────────────────────────────────────────────────
-const _kBg = Color(0xFF0C1120);
-const _kGold = Color(0xFFD4AF37);
-const _kGoldDim = Color(0x33D4AF37);
-const _kText = Colors.white;
-const _kSubText = Color(0xFF94A3B8);
-const _kBorder = Color(0x1FD4AF37);
-
-TextStyle _almarai({
-  double size = 13,
-  Color color = _kText,
-  FontWeight weight = FontWeight.w500,
-  double height = 1.4,
-}) =>
-    GoogleFonts.almarai(
-      fontSize: size,
-      color: color,
-      fontWeight: weight,
-      height: height,
-    );
+import 'package:sakina_app/features/home_widgets/presentation/widgets/widget_common.dart';
 
 // ─── TASBEEH SMALL (2×2) ────────────────────────────────────────────────────
+
 class TasbeehSmallWidgetView extends StatelessWidget {
   final WidgetTasbeehData data;
 
@@ -32,87 +14,111 @@ class TasbeehSmallWidgetView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final current = ArabicNumerals.format(data.currentCount);
+    final target = ArabicNumerals.format(data.targetCount);
+    final progress = data.targetCount <= 0
+        ? 0.0
+        : (data.currentCount / data.targetCount).clamp(0.0, 1.0);
+
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Material(
         type: MaterialType.transparency,
-        child: Container(
+        child: SizedBox(
           width: 170,
           height: 170,
-          color: _kBg,
-          padding: const EdgeInsets.all(14),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // ── Header ───────────────────────────────────────────────────
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Text(
-                      'التسبيح اليومي',
-                      style: _almarai(
-                          size: 11, color: _kGold, weight: FontWeight.bold),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+          child: WidgetFrame(
+            padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Row(
+                  children: [
+                    const WidgetTitle(
+                      icon: Icons.blur_circular_rounded,
+                      text: 'التسبيح اليومي',
+                      fontSize: 10,
+                      iconSize: 12,
+                    ),
+                    if (data.shortTitle.isNotEmpty) ...[
+                      const SizedBox(width: 4),
+                      Expanded(
+                        child: Text(
+                          data.shortTitle,
+                          textAlign: TextAlign.end,
+                          style: GoogleFonts.almarai(
+                            fontSize: 9,
+                            color: AppColors.mutedSilver,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+                const SizedBox(height: 5),
+                const OrnamentDivider(),
+                Expanded(
+                  child: AutoFitText(
+                    text: data.phrase,
+                    maxLines: 4,
+                    style: GoogleFonts.amiri(
+                      fontSize: 15,
+                      color: AppColors.pureChalk,
+                      fontWeight: FontWeight.bold,
+                      height: 1.5,
                     ),
                   ),
-                  const SizedBox(width: 4),
-                  Flexible(
-                    child: Text(
-                      data.shortTitle,
-                      style: _almarai(size: 10, color: _kSubText),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+                ),
+                // Progress bar (gold only)
+                Container(
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: AppColors.champagneGold.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: FractionallySizedBox(
+                    alignment: AlignmentDirectional.centerStart,
+                    widthFactor: progress,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: AppColors.champagneGold,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
                     ),
                   ),
-                ],
-              ),
-              const SizedBox(height: 6),
-
-              // ── Thin divider ─────────────────────────────────────────────
-              Container(height: 1, color: _kBorder),
-              const SizedBox(height: 6),
-
-              // ── Phrase ───────────────────────────────────────────────────
-              Expanded(
-                child: Center(
-                  child: Text(
-                    data.phrase,
-                    textAlign: TextAlign.center,
-                    style: _almarai(
-                        size: 13,
-                        color: _kText,
-                        weight: FontWeight.bold,
-                        height: 1.55),
-                    maxLines: 3,
-                    overflow: TextOverflow.ellipsis,
-                  ),
                 ),
-              ),
-
-              const SizedBox(height: 6),
-
-              // ── Target pill ──────────────────────────────────────────────
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: _kGoldDim,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: _kGold.withAlpha(80)),
+                const SizedBox(height: 7),
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.touch_app_rounded,
+                      size: 12,
+                      color: AppColors.mutedSilver,
+                    ),
+                    const SizedBox(width: 3),
+                    Expanded(
+                      child: Text(
+                        'اضغط للعد',
+                        style: GoogleFonts.almarai(
+                          fontSize: 9,
+                          color: AppColors.mutedSilver,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        maxLines: 1,
+                      ),
+                    ),
+                    WidgetPill(
+                      text: '$current / $target',
+                      fontSize: 10,
+                      filled: true,
+                    ),
+                  ],
                 ),
-                child: Center(
-                  child: Text(
-                    'الهدف: ${ArabicNumerals.format(data.targetCount)} مرة \u2022 اضغط للبدء',
-                    style: _almarai(
-                        size: 9.5, color: _kGold, weight: FontWeight.bold),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

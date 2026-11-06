@@ -63,18 +63,6 @@
         </receiver>
         <!-- Sakina App Widgets -->
         <receiver
-            android:name=".widgets.HadithLargeWidgetProvider"
-            android:exported="true"
-            android:label="@string/widget_hadith_large_name">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-            </intent-filter>
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/widget_hadith_large_info" />
-        </receiver>
-
-        <receiver
             android:name=".widgets.HadithMediumWidgetProvider"
             android:exported="true"
             android:label="@string/widget_hadith_medium_name">
@@ -135,18 +123,6 @@
         </receiver>
 
         <receiver
-            android:name=".widgets.QuranLargeWidgetProvider"
-            android:exported="true"
-            android:label="@string/widget_quran_large_name">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-            </intent-filter>
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/widget_quran_large_info" />
-        </receiver>
-
-        <receiver
             android:name=".widgets.QuranMediumWidgetProvider"
             android:exported="true"
             android:label="@string/widget_quran_medium_name">
@@ -159,15 +135,37 @@
         </receiver>
 
         <receiver
-            android:name=".widgets.TasbeehSmallWidgetProvider"
+            android:name=".widgets.QuranSmallWidgetProvider"
             android:exported="true"
-            android:label="@string/widget_tasbeeh_small_name">
+            android:label="@string/widget_quran_small_name">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
             <meta-data
                 android:name="android.appwidget.provider"
+                android:resource="@xml/widget_quran_small_info" />
+        </receiver>
+
+        <receiver
+            android:name=".widgets.TasbeehSmallWidgetProvider"
+            android:exported="true"
+            android:label="@string/widget_tasbeeh_small_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.sakina.islamic.ACTION_TASBEEH_COUNT" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
                 android:resource="@xml/widget_tasbeeh_small_info" />
+        </receiver>
+
+        <!-- HomeWidget Background Interactivity Receiver -->
+        <receiver
+            android:name="es.antonborri.home_widget.HomeWidgetBackgroundReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="es.antonborri.home_widget.action.BACKGROUND" />
+            </intent-filter>
         </receiver>
     </application>
     <!-- Required to query activities that can process text, see:

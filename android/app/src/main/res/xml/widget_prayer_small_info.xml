@@ -4,11 +4,9 @@
     android:minHeight="110dp"
     android:targetCellWidth="2"
     android:targetCellHeight="2"
-    android:minResizeWidth="100dp"
-    android:minResizeHeight="100dp"
-    android:resizeMode="horizontal|vertical"
-    android:updatePeriodMillis="1800000"
+    android:resizeMode="none"
+    android:updatePeriodMillis="900000"
     android:initialLayout="@layout/widget_prayer_small"
+    android:previewLayout="@layout/widget_prayer_small"
     android:description="@string/widget_prayer_desc"
     android:widgetCategory="home_screen" />
-
