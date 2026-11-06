@@ -610,9 +610,9 @@ void main() {
       await tester.pumpAndSettle();
 
       // Because verse 25 is on page index 1 (verses 21-40), verses 21 through 40 are rendered
-      expect(find.text('21'), findsWidgets);
-      expect(find.text('25'), findsWidgets);
-      expect(find.text('40'), findsWidgets);
+      expect(find.textContaining('آيَةُ رَقْمِ 21'), findsWidgets);
+      expect(find.textContaining('آيَةُ رَقْمِ 25'), findsWidgets);
+      expect(find.textContaining('آيَةُ رَقْمِ 40'), findsWidgets);
       // Floating bar indicates Ayah 25 is actively selected
       expect(find.textContaining('الآية 25'), findsOneWidget);
       expect(find.textContaining('آيَةُ رَقْمِ 25'), findsWidgets);

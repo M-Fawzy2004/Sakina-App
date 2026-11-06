@@ -190,9 +190,9 @@ enum QuranReaderTheme {
 
 /// Line spacing choices to ensure Tashkeel (diacritics) readability:
 enum QuranLineSpacing {
-  normal(title: 'عَادِي', height: 2.0),
-  relaxed(title: 'مُرِيح', height: 2.3),
-  spacious(title: 'وَاسِع', height: 2.6);
+  normal(title: 'عَادِي', height: 1.8),
+  relaxed(title: 'مُرِيح', height: 2.0),
+  spacious(title: 'وَاسِع', height: 2.25);
 
   final String title;
   final double height;

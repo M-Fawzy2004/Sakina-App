@@ -1,5 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">سَكِينَة</string>
-</resources>
 
+    <!-- Home Screen Widgets -->
+    <string name="widget_hadith_large_name">حديث اليوم (موسع)</string>
+    <string name="widget_hadith_medium_name">حديث اليوم (متوسط)</string>
+    <string name="widget_hadith_small_name">حديث اليوم (مصغر)</string>
+
+    <string name="widget_prayer_large_name">مواقيت الصلاة (موسع)</string>
+    <string name="widget_prayer_medium_name">مواقيت الصلاة (متوسط)</string>
+    <string name="widget_prayer_small_name">مواقيت الصلاة (مصغر)</string>
+
+    <string name="widget_quran_large_name">آية اليوم (موسع)</string>
+    <string name="widget_quran_medium_name">آية اليوم (متوسط)</string>
+
+    <string name="widget_tasbeeh_small_name">التسبيح اليومي</string>
+
+    <string name="widget_hadith_desc">حديث نبوي شريف متجدد يومياً من كتب السنة المعتمدة</string>
+    <string name="widget_prayer_desc">متابعة دقيقة لمواقيت الصلوات الخمس والعد التنازلي للصلاة القادمة</string>
+    <string name="widget_quran_desc">آية كريمة يومية بالرسم العثماني مع الوقفات التدبرية</string>
+    <string name="widget_tasbeeh_desc">أذكار واستغفار وتسبيح يومي متجدد</string>
+</resources>

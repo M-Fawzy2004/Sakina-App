@@ -38,6 +38,12 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+            <!-- Deep link filter for home_widget clicks -->
+            <intent-filter>
+                <action android:name="es.antonborri.home_widget.action.LAUNCH" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="sakina" />
+            </intent-filter>
         </activity>
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
@@ -54,6 +60,114 @@
                 <action android:name="android.intent.action.QUICKBOOT_POWERON" />
                 <action android:name="com.htc.intent.action.QUICKBOOT_POWERON" />
             </intent-filter>
+        </receiver>
+        <!-- Sakina App Widgets -->
+        <receiver
+            android:name=".widgets.HadithLargeWidgetProvider"
+            android:exported="true"
+            android:label="@string/widget_hadith_large_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_hadith_large_info" />
+        </receiver>
+
+        <receiver
+            android:name=".widgets.HadithMediumWidgetProvider"
+            android:exported="true"
+            android:label="@string/widget_hadith_medium_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_hadith_medium_info" />
+        </receiver>
+
+        <receiver
+            android:name=".widgets.HadithSmallWidgetProvider"
+            android:exported="true"
+            android:label="@string/widget_hadith_small_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_hadith_small_info" />
+        </receiver>
+
+        <receiver
+            android:name=".widgets.PrayerLargeWidgetProvider"
+            android:exported="true"
+            android:label="@string/widget_prayer_large_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_prayer_large_info" />
+        </receiver>
+
+        <receiver
+            android:name=".widgets.PrayerMediumWidgetProvider"
+            android:exported="true"
+            android:label="@string/widget_prayer_medium_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_prayer_medium_info" />
+        </receiver>
+
+        <receiver
+            android:name=".widgets.PrayerSmallWidgetProvider"
+            android:exported="true"
+            android:label="@string/widget_prayer_small_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_prayer_small_info" />
+        </receiver>
+
+        <receiver
+            android:name=".widgets.QuranLargeWidgetProvider"
+            android:exported="true"
+            android:label="@string/widget_quran_large_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_quran_large_info" />
+        </receiver>
+
+        <receiver
+            android:name=".widgets.QuranMediumWidgetProvider"
+            android:exported="true"
+            android:label="@string/widget_quran_medium_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_quran_medium_info" />
+        </receiver>
+
+        <receiver
+            android:name=".widgets.TasbeehSmallWidgetProvider"
+            android:exported="true"
+            android:label="@string/widget_tasbeeh_small_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_tasbeeh_small_info" />
         </receiver>
     </application>
     <!-- Required to query activities that can process text, see:
