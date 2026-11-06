@@ -2,11 +2,18 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:sakina_app/core/services/notifications/local_notification_service.dart';
+import 'package:sakina_app/core/services/storage/preferences_service.dart';
+import 'package:sakina_app/features/settings/domain/services/settings_persistence_manager.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
 class MockFlutterLocalNotificationsPlugin extends Mock
     implements FlutterLocalNotificationsPlugin {}
+
+class MockAndroidFlutterLocalNotificationsPlugin extends Mock
+    implements AndroidFlutterLocalNotificationsPlugin {}
+
+class MockPreferencesService extends Mock implements PreferencesService {}
 
 void main() {
   setUpAll(() {
@@ -231,6 +238,7 @@ void main() {
         dailyQuranReminder: true,
         dailyHopeReminder: true,
         nightPrayerReminder: true,
+        rotatingQuranNotifications: false,
       );
 
       // Regex matching common emojis & symbols
@@ -251,6 +259,130 @@ void main() {
         expect(emojiRegex.hasMatch(body), isFalse,
             reason: 'Notification body "$body" should not contain emojis');
       }
+    });
+
+    test('scheduleRotatingQuranNotifications cancels all rotating IDs when disabled', () async {
+      await service.scheduleRotatingQuranNotifications(enabled: false);
+
+      for (int i = 0; i < LocalNotificationServiceImpl.rotatingQuranCount; i++) {
+        verify(() => mockPlugin.cancel(id: LocalNotificationServiceImpl.idRotatingQuranBase + i)).called(1);
+      }
+    });
+
+    test('scheduleRotatingQuranNotifications schedules slots without repetition and updates shown IDs', () async {
+      final mockPrefs = MockPreferencesService();
+      when(() => mockPrefs.getStringList(SettingsPersistenceManager.keyShownQuranNotificationIds))
+          .thenReturn(['1', '2', '3']);
+      when(() => mockPrefs.setStringList(SettingsPersistenceManager.keyShownQuranNotificationIds, any()))
+          .thenAnswer((_) async => true);
+
+      await service.scheduleRotatingQuranNotifications(enabled: true, prefs: mockPrefs);
+
+      verify(() => mockPlugin.zonedSchedule(
+            id: any(named: 'id'),
+            title: captureAny(named: 'title'),
+            body: captureAny(named: 'body'),
+            scheduledDate: any(named: 'scheduledDate'),
+            notificationDetails: any(named: 'notificationDetails'),
+            androidScheduleMode: any(named: 'androidScheduleMode'),
+            payload: any(named: 'payload'),
+          )).called(greaterThan(0));
+
+      final capturedSet = verify(() => mockPrefs.setStringList(
+            SettingsPersistenceManager.keyShownQuranNotificationIds,
+            captureAny(),
+          )).captured;
+
+      expect(capturedSet.isNotEmpty, isTrue);
+      final updatedList = capturedSet.last as List<String>;
+      expect(updatedList.length, greaterThan(3));
+      // Ensures previously shown IDs 1, 2, 3 are preserved in the cycle history
+      expect(updatedList.contains('1'), isTrue);
+      expect(updatedList.contains('2'), isTrue);
+      expect(updatedList.contains('3'), isTrue);
+    });
+
+    test('scheduleRotatingQuranNotifications resets pool when exhausted', () async {
+      final mockPrefs = MockPreferencesService();
+      // Fill shown IDs with all 60 pool items
+      final allIds = List.generate(60, (index) => (index + 1).toString());
+      when(() => mockPrefs.getStringList(SettingsPersistenceManager.keyShownQuranNotificationIds))
+          .thenReturn(allIds);
+      when(() => mockPrefs.setStringList(SettingsPersistenceManager.keyShownQuranNotificationIds, any()))
+          .thenAnswer((_) async => true);
+
+      await service.scheduleRotatingQuranNotifications(enabled: true, prefs: mockPrefs);
+
+      final capturedSet = verify(() => mockPrefs.setStringList(
+            SettingsPersistenceManager.keyShownQuranNotificationIds,
+            captureAny(),
+          )).captured;
+
+      expect(capturedSet.isNotEmpty, isTrue);
+      final updatedList = capturedSet.last as List<String>;
+      // Since it reset, it now holds only the freshly scheduled batch count (at most 21)
+      expect(updatedList.length, lessThanOrEqualTo(LocalNotificationServiceImpl.rotatingQuranCount));
+    });
+
+    test('handleFirstLaunchPermissions enables all reminders when granted', () async {
+      final mockPrefs = MockPreferencesService();
+      final mockAndroid = MockAndroidFlutterLocalNotificationsPlugin();
+
+      when(() => mockPrefs.getBool(SettingsPersistenceManager.keyNotificationPermissionPrompted))
+          .thenReturn(null);
+      when(() => mockPrefs.setBool(any(), any())).thenAnswer((_) async => true);
+      when(() => mockPrefs.getStringList(SettingsPersistenceManager.keyShownQuranNotificationIds))
+          .thenReturn(null);
+      when(() => mockPrefs.setStringList(SettingsPersistenceManager.keyShownQuranNotificationIds, any()))
+          .thenAnswer((_) async => true);
+      when(() => mockPlugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>())
+          .thenReturn(mockAndroid);
+      when(() => mockAndroid.requestNotificationsPermission()).thenAnswer((_) async => true);
+
+      final result = await service.handleFirstLaunchPermissions(prefs: mockPrefs);
+
+      expect(result, isTrue);
+      verify(() => mockPrefs.setBool(SettingsPersistenceManager.keyNotificationPermissionPrompted, true)).called(1);
+      verify(() => mockPrefs.setBool(SettingsPersistenceManager.keyMorningEveningAzkar, true)).called(1);
+      verify(() => mockPrefs.setBool(SettingsPersistenceManager.keyDailyQuranReminder, true)).called(1);
+      verify(() => mockPrefs.setBool(SettingsPersistenceManager.keyDailyHopeReminder, true)).called(1);
+      verify(() => mockPrefs.setBool(SettingsPersistenceManager.keyNightPrayerReminder, true)).called(1);
+      verify(() => mockPrefs.setBool(SettingsPersistenceManager.keyRotatingQuranNotifications, true)).called(1);
+    });
+
+    test('handleFirstLaunchPermissions disables all reminders and cancels schedules when denied', () async {
+      final mockPrefs = MockPreferencesService();
+      final mockAndroid = MockAndroidFlutterLocalNotificationsPlugin();
+
+      when(() => mockPrefs.getBool(SettingsPersistenceManager.keyNotificationPermissionPrompted))
+          .thenReturn(false);
+      when(() => mockPrefs.setBool(any(), any())).thenAnswer((_) async => true);
+      when(() => mockPlugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>())
+          .thenReturn(mockAndroid);
+      when(() => mockAndroid.requestNotificationsPermission()).thenAnswer((_) async => false);
+
+      final result = await service.handleFirstLaunchPermissions(prefs: mockPrefs);
+
+      expect(result, isFalse);
+      verify(() => mockPrefs.setBool(SettingsPersistenceManager.keyNotificationPermissionPrompted, true)).called(1);
+      verify(() => mockPrefs.setBool(SettingsPersistenceManager.keyMorningEveningAzkar, false)).called(1);
+      verify(() => mockPrefs.setBool(SettingsPersistenceManager.keyDailyQuranReminder, false)).called(1);
+      verify(() => mockPrefs.setBool(SettingsPersistenceManager.keyDailyHopeReminder, false)).called(1);
+      verify(() => mockPrefs.setBool(SettingsPersistenceManager.keyNightPrayerReminder, false)).called(1);
+      verify(() => mockPrefs.setBool(SettingsPersistenceManager.keyRotatingQuranNotifications, false)).called(1);
+      verify(() => mockPlugin.cancelAll()).called(1);
+    });
+
+    test('handleFirstLaunchPermissions does nothing if already prompted previously', () async {
+      final mockPrefs = MockPreferencesService();
+
+      when(() => mockPrefs.getBool(SettingsPersistenceManager.keyNotificationPermissionPrompted))
+          .thenReturn(true);
+
+      final result = await service.handleFirstLaunchPermissions(prefs: mockPrefs);
+
+      expect(result, isFalse);
+      verifyNever(() => mockPrefs.setBool(any(), any()));
     });
   });
 }

@@ -49,7 +49,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _morningEveningAzkar = true;
   bool _dailyQuranReminder = true;
   bool _dailyHopeReminder = true;
-  bool _nightPrayerReminder = false;
+  bool _nightPrayerReminder = true;
+  bool _rotatingQuranNotifications = true;
 
   // Security & Inaba
   bool _inabaBiometricLock = true;
@@ -78,6 +79,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     _dailyQuranReminder = data.dailyQuranReminder;
     _dailyHopeReminder = data.dailyHopeReminder;
     _nightPrayerReminder = data.nightPrayerReminder;
+    _rotatingQuranNotifications = data.rotatingQuranNotifications;
     _inabaBiometricLock = data.inabaLock;
     _stealthNotifications = data.stealthNotifications;
   }
@@ -98,30 +100,42 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
-  Future<void> _scheduleNotification(
-    Future<void> Function(LocalNotificationService s) action,
-    bool enabled,
-  ) async {
-    if (!sl.isRegistered<LocalNotificationService>()) return;
-    final s = sl<LocalNotificationService>();
-    if (enabled) await s.requestPermissions();
-    await action(s);
-  }
-
-  void _updateNotifPref(
+  Future<void> _updateNotifPref(
     String key,
     bool val,
     void Function(bool) setter,
     String label,
     Future<void> Function(LocalNotificationService s) action,
-  ) {
-    _updateBoolPref(
-      key,
-      val,
-      setter,
-      val ? 'تم تفعيل $label' : 'تم إيقاف $label',
-      () => _scheduleNotification(action, val),
-    );
+  ) async {
+    HapticService.selectionClick();
+    if (!sl.isRegistered<LocalNotificationService>()) return;
+    final s = sl<LocalNotificationService>();
+
+    if (val) {
+      final granted = await s.requestPermissions();
+      if (!granted) {
+        if (mounted) {
+          setState(() => setter(false));
+          AppTopSnackBar.show(
+            context: context,
+            message: 'يرجى تفعيل إذن الإشعارات من إعدادات الهاتف لتصلك التنبيهات',
+          );
+        }
+        await sl<PreferencesService>().setBool(key, false);
+        return;
+      }
+    }
+
+    setState(() => setter(val));
+    await sl<PreferencesService>().setBool(key, val);
+    await action(s);
+
+    if (mounted) {
+      AppTopSnackBar.showSuccess(
+        context: context,
+        message: val ? 'تم تفعيل $label' : 'تم إيقاف $label',
+      );
+    }
   }
 
   Future<void> _handleReciterChanged(String id, String name) async {
@@ -268,6 +282,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         dailyQuranReminder: _dailyQuranReminder,
                         dailyHopeReminder: _dailyHopeReminder,
                         nightPrayerReminder: _nightPrayerReminder,
+                        rotatingQuranNotifications: _rotatingQuranNotifications,
                         onMorningEveningChanged: (val) => _updateNotifPref(
                           SettingsPersistenceManager.keyMorningEveningAzkar,
                           val,
@@ -295,6 +310,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           (v) => _nightPrayerReminder = v,
                           'تذكير قيام الليل والأسحار',
                           (s) => s.scheduleNightPrayerReminder(enabled: val),
+                        ),
+                        onRotatingQuranChanged: (val) => _updateNotifPref(
+                          SettingsPersistenceManager
+                              .keyRotatingQuranNotifications,
+                          val,
+                          (v) => _rotatingQuranNotifications = v,
+                          'النفحات القرآنية المتجددة',
+                          (s) => s.scheduleRotatingQuranNotifications(
+                            enabled: val,
+                            prefs: sl<PreferencesService>(),
+                          ),
                         ),
                       ),
                     ),

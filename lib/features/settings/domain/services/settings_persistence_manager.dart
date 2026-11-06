@@ -15,6 +15,13 @@ abstract final class SettingsPersistenceManager {
   static const String keyDailyQuranReminder = 'sakina_reminder_daily_quran';
   static const String keyDailyHopeReminder = 'sakina_reminder_daily_hope';
   static const String keyNightPrayerReminder = 'sakina_reminder_night_prayer';
+  static const String keyRotatingQuranNotifications =
+      'sakina_reminder_rotating_quran';
+  static const String keyShownQuranNotificationIds =
+      'sakina_shown_quran_notification_ids';
+
+  static const String keyNotificationPermissionPrompted =
+      'sakina_notification_permission_prompted';
 
   static const String keyInabaLock = 'sakina_inaba_pin_lock_enabled';
   static const String keyStealthNotifications = 'sakina_stealth_notifications';
@@ -32,6 +39,7 @@ abstract final class SettingsPersistenceManager {
     bool dailyQuranReminder,
     bool dailyHopeReminder,
     bool nightPrayerReminder,
+    bool rotatingQuranNotifications,
     bool inabaLock,
     bool stealthNotifications,
   }) load(PreferencesService prefs) {
@@ -49,7 +57,9 @@ abstract final class SettingsPersistenceManager {
       morningEveningAzkar: prefs.getBool(keyMorningEveningAzkar) ?? true,
       dailyQuranReminder: prefs.getBool(keyDailyQuranReminder) ?? true,
       dailyHopeReminder: prefs.getBool(keyDailyHopeReminder) ?? true,
-      nightPrayerReminder: prefs.getBool(keyNightPrayerReminder) ?? false,
+      nightPrayerReminder: prefs.getBool(keyNightPrayerReminder) ?? true,
+      rotatingQuranNotifications:
+          prefs.getBool(keyRotatingQuranNotifications) ?? true,
       inabaLock: prefs.getBool(keyInabaLock) ?? true,
       stealthNotifications: prefs.getBool(keyStealthNotifications) ?? false,
     );
@@ -68,6 +78,9 @@ abstract final class SettingsPersistenceManager {
     await prefs.remove(keyDailyQuranReminder);
     await prefs.remove(keyDailyHopeReminder);
     await prefs.remove(keyNightPrayerReminder);
+    await prefs.remove(keyRotatingQuranNotifications);
+    await prefs.remove(keyShownQuranNotificationIds);
+    await prefs.remove(keyNotificationPermissionPrompted);
     await prefs.remove(keyInabaLock);
     await prefs.remove(keyStealthNotifications);
   }

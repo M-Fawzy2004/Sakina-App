@@ -9,6 +9,8 @@ abstract interface class PreferencesService {
   bool? getBool(String key);
   Future<bool> setDouble(String key, double value);
   double? getDouble(String key);
+  Future<bool> setStringList(String key, List<String> value);
+  List<String>? getStringList(String key);
   Future<bool> remove(String key);
   Future<bool> clear();
 }
@@ -41,6 +43,13 @@ class PreferencesServiceImpl implements PreferencesService {
 
   @override
   double? getDouble(String key) => preferences.getDouble(key);
+
+  @override
+  Future<bool> setStringList(String key, List<String> value) =>
+      preferences.setStringList(key, value);
+
+  @override
+  List<String>? getStringList(String key) => preferences.getStringList(key);
 
   @override
   Future<bool> remove(String key) => preferences.remove(key);

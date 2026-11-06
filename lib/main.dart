@@ -47,15 +47,23 @@ void main() async {
       await sl<LocalNotificationService>().initialize();
       if (sl.isRegistered<PreferencesService>()) {
         final prefs = sl<PreferencesService>();
-        final data = SettingsPersistenceManager.load(prefs);
-        unawaited(
-          sl<LocalNotificationService>().syncAllNotifications(
-            morningEveningAzkar: data.morningEveningAzkar,
-            dailyQuranReminder: data.dailyQuranReminder,
-            dailyHopeReminder: data.dailyHopeReminder,
-            nightPrayerReminder: data.nightPrayerReminder,
-          ),
-        );
+        final hasPrompted = prefs.getBool(
+              SettingsPersistenceManager.keyNotificationPermissionPrompted,
+            ) ??
+            false;
+        if (hasPrompted) {
+          final data = SettingsPersistenceManager.load(prefs);
+          unawaited(
+            sl<LocalNotificationService>().syncAllNotifications(
+              morningEveningAzkar: data.morningEveningAzkar,
+              dailyQuranReminder: data.dailyQuranReminder,
+              dailyHopeReminder: data.dailyHopeReminder,
+              nightPrayerReminder: data.nightPrayerReminder,
+              rotatingQuranNotifications: data.rotatingQuranNotifications,
+              prefs: prefs,
+            ),
+          );
+        }
       }
     }
 

@@ -1,7 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:sakina_app/core/services/notifications/quran_reflections_catalog.dart';
+import 'package:sakina_app/core/services/storage/preferences_service.dart';
 import 'package:sakina_app/core/utils/app_logger.dart';
+import 'package:sakina_app/features/settings/domain/services/settings_persistence_manager.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
@@ -9,15 +12,24 @@ import 'package:timezone/timezone.dart' as tz;
 abstract class LocalNotificationService {
   Future<void> initialize();
   Future<bool> requestPermissions();
+  Future<bool> handleFirstLaunchPermissions({
+    required PreferencesService prefs,
+  });
   Future<void> scheduleMorningEveningAzkar({required bool enabled});
   Future<void> scheduleDailyQuranReminder({required bool enabled});
   Future<void> scheduleDailyHopeReminder({required bool enabled});
   Future<void> scheduleNightPrayerReminder({required bool enabled});
+  Future<void> scheduleRotatingQuranNotifications({
+    required bool enabled,
+    PreferencesService? prefs,
+  });
   Future<void> syncAllNotifications({
     required bool morningEveningAzkar,
     required bool dailyQuranReminder,
     required bool dailyHopeReminder,
     required bool nightPrayerReminder,
+    bool rotatingQuranNotifications = true,
+    PreferencesService? prefs,
   });
   Future<void> cancel(int id);
   Future<void> cancelAll();
@@ -45,6 +57,14 @@ class LocalNotificationServiceImpl implements LocalNotificationService {
   static const int idDailyQuran = 103;
   static const int idDailyHope = 104;
   static const int idNightPrayer = 105;
+
+  static const int idRotatingQuranBase = 300;
+  static const int rotatingDaysAhead = 7;
+  static const int slotsPerDay = 3;
+  static const int rotatingQuranCount = rotatingDaysAhead * slotsPerDay; // 21
+
+  static const List<int> rotatingSlotHours = [9, 15, 21];
+  static const List<int> rotatingSlotMinutes = [15, 45, 15];
 
   bool _isInitialized = false;
 
@@ -127,6 +147,91 @@ class LocalNotificationServiceImpl implements LocalNotificationService {
     } catch (e, st) {
       AppLogger.error(
           'Error requesting notification permissions', e, st, 'NOTIFICATION');
+    }
+
+    return granted;
+  }
+
+  @override
+  Future<bool> handleFirstLaunchPermissions({
+    required PreferencesService prefs,
+  }) async {
+    final alreadyPrompted = prefs.getBool(
+          SettingsPersistenceManager.keyNotificationPermissionPrompted,
+        ) ??
+        false;
+
+    if (alreadyPrompted) {
+      return false;
+    }
+
+    final granted = await requestPermissions();
+    await prefs.setBool(
+      SettingsPersistenceManager.keyNotificationPermissionPrompted,
+      true,
+    );
+
+    if (granted) {
+      await prefs.setBool(
+        SettingsPersistenceManager.keyMorningEveningAzkar,
+        true,
+      );
+      await prefs.setBool(
+        SettingsPersistenceManager.keyDailyQuranReminder,
+        true,
+      );
+      await prefs.setBool(
+        SettingsPersistenceManager.keyDailyHopeReminder,
+        true,
+      );
+      await prefs.setBool(
+        SettingsPersistenceManager.keyNightPrayerReminder,
+        true,
+      );
+      await prefs.setBool(
+        SettingsPersistenceManager.keyRotatingQuranNotifications,
+        true,
+      );
+
+      await syncAllNotifications(
+        morningEveningAzkar: true,
+        dailyQuranReminder: true,
+        dailyHopeReminder: true,
+        nightPrayerReminder: true,
+        rotatingQuranNotifications: true,
+        prefs: prefs,
+      );
+      AppLogger.info(
+        'First launch notification permission granted: all reminders activated',
+        'NOTIFICATION',
+      );
+    } else {
+      await prefs.setBool(
+        SettingsPersistenceManager.keyMorningEveningAzkar,
+        false,
+      );
+      await prefs.setBool(
+        SettingsPersistenceManager.keyDailyQuranReminder,
+        false,
+      );
+      await prefs.setBool(
+        SettingsPersistenceManager.keyDailyHopeReminder,
+        false,
+      );
+      await prefs.setBool(
+        SettingsPersistenceManager.keyNightPrayerReminder,
+        false,
+      );
+      await prefs.setBool(
+        SettingsPersistenceManager.keyRotatingQuranNotifications,
+        false,
+      );
+
+      await cancelAll();
+      AppLogger.info(
+        'First launch notification permission denied: all reminders deactivated',
+        'NOTIFICATION',
+      );
     }
 
     return granted;
@@ -293,16 +398,121 @@ class LocalNotificationServiceImpl implements LocalNotificationService {
   }
 
   @override
+  Future<void> scheduleRotatingQuranNotifications({
+    required bool enabled,
+    PreferencesService? prefs,
+  }) async {
+    if (!enabled) {
+      for (int i = 0; i < rotatingQuranCount; i++) {
+        await cancel(idRotatingQuranBase + i);
+      }
+      return;
+    }
+
+    try {
+      final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
+      final List<tz.TZDateTime> upcomingSlots = [];
+
+      for (int day = 0; day < rotatingDaysAhead; day++) {
+        for (int s = 0; s < slotsPerDay; s++) {
+          final candidate = tz.TZDateTime(
+            tz.local,
+            now.year,
+            now.month,
+            now.day + day,
+            rotatingSlotHours[s],
+            rotatingSlotMinutes[s],
+          );
+          if (candidate.isAfter(now)) {
+            upcomingSlots.add(candidate);
+          }
+        }
+      }
+
+      final int neededCount = upcomingSlots.length.clamp(0, rotatingQuranCount);
+      if (neededCount == 0) return;
+
+      // Cancel previous slots before re-scheduling to ensure clean state
+      for (int i = 0; i < rotatingQuranCount; i++) {
+        await cancel(idRotatingQuranBase + i);
+      }
+
+      final Set<String> shownIds = prefs != null
+          ? (prefs.getStringList(
+                    SettingsPersistenceManager.keyShownQuranNotificationIds,
+                  ) ??
+                  [])
+              .toSet()
+          : <String>{};
+
+      List<QuranReflectionItem> availablePool = QuranReflectionsCatalog.pool
+          .where((item) => !shownIds.contains(item.id.toString()))
+          .toList();
+
+      // If available pool has fewer items than needed, reset shown history to start a fresh cycle
+      if (availablePool.length < neededCount) {
+        shownIds.clear();
+        availablePool = List.of(QuranReflectionsCatalog.pool);
+      }
+
+      availablePool.shuffle();
+      final selectedItems = availablePool.take(neededCount).toList();
+
+      for (int i = 0; i < neededCount; i++) {
+        final item = selectedItems[i];
+        final scheduledTime = upcomingSlots[i];
+
+        await _plugin.zonedSchedule(
+          id: idRotatingQuranBase + i,
+          title: item.notificationTitle,
+          body: item.notificationBody,
+          scheduledDate: scheduledTime,
+          notificationDetails: _buildNotificationDetails(),
+          androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+          payload: 'rotating_quran_${item.id}',
+        );
+
+        shownIds.add(item.id.toString());
+      }
+
+      if (prefs != null) {
+        await prefs.setStringList(
+          SettingsPersistenceManager.keyShownQuranNotificationIds,
+          shownIds.toList(),
+        );
+      }
+
+      AppLogger.info(
+        'Scheduled $neededCount rotating Quran notifications without repetition',
+        'NOTIFICATION',
+      );
+    } catch (e, st) {
+      AppLogger.error(
+        'Failed to schedule rotating Quran notifications',
+        e,
+        st,
+        'NOTIFICATION',
+      );
+    }
+  }
+
+  @override
   Future<void> syncAllNotifications({
     required bool morningEveningAzkar,
     required bool dailyQuranReminder,
     required bool dailyHopeReminder,
     required bool nightPrayerReminder,
+    bool rotatingQuranNotifications = true,
+    PreferencesService? prefs,
   }) async {
     await scheduleMorningEveningAzkar(enabled: morningEveningAzkar);
     await scheduleDailyQuranReminder(enabled: dailyQuranReminder);
     await scheduleDailyHopeReminder(enabled: dailyHopeReminder);
     await scheduleNightPrayerReminder(enabled: nightPrayerReminder);
+    await scheduleRotatingQuranNotifications(
+      enabled: rotatingQuranNotifications,
+      prefs: prefs,
+    );
   }
 
   @override

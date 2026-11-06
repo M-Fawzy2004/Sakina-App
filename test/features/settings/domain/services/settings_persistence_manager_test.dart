@@ -25,7 +25,7 @@ void main() {
       expect(data.morningEveningAzkar, true);
       expect(data.dailyQuranReminder, true);
       expect(data.dailyHopeReminder, true);
-      expect(data.nightPrayerReminder, false);
+      expect(data.nightPrayerReminder, true);
       expect(data.inabaLock, true);
       expect(data.stealthNotifications, false);
     });
@@ -86,6 +86,7 @@ void main() {
       verify(() => mockPrefs.remove(SettingsPersistenceManager.keyDailyQuranReminder)).called(1);
       verify(() => mockPrefs.remove(SettingsPersistenceManager.keyDailyHopeReminder)).called(1);
       verify(() => mockPrefs.remove(SettingsPersistenceManager.keyNightPrayerReminder)).called(1);
+      verify(() => mockPrefs.remove(SettingsPersistenceManager.keyNotificationPermissionPrompted)).called(1);
       verify(() => mockPrefs.remove(SettingsPersistenceManager.keyInabaLock)).called(1);
       verify(() => mockPrefs.remove(SettingsPersistenceManager.keyStealthNotifications)).called(1);
     });

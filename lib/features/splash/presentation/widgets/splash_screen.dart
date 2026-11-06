@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sakina_app/core/di/injection_container.dart';
+import 'package:sakina_app/core/services/notifications/local_notification_service.dart';
+import 'package:sakina_app/core/services/storage/preferences_service.dart';
 import 'package:sakina_app/core/theme/app_colors.dart';
 import 'package:sakina_app/features/splash/presentation/cubit/splash_cubit.dart';
 import 'package:sakina_app/features/splash/presentation/cubit/splash_state.dart';
@@ -84,6 +86,22 @@ class _SplashViewState extends State<_SplashView>
     );
 
     _entranceController.forward();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _requestInitialNotificationPermissions();
+    });
+  }
+
+  Future<void> _requestInitialNotificationPermissions() async {
+    if (!mounted) return;
+    try {
+      if (sl.isRegistered<LocalNotificationService>() &&
+          sl.isRegistered<PreferencesService>()) {
+        await sl<LocalNotificationService>().handleFirstLaunchPermissions(
+          prefs: sl<PreferencesService>(),
+        );
+      }
+    } catch (_) {}
   }
 
   @override
