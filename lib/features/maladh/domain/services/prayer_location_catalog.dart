@@ -816,6 +816,17 @@ abstract final class PrayerLocationCatalog {
     return defaultLocation; // Egypt default (+2)
   }
 
+  /// Resolves the user-selected city from [prefs] or falls back to smart timezone detection.
+  static CityLocation getEffectiveLocation([PreferencesService? prefs]) {
+    if (prefs != null) {
+      final savedId = prefs.getString(keySelectedCityId);
+      if (savedId != null) {
+        return findById(savedId);
+      }
+    }
+    return detectInitialLocation();
+  }
+
   /// Finds the closest city in the catalog to the given GPS coordinates.
   static CityLocation findClosest(double latitude, double longitude) {
     CityLocation closest = defaultLocation;

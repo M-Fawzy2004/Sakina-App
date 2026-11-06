@@ -8,6 +8,8 @@ import 'package:sakina_app/core/theme/app_colors_scheme.dart';
 import 'package:sakina_app/features/maladh/domain/services/cairo_prayer_times_calculator.dart';
 import 'package:sakina_app/features/maladh/domain/services/global_prayer_times_calculator.dart';
 import 'package:sakina_app/core/di/injection_container.dart';
+import 'package:sakina_app/core/utils/haptic_service.dart';
+import 'package:sakina_app/features/maladh/presentation/widgets/prayer_times_detail_screen.dart';
 
 /// Luxury Prayer Context & Countdown Bar (The First Half - Image 2).
 /// Displays:
@@ -81,31 +83,37 @@ class _MaladhPrayerContextBarState extends State<MaladhPrayerContextBar> {
         ),
       ),
       clipBehavior: Clip.antiAlias,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          // 1. Top Context Row: Current Prayer, Center Hijri Tab, Next Prayer
-          _TopContextRow(
-            hijriDay: hijriDay,
-            hijriMonth: hijriMonth,
-            currentPrayerText:
-                '${_scheduleInfo.currentPrayerName} ${_scheduleInfo.currentPrayerTime}',
-            nextPrayerText:
-                '${_scheduleInfo.nextPrayerName} ${_scheduleInfo.nextPrayerTime}',
-          ),
+      child: InkWell(
+        onTap: () {
+          HapticService.selectionClick();
+          PrayerTimesDetailScreen.open(context);
+        },
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // 1. Top Context Row: Current Prayer, Center Hijri Tab, Next Prayer
+            _TopContextRow(
+              hijriDay: hijriDay,
+              hijriMonth: hijriMonth,
+              currentPrayerText:
+                  '${_scheduleInfo.currentPrayerName} ${_scheduleInfo.currentPrayerTime}',
+              nextPrayerText:
+                  '${_scheduleInfo.nextPrayerName} ${_scheduleInfo.nextPrayerTime}',
+            ),
 
-          // 2. Subtle Hairline Divider
-          Container(
-            height: 1.h,
-            color: colors.borderHairline.withValues(alpha: 0.4),
-          ),
+            // 2. Subtle Hairline Divider
+            Container(
+              height: 1.h,
+              color: colors.borderHairline.withValues(alpha: 0.4),
+            ),
 
-          // 3. Live Countdown Ticker
-          _LiveCountdownTicker(
-            countdownText: countdownString,
-          ),
-        ],
+            // 3. Live Countdown Ticker
+            _LiveCountdownTicker(
+              countdownText: countdownString,
+            ),
+          ],
+        ),
       ),
     );
   }

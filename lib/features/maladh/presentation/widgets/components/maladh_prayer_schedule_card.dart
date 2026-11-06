@@ -15,6 +15,7 @@ import 'package:sakina_app/features/maladh/domain/services/cairo_prayer_times_ca
 import 'package:sakina_app/features/maladh/domain/services/global_prayer_times_calculator.dart';
 import 'package:sakina_app/features/maladh/domain/services/prayer_location_catalog.dart';
 import 'package:sakina_app/features/maladh/presentation/widgets/components/prayer_location_selector_sheet.dart';
+import 'package:sakina_app/features/maladh/presentation/widgets/prayer_times_detail_screen.dart';
 import 'package:sakina_app/features/settings/domain/services/settings_persistence_manager.dart';
 
 /// "جدول الصلوات اليومية" - Worldwide offline prayer schedule card.
@@ -372,7 +373,10 @@ class _SinglePrayerSlot extends StatelessWidget {
     final subtitleColor = isNext ? colors.accentGold : colors.textSecondary;
 
     return InkWell(
-      onTap: () => HapticService.selectionClick(),
+      onTap: () {
+        HapticService.selectionClick();
+        PrayerTimesDetailScreen.open(context);
+      },
       borderRadius: BorderRadius.circular(10.r),
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 2.h),
@@ -419,8 +423,14 @@ class _SupplementaryTimesRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.colors;
 
-    return Row(
-      children: [
+    return InkWell(
+      onTap: () {
+        HapticService.selectionClick();
+        PrayerTimesDetailScreen.open(context);
+      },
+      borderRadius: BorderRadius.circular(10.r),
+      child: Row(
+        children: [
         Expanded(
           child: _SupplementaryTimeItem(
             name: 'الشروق',
@@ -450,6 +460,7 @@ class _SupplementaryTimesRow extends StatelessWidget {
           ),
         ),
       ],
+      ),
     );
   }
 }
