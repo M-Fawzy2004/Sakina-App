@@ -37,10 +37,12 @@ workflows:
       - name: Build iOS IPA and Sign
         script: |
           flutter build ipa --release \
+            --build-number "$BUILD_NUMBER" \
             --export-options-plist=/Users/builder/export_options.plist
 
     artifacts:
       - build/ios/ipa/*.ipa
+      - /Users/builder/clone/build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
 
     publishing:
