@@ -71,12 +71,13 @@ else
   runner_target.add_dependency(widget_target)
 
   # Embed Widget Extension into Runner.app/PlugIns
-  embed_phase = runner_target.copy_files_build_phases.find { |p| p.name == 'Embed Foundation Extensions' || p.dst_subfolder_spec == 13 }
+  embed_phase = runner_target.copy_files_build_phases.find { |p| p.name == 'Embed Foundation Extensions' || p.dst_subfolder_spec.to_s == '13' }
   unless embed_phase
     embed_phase = runner_target.new_copy_files_build_phase('Embed Foundation Extensions')
-    embed_phase.dst_subfolder_spec = 13 # PlugIns
+    embed_phase.dst_subfolder_spec = '13' # PlugIns
+    embed_phase.dst_path = ''
   end
-  embed_file = embed_phase.add_file_reference(widget_target.product_reference)
+  embed_file = embed_phase.add_file_reference(widget_target.product_reference, true)
   embed_file.settings = { 'ATTRIBUTES' => ['RemoveHeadersOnCopy', 'CodeSignOnCopy'] }
 
   project.save
