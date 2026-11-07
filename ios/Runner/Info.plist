@@ -39,14 +39,20 @@
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<!-- Microphone Usage for Audio/Recitation -->
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Microphone access is required to play and record audio for Quran recitations and supplications in the app.</string>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Sakina uses Face ID to securely authenticate and protect your private spiritual reflections and personal sanctuary.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Sakina requires access to save your customized Quranic cards and video reels to your photo library.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Sakina requires access to select background media and save your customized Quranic cards and reels to your photo library.</string>
+	<string>Photo library access is required to save the videos and Quranic designs you create.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>تطبيق سكينة يحتاج إلى موقعك لحساب مواقيت الصلاة بدقة فلكية وتنبيهك قبل كل صلاة في مدينتك.</string>
+	<string>Sakina needs your location to accurately calculate prayer times and notify you before each prayer in your city.</string>
+	<!-- Automatically bypass TestFlight export compliance prompt -->
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
