@@ -10,7 +10,7 @@ workflows:
         provisioning_profiles:
           - sakina_appstore_profile
         certificates:
-          - sakina_cert 
+          - sakina_cert
       xcode: latest
       flutter: stable
 
