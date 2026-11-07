@@ -9,6 +9,7 @@ workflows:
       ios_signing:
         provisioning_profiles:
           - sakina_appstore_profile
+          - sakina_widgets_profile
         certificates:
           - sakina_cert
       xcode: latest
@@ -23,6 +24,11 @@ workflows:
           source: true
 
     scripts:
+      - name: Configure SakinaWidgets Target in Xcode
+        script: |
+          ruby -r xcodeproj -e 'puts "xcodeproj is ready"' || gem install xcodeproj --no-document
+          ruby ios/setup_widgets.rb
+
       - name: Install Flutter dependencies & CocoaPods
         script: |
           flutter config --no-enable-swift-package-manager
