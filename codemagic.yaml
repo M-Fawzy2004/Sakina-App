@@ -1,12 +1,18 @@
 workflows:
-  ios-release-workflow:
-    name: iOS Sideloadly IPA Build
-    max_build_duration: 120
+  ios-app-store-release:
+    name: iOS Sakina App Store & TestFlight
     instance_type: mac_mini_m2
+    max_build_duration: 60
+    integrations:
+      app_store_connect: Sakina Key
     environment:
-      flutter: stable
+      ios_signing:
+        provisioning_profiles:
+          - sakina_appstore_profile
+        certificates:
+          - sakina_cert 
       xcode: latest
-      cocoapods: default
+      flutter: stable
 
     triggering:
       events:
@@ -17,34 +23,28 @@ workflows:
           source: true
 
     scripts:
-      - name: Install dependencies & CocoaPods
+      - name: Install Flutter dependencies & CocoaPods
         script: |
+          flutter config --no-enable-swift-package-manager
           flutter packages pub get
           cd ios
           pod install --repo-update
           cd ..
 
-      - name: Build Unsigned iOS App
-        script: |
-          flutter build ios --release --no-codesign
+      - name: Set up code signing settings on Xcode project
+        script: xcode-project use-profiles
 
-      - name: Package IPA for Sideloadly
+      - name: Build iOS IPA and Sign
         script: |
-          set -e
-          APP_PATH="build/ios/iphoneos/Runner.app"
-          if [ -d "$APP_PATH" ]; then
-            echo "App built successfully at $APP_PATH! Packaging into IPA for Sideloadly..."
-            rm -rf Payload Runner.ipa
-            mkdir -p Payload
-            cp -r "$APP_PATH" Payload/
-            zip -r -q Runner.ipa Payload
-            rm -rf Payload
-            echo "Packaging complete: Runner.ipa is ready for download!"
-            ls -lh Runner.ipa
-          else
-            echo "Error: App NOT found at $APP_PATH"
-            exit 1
-          fi
+          flutter build ipa --release \
+            --export-options-plist=/Users/builder/export_options.plist
 
     artifacts:
-      - Runner.ipa
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true
+        submit_to_app_store: false
